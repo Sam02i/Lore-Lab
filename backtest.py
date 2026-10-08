@@ -1,7 +1,7 @@
 import math
 import sys
 
-from backend.weather import geocode, fetch_history
+from weather import geocode, fetch_history
 
 RAIN_MM = 0.2   #? total perception in the window that counts as "rain"
 LOOK_HOUR = 18           #? local hour you "look outside" (dusk)
