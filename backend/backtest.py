@@ -1,16 +1,16 @@
 import math
 import sys
 
-from weather import geocode, fetch_history
+from backend.weather import geocode, fetch_history
 
-RAIN_MM = 0.2   #* total perception in the window that counts as "rain"
-LOOK_HOUR = 18           # local hour you "look outside" (dusk)
-WINDOW_H = 24            # outcome window starts the next full hour
+RAIN_MM = 0.2   #? total perception in the window that counts as "rain"
+LOOK_HOUR = 18           #? local hour you "look outside" (dusk)
+WINDOW_H = 24            #? outcome window starts the next full hour
 MIN_N_BACKTEST = 30
 
-# Hypothesis: "falling glass" = pressure drops by at least this much in 3 hours
+#? Hypothesis: "falling glass" = pressure drops by at least this much in 3 hours
 
-PRESSURE_DROP_HPA = 1.0  # user-set threshold, never model-set (F4)
+PRESSURE_DROP_HPA = 1.0  #? user-set threshold, never model-set (F4)
 
 def wilson(k, n, z=1.96):
     if n == 0:
@@ -47,7 +47,7 @@ if __name__ == "__main__":
     sign = days["p_change_3h"] <= -PRESSURE_DROP_HPA
     base, n, k = score(days, sign)
 
-    print(f"Days analysed: {len(days)}")
+    print(f"Days analysed : {len(days)}")
     print(f"Base rate (rain follows any day): {base:.1%}")
     if n < MIN_N_BACKTEST:
         print(f"ON THE TRAIL: sign seen on {n} days, rain followed {k}. Need {MIN_N_BACKTEST}.")

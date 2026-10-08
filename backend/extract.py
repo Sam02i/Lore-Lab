@@ -1,7 +1,7 @@
 import sys
 import ollama
-from schema import Hypothesis, is_backtestable
-from prompt import SYSTEM
+from backend.schema import Hypothesis, is_backtestable
+from backend.prompt import SYSTEM
 import os
 
 MODEL = os.environ.get("LORE_MODEL", "gemma3:4b")
