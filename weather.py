@@ -4,15 +4,15 @@ import httpx
 import pandas as pd
 
 CACHE = Path("cache")
-CACHE.mkdir(exits_ok = True)
+CACHE.mkdir(exist_ok = True)
 
-HOURLY = ["pressure_msl","cloud_cover_high","relative_humidity_2m", "wind_direction_10m","perception"]
+HOURLY = ["pressure_msl","cloud_cover_high","relative_humidity_2m", "wind_direction_10m","precipitation"]
 
 def geocode(city:str):
     r = httpx.get("https://geocoding-api.open-meteo.com/v1/search",
-        prams = {"name": city, "count": 1}, timeout=30)
-    r.raise_for_status
-    res = r.jason().get("results")
+        params = {"name": city, "count": 1}, timeout=30)
+    r.raise_for_status()
+    res = r.json().get("results")
     if not res:
         raise ValueError(f"Location not found: {city}")
     p = res[0]
@@ -26,7 +26,7 @@ def fetch_history(lat: float, lon: float, years: int = 10) -> pd.DataFrame:
         return pd.read_csv(f, parse_dates=["time"], index_col="time")
     
     end = dt.date.today() - dt.timedelta(days=7)  #* archive lags a few days
-    start = end.replace(year = end.years - years)
+    start = end.replace(year = end.year - years)
 
     frames = []
     for y in range(start.year, end.year + 1):     #* one request per year
@@ -51,5 +51,5 @@ def fetch_history(lat: float, lon: float, years: int = 10) -> pd.DataFrame:
     return df
 
 
-    
-    
+
+
