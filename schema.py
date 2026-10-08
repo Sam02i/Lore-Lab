@@ -1,6 +1,7 @@
 from typing import Literal , Optional
 from pydantic import BaseModel, Field
 
+# used pydantic to convert the gemma strings into particular using Literal 
 class Sign(BaseModel):
     description: str
     how_to_observe: str
@@ -31,7 +32,7 @@ class Hypothesis(BaseModel):
 WHITELIST = {"pressure_msl","wind_direction_10m","cloud_cover_high","relative_humidity_2m"}
 
 def is_backtestable(h : Hypothesis) -> bool:
-    # we are going to decide not the model
+    # Code is going to decide not the model
     return(h.sign.kind == "atmospheric"
     and h.proxy.variable in WHITELIST
     and h.proxy.fit != "none")

@@ -13,4 +13,13 @@ Example 1: "Swifts flying low means rain"
 
 Example 2: "Falling barometer means rain is coming"
 -> sign.kind "atmospheric", proxy.variable "pressure_msl", proxy.feature "change_3h", proxy.fit "good", ambiguities ["How big a drop counts as falling?"]
+
+Example 3: "halo around the moon means rain soon"
+-> sign.kind "celestial", proxy.variable "cloud_cover_high", proxy.feature "level", proxy.fit "rough", ambiguities ["High clouds do not guarantee visible halo"]
+
+Example 4: "count crickets chips to tell the temperature"
+-> sign.kind "animal", proxy.variable "none", proxy.feature "none", proxy.fit "none", live_only_reason "Insects chirp rate cannot be measured by weather stations ; need human intervention "
+
+Example 5: "cows lying down rain is on the way"
+-> sign.kind "animal" , proxy.variable "none", proxy.feature "none", proxy.fir "none", live_only_reason "Cattle posture is not tracked by weather instruments or reanalysis models", ambiguities ["Whether a single cow counts or the majority of the herd must be lying down"]
 """

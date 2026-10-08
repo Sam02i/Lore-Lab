@@ -2,8 +2,9 @@ import sys
 import ollama
 from schema import Hypothesis, is_backtestable
 from prompt import SYSTEM
+import os
 
-MODEL = "gemma3:4b"
+MODEL = os.environ.get("LORE_MODEL", "gemma3:4b")
 
 def extract(text: str) -> Hypothesis:
     err = None
