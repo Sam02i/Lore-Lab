@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Delicious+Handrawn&family=Delius&family=Swanky+and+Moo+Moo&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="lore.css">
   <script>document.documentElement.classList.add("js");</script>
 </head>
 <body id="top">
@@ -102,14 +103,116 @@
     </div>
   </section>
 
-  <section class="page" id="engine">
+  <!-- ===================== LORE LAB · EXPERIMENT ENGINE ===================== -->
+  <section class="lore lore-engine" id="engine" aria-labelledby="lore-engine-title">
+    <div class="lore-wrap">
+      <header class="lore-head lore-in">
+        <span class="lore-pill">Gemma proposes <i>&bull;</i> Code decides</span>
+        <h2 class="lore-title" id="lore-engine-title">LET&rsquo;S PUT AN OLD SAYING TO THE TEST.</h2>
+        <p class="lore-lede">A proverb becomes a hypothesis. The hypothesis meets weather evidence, or you step outside and look. Then we hold the result up against what ordinary chance would have done anyway.</p>
+      </header>
+      <ol class="lore-recipe lore-in">
+        <li><b>1</b><span>Write the saying down, in any language.</span></li>
+        <li><b>2</b><span>Review what Gemma proposes. Settle anything vague yourself.</span></li>
+        <li><b>3</b><span>Test it against weather history, or go and look at the sky.</span></li>
+      </ol>
+
+      <div class="lore-desk lore-in" id="lore-desk">
+        <div class="lore-tabs" role="tablist" aria-label="Experiment steps">
+          <button class="lore-tab is-active" role="tab" id="lore-tab-1" aria-controls="lore-p1" aria-selected="true" data-go="1"><b>1</b>Saying</button>
+          <button class="lore-tab" role="tab" id="lore-tab-2" aria-controls="lore-p2" aria-selected="false" data-go="2" disabled><b>2</b>Hypothesis</button>
+          <button class="lore-tab" role="tab" id="lore-tab-3" aria-controls="lore-p3" aria-selected="false" data-go="3" disabled><b>3</b>Test</button>
+          <button class="lore-tab" role="tab" id="lore-tab-4" aria-controls="lore-p4" aria-selected="false" data-go="4" disabled><b>4</b>Result</button>
+        </div>
+        <div class="lore-sheet">
+          <div class="lore-main">
+            <div class="lore-pane" id="lore-p1" role="tabpanel" aria-labelledby="lore-tab-1">
+              <h3>What did they say?</h3>
+              <p class="lore-intro">Your grandmother said it. Does it actually work here? Type the saying exactly as you heard it.</p>
+              <form id="lore-form" novalidate>
+                <label for="lore-text">The saying</label>
+                <textarea class="lore-field" id="lore-text" rows="4" required placeholder="Write the proverb in any language"></textarea>
+                <div class="lore-row">
+                  <div>
+                    <label for="lore-source">Who said it?</label>
+                    <input class="lore-field" id="lore-source" type="text" autocomplete="off" placeholder="Source, or Unknown">
+                    <div class="lore-chips" aria-label="Quick sources">
+                      <button type="button" class="lore-chip" data-source="My grandmother">My grandmother</button>
+                      <button type="button" class="lore-chip" data-source="Unknown">Unknown</button>
+                    </div>
+                  </div>
+                  <div>
+                    <label for="lore-lang">Language <small>(optional)</small></label>
+                    <input class="lore-field" id="lore-lang" type="text" autocomplete="off" placeholder="Leave blank to detect it">
+                  </div>
+                </div>
+                <div id="lore-starters" hidden>
+                  <label class="lore-label" for="lore-starter" style="margin-top:1.1em">Or start from a saying in the corpus</label>
+                  <select class="lore-field" id="lore-starter"><option value="">Choose one&hellip;</option></select>
+                </div>
+                <div class="lore-actions">
+                  <button class="lore-btn lore-btn--coral" id="lore-extract" type="submit">Extract the hypothesis</button>
+                </div>
+              </form>
+            </div>
+            <div class="lore-pane" id="lore-p2" role="tabpanel" aria-labelledby="lore-tab-2" hidden></div>
+            <div class="lore-pane" id="lore-p3" role="tabpanel" aria-labelledby="lore-tab-3" hidden></div>
+            <div class="lore-pane" id="lore-p4" role="tabpanel" aria-labelledby="lore-tab-4" hidden></div>
+            <div class="lore-alert" id="lore-alert" role="alert" hidden></div>
+          </div>
+          <aside class="lore-side" aria-label="Bench notes">
+            <section>
+              <h4>Bench status</h4>
+              <div class="lore-conn" id="lore-conn"><i></i><span id="lore-conn-text">Checking the bench&hellip;</span></div>
+            </section>
+            <section>
+              <h4>Who decides what</h4>
+              <p>Gemma <b>proposes</b> a hypothesis. Plain code <b>decides</b> whether it can be backtested. You settle every number and every vague word.</p>
+            </section>
+            <section id="lore-side-mode" hidden>
+              <h4>This experiment</h4>
+              <span class="lore-modebadge" id="lore-side-badge"></span>
+            </section>
+          </aside>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== LORE LAB · SYSTEM ARCHITECTURE ===================== -->
+  <section class="lore lore-arch" id="architecture" aria-labelledby="lore-arch-title">
+    <div class="lore-wrap">
+      <header class="lore-head lore-in">
+        <span class="lore-pill">Blueprint <i>&bull;</i> Seven parts</span>
+        <h2 class="lore-title" id="lore-arch-title">HOW THE LAB IS WIRED</h2>
+        <p class="lore-lede">Pick a part to see what it takes in and what it hands on. Or trace one journey through the system.</p>
+      </header>
+      <div class="lore-trace lore-in" role="group" aria-label="Trace a path through the system">
+        <button type="button" data-trace="all" aria-pressed="true">Whole system</button>
+        <button type="button" data-trace="lab" aria-pressed="false">Lab Test</button>
+        <button type="button" data-trace="field" aria-pressed="false">Field Test</button>
+        <button type="button" data-trace="outcome" aria-pressed="false">Outcome check</button>
+      </div>
+      <div class="lore-arch-grid lore-in">
+        <div>
+          <div class="lore-diagram" id="lore-diagram"></div>
+          <ul class="lore-stack" id="lore-stack" aria-label="System parts"></ul>
+        </div>
+        <aside class="lore-detail" id="lore-detail" aria-live="polite"></aside>
+      </div>
+      <ol class="lore-steps lore-in" id="lore-steps"></ol>
+      <p class="lore-archnote">Follows the architecture in the product requirements. Parts are shown as designed; this diagram does not report which are live.</p>
+    </div>
+  </section>
+
+  <section class="page" id="protocol-notes">
     <div class="head">
       <span class="pill reveal">Gemma proposes <i class="hero__dot">&bull;</i> Code decides</span>
-      <h2 class="title reveal">THE ENGINE</h2>
+      <h2 class="title reveal">THE PROTOCOL</h2>
       <p class="lede reveal">Five stops between your grandmother's saying and an honest answer. The model translates, plain Python judges, and you step outside for the part no satellite can see.</p>
     </div>
 
-    <div class="flow" id="architecture">
+    <div class="flow">
       <div class="reveal flow__step"><div class="flow__name">Proverb</div><div class="flow__what">Any language, with its source or "unknown"</div></div>
       <span class="reveal flow__arrow" aria-hidden="true">&rarr;</span>
       <div class="reveal flow__step"><div class="flow__name">Gemma proposes</div><div class="flow__what">A structured, testable hypothesis</div></div>
@@ -143,7 +246,7 @@
         <p>A "rough" fit is labelled Rough match and needs your explicit OK.</p>
       </article>
 
-      <article class="note note--c note--sage reveal" id="field-reports">
+      <article class="note note--c note--sage reveal">
         <span class="note__tag">Two ways to test</span>
         <h2 class="note__title">Lab Test and Field Test</h2>
         <div class="split">
@@ -204,6 +307,35 @@ WINDOW            = next full hour + window_hours</div>
     </div>
   </section>
 
+
+  <!-- ===================== LORE LAB · FIELD REPORT ===================== -->
+  <section class="lore lore-fieldreport" id="field-reports" aria-labelledby="lore-fr-title">
+    <div class="lore-wrap">
+      <header class="lore-head lore-in">
+        <span class="lore-pill">Field notebook <i>&bull;</i> Looks, then outcomes</span>
+        <h2 class="lore-title" id="lore-fr-title">TONIGHT, YOU&rsquo;RE THE INSTRUMENT.</h2>
+        <p class="lore-lede">No satellite records a swift, a cow or the look of the moon. Look up, tap what you saw, and put the phone away. The sky gets checked after the window closes.</p>
+      </header>
+
+      <div class="lore-fr-grid">
+        <div class="lore-in">
+          <div class="lore-obs" id="lore-obs"></div>
+          <ul class="lore-states" aria-label="How a look travels">
+            <li data-s="logged"><strong>Logged</strong>Your look was saved.</li>
+            <li data-s="pending"><strong>Pending</strong>The window hasn&rsquo;t been checked yet.</li>
+            <li data-s="resolved"><strong>Resolved</strong>We know what the sky did.</li>
+            <li data-s="failed"><strong>Couldn&rsquo;t resolve</strong>Weather data wasn&rsquo;t available.</li>
+          </ul>
+          <ul class="lore-obslist" id="lore-obslist" aria-label="Your looks"></ul>
+        </div>
+        <div class="lore-in" id="lore-cards"></div>
+      </div>
+
+      <div class="lore-keyrow lore-in" id="lore-key" aria-label="The four verdicts"></div>
+      <p class="lore-sev lore-in">Field Tests and Lab Tests are scored separately and never pooled. One place and a short history is a hint, not proof.</p>
+    </div>
+  </section>
+
   <section class="page end" id="join">
     <img class="end__sticker" src="assets/apple.png" alt="">
     <img class="end__girl" src="assets/girl.png" alt="">
@@ -241,5 +373,6 @@ WINDOW            = next full hour + window_hours</div>
   </section>
 
   <script src="script.js"></script>
+  <script src="lore.js"></script>
 </body>
 </html>
