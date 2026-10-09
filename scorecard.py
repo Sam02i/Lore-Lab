@@ -9,7 +9,7 @@ def what_would_count(n,base):
     for k in range(n+1):
         if wilson(k,n)[0] > base:
             return k
-        return None
+    return None
     
 def tally(hits,look,target):
     #? filled = rain followed, hollow = no rain, dot = look still needed

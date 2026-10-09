@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Delicious+Handrawn&family=Delius&family=Swanky+and+Moo+Moo&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="pages.css">
+  <script>document.documentElement.classList.add("js");</script>
+  <title>Lore Lab · Engine Architecture</title>
+</head>
+<body>
+  <header class="header">
+    <a href="index.html"><span class="header__brand">Lore Lab</span></a>
+    <nav class="header__nav">
+      <a href="index.html#way"><span>Stance</span></a>
+      <a href="architecture.html"><span>Engine</span></a>
+      <a href="architecture.html#architecture"><span>Architecture</span></a>
+      <a href="architecture.html#protocol"><span>Protocol</span></a>
+      <a href="architecture.html#field-reports"><span>Field Reports</span></a>
+      <a href="ending.html"><span>Post &#8599;</span></a>
+    </nav>
+  </header>
+
+  <main class="page">
+    <div class="head">
+      <span class="pill">Gemma proposes <i class="hero__dot">&bull;</i> Code decides</span>
+      <h1 class="title">THE ENGINE</h1>
+      <p class="lede">Five stops between your grandmother's saying and an honest answer. The model translates, plain Python judges, and you step outside for the part no satellite can see.</p>
+    </div>
+
+    <div class="flow reveal" id="architecture">
+      <div class="flow__step"><div class="flow__name">Proverb</div><div class="flow__what">Any language, with its source or "unknown"</div></div>
+      <span class="flow__arrow" aria-hidden="true">&rarr;</span>
+      <div class="flow__step"><div class="flow__name">Gemma proposes</div><div class="flow__what">A structured, testable hypothesis</div></div>
+      <span class="flow__arrow" aria-hidden="true">&rarr;</span>
+      <div class="flow__step flow__step--code"><div class="flow__name">Code decides</div><div class="flow__what">Lab Test or Field Test, by whitelist</div></div>
+      <span class="flow__arrow" aria-hidden="true">&rarr;</span>
+      <div class="flow__step"><div class="flow__name">Test it</div><div class="flow__what">10-year backtest, or go look outside</div></div>
+      <span class="flow__arrow" aria-hidden="true">&rarr;</span>
+      <div class="flow__step"><div class="flow__name">Verdict</div><div class="flow__what">Counts, chance and a plain-words reading</div></div>
+    </div>
+
+    <div class="grid">
+      <article class="note note--a note--tilt-l reveal">
+        <span class="note__tag">Step 1 &middot; open weights</span>
+        <h2 class="note__title">Gemma proposes</h2>
+        <p>Local open-weight Gemma reads the proverb, translates it and sorts the sign into a closed vocabulary. It never judges whether the saying is true, and it never invents a threshold. Anything vague goes into an ambiguities list for you to settle.</p>
+        <div class="chalk"><b>sign.kind</b>   atmospheric | animal | plant | celestial | body
+<b>proxy.variable</b>   pressure_msl | wind_direction_10m | ...| <i>none</i>
+<b>proxy.fit</b>   good | rough | <i>none</i>
+<b>threshold_suggestion</b>   <i>null</i>   // always. You set the number.</div>
+      </article>
+
+      <article class="note note--b note--coral note--tilt-r reveal">
+        <span class="note__tag">Step 2 &middot; plain Python</span>
+        <h2 class="note__title">Code decides</h2>
+        <p>A small model should not be the judge of what can be tested. Backtestability is computed by deterministic code and stored on the hypothesis.</p>
+        <div class="chalk">backtestable =
+  sign.kind == <b>"atmospheric"</b>
+  and proxy.variable in <b>WHITELIST</b>
+  and proxy.fit != <b>"none"</b></div>
+        <p>A "rough" fit is labelled Rough match and needs your explicit OK.</p>
+      </article>
+
+      <article class="note note--c note--sage reveal" id="field-reports">
+        <span class="note__tag">Two ways to test</span>
+        <h2 class="note__title">Lab Test and Field Test</h2>
+        <div class="split">
+          <div>
+            <h4>Lab Test</h4>
+            <p>The sign shows up in weather data. We score it against about 10 years of Open-Meteo history for your spot. Big sample, instant answer, modelled reanalysis rather than station readings.</p>
+            <div class="chips"><span class="chip">pressure change</span><span class="chip">wind direction</span><span class="chip">high cloud</span><span class="chip">humidity</span></div>
+          </div>
+          <div>
+            <h4>Field Test</h4>
+            <p>Swifts, cows, crickets, the look of the moon: no instrument records them, so you are the instrument. Look, tap Seen or Not seen, put your phone away. Small sample, and the app says so.</p>
+            <div class="chips"><span class="chip">animals</span><span class="chip">plants</span><span class="chip">sounds</span><span class="chip">the moon</span></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="note note--d note--blush note--tilt-l reveal">
+        <span class="note__tag">Step 4 &middot; outcomes</span>
+        <h2 class="note__title">Lazy outcome check</h2>
+        <p>No scheduler, no queue. Each look stores a time to resolve after. Whenever the app next opens, one idempotent function fills in what the sky actually did.</p>
+        <div class="chalk">resolvePending()
+  find looks that are due
+  claim the row  <b>(no double-resolve)</b>
+  fetch hourly rain for the window
+  <i>missing hour?</i> retry, up to 5 times
+  save outcome, update scorecard</div>
+      </article>
+
+      <article class="note note--e note--tilt-r reveal" id="protocol">
+        <span class="note__tag">Step 5 &middot; the scorecard</span>
+        <h2 class="note__title">Never a verdict the data can't back</h2>
+        <p>Every card shows the bar to beat (how often it rains anyway) next to the hit rate, with sample size beside every number. Under the minimum, you get a notebook page of blank tally dots instead of a percentage.</p>
+        <div class="tally" aria-label="3 of 10 looks logged"><span class="dot dot--on"></span><span class="dot dot--on"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+        <div class="verdicts">
+          <span><strong>On the trail</strong>Still collecting looks</span>
+          <span><strong>Promising</strong>Beats chance</span>
+          <span><strong>Same as chance</strong>A real finding</span>
+          <span><strong>Backfires</strong>Worse than chance</span>
+        </div>
+      </article>
+
+      <article class="note note--f note--sage note--tilt-r reveal">
+        <span class="note__tag">Committed before any result</span>
+        <h2 class="note__title">Pre-set constants</h2>
+        <p>Written into the README before a single result is viewed, so the experiment can be audited.</p>
+        <div class="chalk">MIN_N_BACKTEST    = 30 sign-present days
+MIN_N_LIVE        = 10 sign-present looks
+RAIN_THRESHOLD_MM = total rain in the window
+WINDOW            = next full hour + window_hours</div>
+      </article>
+
+      <article class="note note--g note--tilt-l reveal">
+        <span class="note__tag">House rules</span>
+        <h2 class="note__title">Honest by design</h2>
+        <p>Backtest and field results are shown separately and never pooled. One place and a short history is a hint, not proof. No streaks, badges or leaderboards, because the reward is the open question.</p>
+        <span class="stamp">Same as chance is a result</span>
+      </article>
+    </div>
+    <div class="next next--in">
+      <p class="next__text">Seen enough? Go outside.</p>
+      <a class="next__btn" href="ending.html">Go touch grass</a>
+    </div>
+  </main>
+
+  <script src="pages.js"></script>
+</body>
+</html>

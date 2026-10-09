@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lore Lab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Delicious+Handrawn&family=Delius&family=Swanky+and+Moo+Moo&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script>document.documentElement.classList.add("js");</script>
+</head>
+<body id="top">
+
+  <header class="header">
+    <a href="index.html"><a href="#top"><span class="header__brand">Lore Lab</span></a></a>
+    <nav class="header__nav">
+      <a href="#way"><span>Stance</span></a>
+      <a href="#engine"><span>Engine</span></a>
+      <a href="#architecture"><span>Architecture</span></a>
+      <a href="#protocol"><span>Protocol</span></a>
+      <a href="#field-reports"><span>Field Reports</span></a>
+      <a href="#join"><span>Post &#8599;</span></a>
+    </nav>
+    <div class="header__progress" aria-hidden="true"></div>
+  </header>
+
+  <main class="hero">
+    <div class="hero__bg" aria-hidden="true"></div>
+
+    <p class="hero__tagline"><span class="hero__pill">Open-Weight Gemma <i class="hero__dot">&bull;</i> 10-Second Field Ledger <i class="hero__dot">&bull;</i> Zero Cloud Tracking</span></p>
+
+    <h1 class="hero__title">LORE LAB</h1>
+    <div class="hero__content">
+      <p class="hero__text">The brutalist open-weight engine designed to force you outside. Translate centuries of weather proverbs on local silicon, step onto the grass to watch the swifts and the sky, and score ancient sayings against 10 years of atmospheric data—then put your phone away</p>
+
+      <form class="signup" id="signup" novalidate>
+        <label class="signup__label" for="signup-email">Email for updates</label>
+        <input class="signup__input" id="signup-email" type="email" name="email" placeholder="Enter your email to get updates" autocomplete="email" required>
+        <button class="signup__btn" type="submit">Get Updates</button>
+        <p class="signup__msg" id="signup-msg" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+
+    <img class="hero__apple" src="assets/apple.png" alt="">
+    <img class="hero__girl" src="assets/girl.png" alt="">
+    <a class="hero__scroll" href="#way"><span>scroll down</span><i aria-hidden="true">&darr;</i></a>
+  </main>
+
+  <section class="way" id="way">
+    <div class="way__shade" aria-hidden="true"></div>
+    <div class="way__stamp" aria-hidden="true"><img src="assets/cat-stamp.png" alt=""></div>
+
+    <div class="way__col way__col--old">
+      <h2 class="way__heading reveal">THE OLD WAY</h2>
+      <p class="way__intro reveal">How closed corporate AI and modern weather apps trap you behind glass with agreeable hallucinations</p>
+
+      <article class="way__item reveal">
+        <h3 class="way__title"><span class="way__icon way__icon--x"></span>Sycophantic Chat Confirmation Bias</h3>
+        <p class="way__body">Ask a closed frontier model if cows lying down predicts rain, and it drafts a polite 400-word agreeable essay. No base rates, no confidence intervals, zero statistical rigor—just automated flattery masquerading as insight.</p>
+      </article>
+
+      <article class="way__item reveal">
+        <h3 class="way__title"><span class="way__icon way__icon--x"></span>The 10-Day Radar Doomscroll</h3>
+        <p class="way__body">Commercial weather apps engineered like casinos—littered with animated radar loops, ad-bloated hourly forecasts, and notification spam designed to keep your eyes glued to glass instead of looking up at the horizon.</p>
+      </article>
+
+      <article class="way__item reveal">
+        <h3 class="way__title"><span class="way__icon way__icon--x"></span>Cloud Surveillance for Family Lore</h3>
+        <p class="way__body">Sending your grandmother's regional dialect, generational oral history, and precise backyard coordinates over corporate API paywalls to subsidize closed training clusters.</p>
+      </article>
+
+      <article class="way__item reveal">
+        <h3 class="way__title"><span class="way__icon way__icon--x"></span>Black-Box "Truth" Engines</h3>
+        <p class="way__body">Proprietary models that fake confidence. When an unmeasurable biological sign appears, closed assistants invent fake correlations instead of admitting: "There is no satellite dataset for swallows."</p>
+      </article>
+    </div>
+
+    <div class="way__col way__col--new">
+      <h2 class="way__heading reveal">LORE LAB WAY</h2>
+      <p class="way__intro reveal">Open-weight intelligence, ruthless statistical honesty, and an app that tells you to put your phone away.</p>
+
+      <article class="way__item reveal">
+        <h3 class="way__title"><span class="way__icon way__icon--check"></span>Brutal Statistical Honesty</h3>
+        <p class="way__body">We don't flatter ancient lore. We compute 10-year base rates, calculate Wilson score intervals, and measure true lift. If your grandmother's saying did no better than a coin flip, Lore Lab prints it plainly: "Same as chance. That's a real finding."</p>
+      </article>
+
+      <article class="way__item reveal">
+        <h3 class="way__title"><span class="way__icon way__icon--check"></span>5-Second Field Observations</h3>
+        <p class="way__body">Look up at the swifts, tap Seen or Not seen, and step away. The interface explicitly instructs: "Logged. We'll check the sky for you. Put your phone away." The screen is an observation notebook, not a destination.</p>
+      </article>
+
+      <article class="way__item reveal">
+        <h3 class="way__title"><span class="way__icon way__icon--check"></span>Local Gemma on Open Silicon</h3>
+        <p class="way__body">Run open-weight Gemma locally on your own machine. Multilingual proverbs—in German, Spanish, Hindi, or English—are interpreted on-device. Generational folk wisdom never leaves your local hardware.</p>
+      </article>
+
+      <article class="way__item reveal">
+        <h3 class="way__title"><span class="way__icon way__icon--check"></span>Gemma Proposes, Code Decides</h3>
+        <p class="way__body">Zero LLM hallucinations in the science layer. Open weights extract hypotheses into strict Pydantic schemas, but deterministic, auditable Python code enforces the sensor whitelist. Honest code, open weights, real grass.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="page" id="engine">
+    <div class="head">
+      <span class="pill reveal">Gemma proposes <i class="hero__dot">&bull;</i> Code decides</span>
+      <h2 class="title reveal">THE ENGINE</h2>
+      <p class="lede reveal">Five stops between your grandmother's saying and an honest answer. The model translates, plain Python judges, and you step outside for the part no satellite can see.</p>
+    </div>
+
+    <div class="flow" id="architecture">
+      <div class="reveal flow__step"><div class="flow__name">Proverb</div><div class="flow__what">Any language, with its source or "unknown"</div></div>
+      <span class="reveal flow__arrow" aria-hidden="true">&rarr;</span>
+      <div class="reveal flow__step"><div class="flow__name">Gemma proposes</div><div class="flow__what">A structured, testable hypothesis</div></div>
+      <span class="reveal flow__arrow" aria-hidden="true">&rarr;</span>
+      <div class="reveal flow__step flow__step--code"><div class="flow__name">Code decides</div><div class="flow__what">Lab Test or Field Test, by whitelist</div></div>
+      <span class="reveal flow__arrow" aria-hidden="true">&rarr;</span>
+      <div class="reveal flow__step"><div class="flow__name">Test it</div><div class="flow__what">10-year backtest, or go look outside</div></div>
+      <span class="reveal flow__arrow" aria-hidden="true">&rarr;</span>
+      <div class="reveal flow__step"><div class="flow__name">Verdict</div><div class="flow__what">Counts, chance and a plain-words reading</div></div>
+    </div>
+
+    <div class="grid">
+      <article class="note note--a note--tilt-l reveal">
+        <span class="note__tag">Step 1 &middot; open weights</span>
+        <h2 class="note__title">Gemma proposes</h2>
+        <p>Local open-weight Gemma reads the proverb, translates it and sorts the sign into a closed vocabulary. It never judges whether the saying is true, and it never invents a threshold. Anything vague goes into an ambiguities list for you to settle.</p>
+        <div class="chalk"><b>sign.kind</b>   atmospheric | animal | plant | celestial | body
+<b>proxy.variable</b>   pressure_msl | wind_direction_10m | ...| <i>none</i>
+<b>proxy.fit</b>   good | rough | <i>none</i>
+<b>threshold_suggestion</b>   <i>null</i>   // always. You set the number.</div>
+      </article>
+
+      <article class="note note--b note--coral note--tilt-r reveal">
+        <span class="note__tag">Step 2 &middot; plain Python</span>
+        <h2 class="note__title">Code decides</h2>
+        <p>A small model should not be the judge of what can be tested. Backtestability is computed by deterministic code and stored on the hypothesis.</p>
+        <div class="chalk">backtestable =
+  sign.kind == <b>"atmospheric"</b>
+  and proxy.variable in <b>WHITELIST</b>
+  and proxy.fit != <b>"none"</b></div>
+        <p>A "rough" fit is labelled Rough match and needs your explicit OK.</p>
+      </article>
+
+      <article class="note note--c note--sage reveal" id="field-reports">
+        <span class="note__tag">Two ways to test</span>
+        <h2 class="note__title">Lab Test and Field Test</h2>
+        <div class="split">
+          <div>
+            <h4>Lab Test</h4>
+            <p>The sign shows up in weather data. We score it against about 10 years of Open-Meteo history for your spot. Big sample, instant answer, modelled reanalysis rather than station readings.</p>
+            <div class="chips"><span class="chip">pressure change</span><span class="chip">wind direction</span><span class="chip">high cloud</span><span class="chip">humidity</span></div>
+          </div>
+          <div>
+            <h4>Field Test</h4>
+            <p>Swifts, cows, crickets, the look of the moon: no instrument records them, so you are the instrument. Look, tap Seen or Not seen, put your phone away. Small sample, and the app says so.</p>
+            <div class="chips"><span class="chip">animals</span><span class="chip">plants</span><span class="chip">sounds</span><span class="chip">the moon</span></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="note note--d note--blush note--tilt-l reveal">
+        <span class="note__tag">Step 4 &middot; outcomes</span>
+        <h2 class="note__title">Lazy outcome check</h2>
+        <p>No scheduler, no queue. Each look stores a time to resolve after. Whenever the app next opens, one idempotent function fills in what the sky actually did.</p>
+        <div class="chalk">resolvePending()
+  find looks that are due
+  claim the row  <b>(no double-resolve)</b>
+  fetch hourly rain for the window
+  <i>missing hour?</i> retry, up to 5 times
+  save outcome, update scorecard</div>
+      </article>
+
+      <article class="note note--e note--tilt-r reveal" id="protocol">
+        <span class="note__tag">Step 5 &middot; the scorecard</span>
+        <h2 class="note__title">Never a verdict the data can't back</h2>
+        <p>Every card shows the bar to beat (how often it rains anyway) next to the hit rate, with sample size beside every number. Under the minimum, you get a notebook page of blank tally dots instead of a percentage.</p>
+        <div class="tally" aria-label="3 of 10 looks logged"><span class="dot dot--on"></span><span class="dot dot--on"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+        <div class="verdicts">
+          <span><strong>On the trail</strong>Still collecting looks</span>
+          <span><strong>Promising</strong>Beats chance</span>
+          <span><strong>Same as chance</strong>A real finding</span>
+          <span><strong>Backfires</strong>Worse than chance</span>
+        </div>
+      </article>
+
+      <article class="note note--f note--sage note--tilt-r reveal">
+        <span class="note__tag">Committed before any result</span>
+        <h2 class="note__title">Pre-set constants</h2>
+        <p>Written into the README before a single result is viewed, so the experiment can be audited.</p>
+        <div class="chalk">MIN_N_BACKTEST    = 30 sign-present days
+MIN_N_LIVE        = 10 sign-present looks
+RAIN_THRESHOLD_MM = total rain in the window
+WINDOW            = next full hour + window_hours</div>
+      </article>
+
+      <article class="note note--g note--tilt-l reveal">
+        <span class="note__tag">House rules</span>
+        <h2 class="note__title">Honest by design</h2>
+        <p>Backtest and field results are shown separately and never pooled. One place and a short history is a hint, not proof. No streaks, badges or leaderboards, because the reward is the open question.</p>
+        <span class="stamp">Same as chance is a result</span>
+      </article>
+    </div>
+  </section>
+
+  <section class="page end" id="join">
+    <img class="end__sticker" src="assets/apple.png" alt="">
+    <img class="end__girl" src="assets/girl.png" alt="">
+
+    <span class="pill reveal">Open weights <i class="hero__dot">&bull;</i> Zero cloud tracking <i class="hero__dot">&bull;</i> Free</span>
+    <h2 class="end__big reveal">PUT YOUR<br>PHONE AWAY.</h2>
+    <p class="lede reveal">Your grandmother said it. Lore Lab goes outside with you to find out if she was right. Leave your email and we'll tell you when the lab opens, then you go look at the sky.</p>
+
+    <form class="signup reveal" id="signup-end" novalidate>
+      <label class="signup__label" for="signup-email-end">Email for updates</label>
+      <input class="signup__input" id="signup-email-end" type="email" name="email" placeholder="Enter your email to get updates" autocomplete="email" required>
+      <button class="signup__btn" type="submit">Get Updates</button>
+      <p class="signup__msg" id="signup-msg-end" role="status" aria-live="polite"></p>
+    </form>
+
+    <div class="pledge">
+      <div class="note note--sage reveal"><p>No accounts, no streaks, no badges. The reward is the open question.</p></div>
+      <div class="note note--blush reveal"><p>Your family's sayings stay on your own machine.</p></div>
+      <div class="note reveal"><p>One place and a short history is a hint, not proof. We say so every time.</p></div>
+    </div>
+
+    <footer class="footer">
+      <div>
+        <div class="footer__brand">Lore Lab<i>.</i></div>
+        <small>Built for the Hacktoberfest Open-Source AI Challenge, Week 1: Touch Grass. Powered by open-weight Gemma.</small>
+      </div>
+      <nav>
+        <a href="index.html#way">Stance</a>
+        <a href="architecture.html">Engine</a>
+        <a href="architecture.html#architecture">Architecture</a>
+        <a href="architecture.html#field-reports">Field Reports</a>
+        <a href="ending.html">Post &#8599;</a>
+      </nav>
+    </footer>
+  </section>
+
+  <script src="script.js"></script>
+</body>
+</html>
