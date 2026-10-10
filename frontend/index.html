@@ -512,6 +512,15 @@ save outcome, update scorecard</pre></div>
     setTimeout(finish, 9000); // failsafe: never trap the visitor
   })();
   </script>
+  <script>
+  // Backend wiring: must come BEFORE lore.js. Add more endpoints here as the routes get built.
+  window.LORE_CONFIG = {
+    apiBase: "",
+    endpoints: {
+      extractHypothesis: { method: "POST", path: "/api/extract" }
+    }
+  };
+  </script>
   <script src="script.js"></script>
   <script src="lore.js"></script>
   <script src="sections.js"></script>
