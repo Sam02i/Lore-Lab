@@ -1,5 +1,5 @@
-from backend.extract import extract , MODEL
-from backend.schema import is_backtestable
+from extract import extract , MODEL
+from schema import is_backtestable
 
 TESTS = [# --- LAB TESTS: Atmospheric signs with whitelisted sensor proxies (True) ---
     ("When the glass falls low, prepare for a blow.", "atmospheric", True),
