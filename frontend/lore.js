@@ -1,7 +1,7 @@
 /* =========================================================
    Lore Lab · Experiment Engine, System Architecture, Field Report
    Vanilla JS. Loaded after script.js. Touches only #engine, #architecture
-   and #field-reports (everything is scoped to .lore sections).
+   and the closing pages (everything is scoped to .lore sections).
 
    NOTHING in here fabricates data. All results come from the backend through
    the adapter in section 1. If an endpoint isn't configured, the UI says so.
@@ -256,7 +256,7 @@
       if (!h.original) h.original = text;
       eng.hyp = S.hyp = h; renderHyp(h); eng.max = 2; go(2);
     } catch (err) { showAlert(err); }
-    finally { eng.busy = false; busy(btn, false); }
+    finally { eng.busy = false; busy(btn, false); if (eng.valid) eng.valid(); }
   });
 
   // optional corpus (only if the backend provides one; nothing is hard-coded)
@@ -399,7 +399,7 @@
         try {
           const f = normField(await api("startFieldTest", { hypothesis_id: h.id, location: loc }, { id: h.id }), h, loc);
           if (!f.id) throw new ApiError(502, "The server started the field test but didn’t return an experiment to log looks against.");
-          S.field = f; document.dispatchEvent(new CustomEvent("lore:field", { detail: f })); renderFieldReady(f); go(4);
+          S.field = f; fr.exp = f; fr.phase = "ready"; fr.entries = []; fr.cards = []; mountField(); go(4);
         } catch (err) { showAlert(err); }
         finally { eng.busy = false; busy(btn, false); }
       });
@@ -412,14 +412,9 @@
       <div class="lore-actions"><button class="lore-btn lore-btn--sage" type="button" data-act="again">Test another saying</button><button class="lore-btn lore-btn--ghost" type="button" data-go="3">Change the place</button></div>`;
     wireResultActions();
   }
-  function renderFieldReady(f) {
-    panes[3].innerHTML = `<h3>Field test ready.</h3><p class="lore-intro">Your first look is waiting in the field notebook below. Go outside, look, tap what you saw, and put the phone away.</p>
-      <div class="lore-actions"><a class="lore-btn lore-btn--coral" href="#field-reports">Open the field notebook</a><button class="lore-btn lore-btn--sage" type="button" data-act="again">Test another saying</button></div>`;
-    wireResultActions();
-  }
   function wireResultActions() {
     on($('[data-act="again"]', panes[3]), "click", () => {
-      eng.hyp = eng.confirmed = null; S.hyp = S.mode = null; eng.max = 1; form.reset(); $("#lore-side-mode").hidden = true; panes[1].innerHTML = panes[2].innerHTML = panes[3].innerHTML = ""; go(1);
+      eng.hyp = eng.confirmed = null; S.hyp = S.mode = null; fr.exp = null; fr.phase = "none"; eng.max = 1; form.reset(); $("#lore-side-mode").hidden = true; panes[1].innerHTML = panes[2].innerHTML = panes[3].innerHTML = ""; go(1);
       $("#lore-text").focus();
     });
     const back = $('[data-go="3"]', panes[3]); if (back) on(back, "click", () => go(3));
@@ -466,18 +461,18 @@
     { id: "e10", a: "api", b: "db", d: "M405 350V475H1055V430", lbl: "save · read records", lx: 730, ly: 464 },
   ];
   const TRACES = {
-    all: { nodes: null, edges: null, steps: ["Pick a part, or choose Lab Test, Field Test or Outcome check above to read a journey step by step."] },
-    lab: { edges: ["e1", "e2", "e3", "e5", "e8", "e10"], steps: [
+    all: { edges: null, title: "", steps: [] },
+    lab: { title: "Lab Test path", edges: ["e1", "e2", "e3", "e5", "e8", "e10"], steps: [
       "The web UI sends your proverb to the API.",
       "The hypothesis service asks Gemma for a structured hypothesis. Code, not the model, decides it’s backtestable.",
       "You confirm and pick a place. The API asks the weather client for about ten years of Open-Meteo history.",
       "The scoring service compares days showing the sign with the base rate.",
       "The result is stored and returned to you as a scorecard." ] },
-    field: { edges: ["e1", "e2", "e10"], steps: [
+    field: { title: "Field Test path", edges: ["e1", "e2", "e10"], steps: [
       "Same start: your proverb goes to the hypothesis service, and code says this one needs an observer.",
       "You confirm, go outside and tap Seen or Not seen. The API stores the look with a time to resolve after.",
       "The scorecard stays “On the trail” until enough looks have been resolved. See Outcome check." ] },
-    outcome: { edges: ["e4", "e6", "e7", "e9", "e8"], steps: [
+    outcome: { title: "Outcome check path", edges: ["e4", "e6", "e7", "e9", "e8"], steps: [
       "Whenever the app next opens, the API triggers the outcome check.",
       "It finds looks that are due and claims each row, so none resolve twice.",
       "It fetches hourly rain for the window through the weather client, retrying up to five times if an hour is missing.",
@@ -485,14 +480,14 @@
   };
   const nodeById = Object.fromEntries(NODES.map((n) => [n.id, n]));
   const KIND = { "": "Part", code: "Plain code decides", ext: "External data", store: "Storage" };
-  const dgm = $("#lore-diagram"), stack = $("#lore-stack"), detail = $("#lore-detail"), stepsEl = $("#lore-steps");
+  const dgm = $("#lore-diagram"), stack = $("#lore-stack"), detail = $("#lore-detail");
   const arch = { pinned: null, hover: null, trace: "all" };
 
   (function buildDiagram() {
     if (!dgm) return;
     const edges = EDGES.map((e) => `<path class="lz-edge" id="lz-${e.id}" d="${e.d}" marker-end="url(#lz-arr)"${e.both ? ' marker-start="url(#lz-arr)"' : ""}/>`).join("");
     const labels = EDGES.map((e) => `<text class="lz-elabel" id="lz-l-${e.id}" x="${e.lx}" y="${e.ly}" text-anchor="${e.anchor || "middle"}">${esc(e.lbl)}</text>`).join("");
-    const nodes = NODES.map((n) => `<g class="lz-node${n.kind ? " lz-node--" + n.kind : ""}" id="lz-n-${n.id}" data-node="${n.id}" role="button" tabindex="0" aria-pressed="false" aria-label="${esc(n.name)}: ${esc(n.sub.join(" "))}">
+    const nodes = NODES.map((n, i) => `<g style="--n:${i}" class="lz-node${n.kind ? " lz-node--" + n.kind : ""}" id="lz-n-${n.id}" data-node="${n.id}" role="button" tabindex="0" aria-pressed="false" aria-label="${esc(n.name)}: ${esc(n.sub.join(" "))}">
       <rect class="lz-shadow" x="${n.x + 6}" y="${n.y + 6}" width="${W}" height="${H}" rx="14"/><rect class="lz-card" x="${n.x}" y="${n.y}" width="${W}" height="${H}" rx="14"/>
       <text class="lz-name" x="${n.x + W / 2}" y="${n.y + 34}" text-anchor="middle">${esc(n.name)}</text>
       <text class="lz-sub" x="${n.x + W / 2}" y="${n.y + 62}" text-anchor="middle">${esc(n.sub[0])}</text>
@@ -500,6 +495,7 @@
     dgm.innerHTML = `<svg viewBox="-10 0 1190 520" role="group" aria-label="Lore Lab system architecture diagram"><defs>
       <marker id="lz-arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="lz-mk" d="M0 0 10 5 0 10z"/></marker>
       <marker id="lz-arr-hot" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="lz-mk-hot" d="M0 0 10 5 0 10z"/></marker></defs>${edges}${labels}${nodes}</svg>`;
+    $$(".lz-edge", dgm).forEach((p, i) => { p.style.setProperty("--len", Math.ceil(p.getTotalLength())); p.style.setProperty("--e", i); });
     const order = ["ui", "api", "hyp", "wea", "score", "out", "db"];
     stack.innerHTML = order.map((id, i) => { const n = nodeById[id];
       return `<li><button type="button" data-node="${id}" class="${n.kind ? "is-" + n.kind : ""}" aria-pressed="false"><strong>${esc(n.name)}</strong><small>${esc(n.sub.join(" "))}</small></button>${i < order.length - 1 ? '<span class="lz-link" aria-hidden="true">↓</span>' : ""}</li>`; }).join("");
@@ -530,12 +526,16 @@
     const id = focusId, n = id && nodeById[id];
     if (n) {
       const talks = [...new Set(EDGES.filter((e) => e.a === id || e.b === id).map((e) => nodeById[e.a === id ? e.b : e.a].name))];
-      detail.innerHTML = `<span class="lore-tag">${KIND[n.kind]}</span><h3>${esc(n.name)}</h3><p>${esc(n.what)}</p><dl><dt>Takes in</dt><dd>${esc(n.takes)}</dd><dt>Hands on</dt><dd>${esc(n.gives)}</dd><dt>Talks to</dt><dd>${esc(talks.join(", "))}</dd></dl>`;
+      detail.innerHTML = `<span class="lore-tag">${KIND[n.kind]}</span><h3>${esc(n.name)}</h3><p>${esc(n.what)}</p><dl><div><dt>Takes in</dt><dd>${esc(n.takes)}</dd></div><div><dt>Hands on</dt><dd>${esc(n.gives)}</dd></div><div><dt>Talks to</dt><dd>${esc(talks.join(", "))}</dd></div></dl>`;
+    } else if (arch.trace !== "all") {
+      const T = TRACES[arch.trace];
+      detail.innerHTML = `<span class="lore-tag">Trace</span><h3>${esc(T.title)}</h3><ol>${T.steps.map((x) => `<li>${esc(x)}</li>`).join("")}</ol><p class="lore-help">Tap a part to see it up close.</p>`;
     } else {
-      detail.innerHTML = `<span class="lore-tag">Blueprint</span><h3>Pick a part</h3><p>Hover or tap any box to see what it takes in, what it hands on and who it talks to. Tap again to let go.</p>`;
+      detail.innerHTML = "";
     }
+    detail.hidden = !detail.innerHTML;
+    if (arch.pinned && window.innerWidth <= 800) detail.scrollIntoView({ block: "nearest", behavior: "smooth" });
   }
-  function renderSteps() { stepsEl.innerHTML = TRACES[arch.trace].steps.map((s) => `<li>${esc(s)}</li>`).join(""); stepsEl.style.listStyle = arch.trace === "all" ? "none" : "decimal"; stepsEl.style.paddingLeft = arch.trace === "all" ? "1.4em" : ""; }
   if (dgm) {
     const pick = (id) => { arch.pinned = arch.pinned === id ? null : id; paint(); };
     on(dgm, "click", (e) => { const g = e.target.closest("[data-node]"); if (g) pick(g.dataset.node); });
@@ -546,26 +546,32 @@
     on($(".lore-trace"), "click", (e) => {
       const b = e.target.closest("[data-trace]"); if (!b) return;
       arch.trace = b.dataset.trace; arch.pinned = null; arch.hover = null;
-      $$(".lore-trace button").forEach((x) => x.setAttribute("aria-pressed", String(x === b))); paint(); renderSteps();
+      $$(".lore-trace button").forEach((x) => x.setAttribute("aria-pressed", String(x === b))); paint();
     });
-    paint(); renderSteps();
+    paint();
   }
 
   /* ---------------------------------------------------------
-     6. FIELD REPORT
+     6. FIELD LOOKS: Seen / Not seen, pending outcomes and the field scorecard,
+        shown inline in step 4 of a Field Test
      --------------------------------------------------------- */
-  const obsEl = $("#lore-obs"), cardsEl = $("#lore-cards"), listEl = $("#lore-obslist");
   const fr = { exp: null, phase: "none", busy: false, entries: [], cards: [] };
+  let obsEl = null, cardsEl = null, listEl = null;
   const ST = { logged: "Logged", pending: "Pending", resolved: "Resolved", failed: "Couldn’t resolve" };
-  const ICON_EYE = '<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="14" fill="#f4d88a" stroke="#10291b" stroke-width="3"/><path d="M32 6v8M32 50v8M6 32h8M50 32h8M13 13l6 6M45 45l6 6M51 13l-6 6M19 45l-6 6" stroke="#10291b" stroke-width="3" stroke-linecap="round"/></svg>';
 
+  function mountField() {
+    panes[3].innerHTML = `<h3>Field test ready.</h3><p class="lore-intro">Go outside, look, tap what you saw, and put the phone away. The sky gets checked after the window closes.</p>
+      <div class="lore-fr-inline"><div><div class="lore-obs" id="lore-obs"></div>
+        <ul class="lore-states" aria-label="How a look travels"><li data-s="logged"><strong>Logged</strong>Your look was saved.</li><li data-s="pending"><strong>Pending</strong>The window hasn’t been checked yet.</li><li data-s="resolved"><strong>Resolved</strong>We know what the sky did.</li><li data-s="failed"><strong>Couldn’t resolve</strong>Weather data wasn’t available.</li></ul>
+        <ul class="lore-obslist" id="lore-obslist" aria-label="Your looks"></ul></div>
+        <div id="lore-cards"></div></div>
+      <div class="lore-actions"><button class="lore-btn lore-btn--sage" type="button" data-act="again">Test another saying</button></div>`;
+    obsEl = $("#lore-obs"); cardsEl = $("#lore-cards"); listEl = $("#lore-obslist");
+    on(obsEl, "click", onObsClick); wireResultActions();
+    renderObs(); renderList(); renderCards(); refreshServerData();
+  }
   function renderObs() {
-    if (!obsEl) return;
-    const f = fr.exp;
-    if (!f) {
-      obsEl.innerHTML = `<div class="lore-empty-obs">${ICON_EYE}<h3>No look due right now.</h3><p>A look starts when you confirm a hypothesis that needs an observer and start its Field Test.</p><div class="lore-actions" style="justify-content:center"><a class="lore-btn lore-btn--coral" href="#engine">Start a Field Test</a></div></div>`;
-      return;
-    }
+    const f = fr.exp; if (!obsEl || !f) return;
     if (fr.phase === "logged") {
       obsEl.innerHTML = `<div class="lore-logged"><h3>Your look</h3><p class="lore-fieldnote">Logged. We’ll check the sky for you.</p><p>Now put the phone away.</p><p class="lore-pend">The outcome is pending until the window closes and the app next resolves it.</p><div class="lore-actions" style="justify-content:center"><button class="lore-btn lore-btn--ghost" type="button" data-act="another">Log another look</button></div></div>`;
       return;
@@ -576,7 +582,7 @@
       <div class="lore-seen" role="group" aria-label="What did you see?"><button class="lore-btn" type="button" data-seen="true">Seen</button><button class="lore-btn" type="button" data-seen="false">Not seen</button></div>
       <details><summary>Add a note (optional)</summary><textarea class="lore-field" id="lf-note" rows="2" placeholder="Anything worth remembering"></textarea></details>`;
   }
-  on(obsEl, "click", async (e) => {
+  async function onObsClick(e) {
     const another = e.target.closest('[data-act="another"]'); if (another) { fr.phase = "ready"; renderObs(); return; }
     const b = e.target.closest("[data-seen]"); if (!b || fr.busy || !fr.exp) return;
     fr.busy = true; $$(".lore-seen .lore-btn", obsEl).forEach((x) => (x.disabled = true)); busy(b, true);
@@ -592,9 +598,7 @@
       $$(".lore-seen .lore-btn", obsEl).forEach((x) => (x.disabled = false)); busy(b, false);
       setTimeout(() => $$(".lore-alert", obsEl).forEach((a) => a.remove()), 9000);
     } finally { fr.busy = false; }
-  });
-  on(document, "lore:field", (e) => { fr.exp = e.detail; fr.phase = "ready"; renderObs(); renderCards(); });
-
+  }
   function renderList() {
     if (!listEl) return;
     listEl.innerHTML = fr.entries.map((en) => {
@@ -605,13 +609,9 @@
   }
   function renderCards() {
     if (!cardsEl) return;
-    const field = fr.cards.filter((c) => c.mode === "field"), lab = fr.cards.filter((c) => c.mode === "lab");
-    let html = `<div class="lore-group"><h3>Field Tests</h3><p>Looks recorded by people. Scored on their own.</p>`;
-    if (field.length) html += field.map(cardHTML).join("");
-    else html += cardHTML({ mode: "field", proverb: fr.exp?.proverb || "Your saying goes here", source: null, place: fr.exp?.place || null, looks: null, n: 0, pending: null, hits: null, baseRate: null, hitRate: null, lo: null, hi: null, lift: null, verdict: null, next: fr.exp ? null : "Start a Field Test above, then come back with your first look.", min: null });
-    html += `</div>`;
-    if (lab.length) html += `<div class="lore-group"><h3>Lab Tests</h3><p>Modelled weather history. Never combined with the field looks above.</p>${lab.map(cardHTML).join("")}</div>`;
-    cardsEl.innerHTML = html;
+    const field = fr.cards.filter((c) => c.mode === "field");
+    cardsEl.innerHTML = field.length ? field.map(cardHTML).join("")
+      : cardHTML({ mode: "field", proverb: fr.exp?.proverb || "", source: null, place: fr.exp?.place || null, looks: null, n: 0, pending: null, hits: null, baseRate: null, hitRate: null, lo: null, hi: null, lift: null, verdict: null, next: null, min: null });
   }
   async function refreshServerData() {
     if (isConfigured("listObservations")) {
@@ -629,10 +629,109 @@
   }
   // lazy outcome resolution: the app resolves what's due whenever it opens
   (async function boot() {
-    renderObs(); renderCards();
-    const key = $("#lore-key");
-    if (key) key.innerHTML = Object.keys(VERDICT_TEXT).map((v) => `<div class="lore-key">${verdictBadge(v)}${esc({ trail: "Evidence is still accumulating.", promising: "The interval is clearly above the bar to beat.", chance: "The interval overlaps the bar to beat. A real finding.", backfires: "The interval is clearly below the bar to beat." }[v])}</div>`).join("");
-    if (isConfigured("resolvePending")) { try { await api("resolvePending"); } catch (_) { /* resolution can fail quietly; failed looks show as such */ } }
-    refreshServerData();
+    if (isConfigured("resolvePending")) { try { await api("resolvePending"); } catch (_) { /* failed looks show as such */ } }
+  })();
+
+  /* ---------------------------------------------------------
+     7. STATEMENT + CLOSING: word reveal and paper-cut grass
+     --------------------------------------------------------- */
+  (function closing() {
+    // split headlines into words (keeps <br> and <mark>), each rises out of a mask
+    let n = 0;
+    const wrap = (node, i0) => {
+      [...node.childNodes].forEach((c) => {
+        if (c.nodeType === 3) {
+          const frag = document.createDocumentFragment();
+          c.textContent.split(/(\s+)/).forEach((t) => {
+            if (!t) return;
+            if (/^\s+$/.test(t)) return frag.appendChild(document.createTextNode(" "));
+            const w = document.createElement("span"); w.className = "w"; w.setAttribute("aria-hidden", "true");
+            const i = document.createElement("span"); i.style.setProperty("--i", n++); i.textContent = t; w.appendChild(i); frag.appendChild(w);
+          });
+          c.replaceWith(frag);
+        } else if (c.nodeType === 1 && c.tagName !== "BR") wrap(c);
+      });
+    };
+    const splits = $$(".lore-split");
+    splits.forEach((el) => { n = 0; el.setAttribute("aria-label", el.textContent.replace(/\s+/g, " ").trim()); wrap(el); });
+    if ("IntersectionObserver" in window) {
+      const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("is-in"); io.unobserve(e.target); } }), { threshold: 0.3 });
+      splits.forEach((el) => io.observe(el)); on(window, "pagehide", () => io.disconnect());
+    } else splits.forEach((el) => el.classList.add("is-in"));
+
+    // grass: three cut-paper layers, deterministic so it never reshuffles
+    const svg = $("#lore-grass"); if (!svg) return;
+    let seed = 11; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+    const layers = [
+      { cls: "g1", fill: "#8aa863", hMin: 34, hMax: 66, vMin: 22, vMax: 32, wMin: 26, wMax: 48 },
+      { cls: "g2", fill: "#3f7d52", hMin: 26, hMax: 52, vMin: 14, vMax: 24, wMin: 22, wMax: 42 },
+      { cls: "g3", fill: "#10291b", hMin: 14, hMax: 32, vMin: 6, vMax: 12, wMin: 20, wMax: 38 },
+    ];
+    svg.innerHTML = layers.map((L) => {
+      let d = "M0 100", x = 0;
+      while (x < 1200) {
+        const w = L.wMin + rnd() * (L.wMax - L.wMin), h = L.hMin + rnd() * (L.hMax - L.hMin), v = L.vMin + rnd() * (L.vMax - L.vMin);
+        const tip = x + w / 2 + (rnd() - 0.5) * w * 0.7;
+        d += `L${x.toFixed(1)} ${(100 - v).toFixed(1)}L${tip.toFixed(1)} ${(100 - h).toFixed(1)}`; x += w;
+      }
+      return `<g class="${L.cls}"><path d="${d}L1200 ${(100 - L.vMin).toFixed(1)}L1200 100Z" fill="${L.fill}"/></g>`;
+    }).join("");
+    // sway only while the closing page is on screen
+    const sec = $("#join");
+    if ("IntersectionObserver" in window && sec && !reduce) {
+      const lv = new IntersectionObserver((es) => es.forEach((e) => sec.classList.toggle("is-live", e.isIntersecting)), { threshold: 0.1 });
+      lv.observe(sec); on(window, "pagehide", () => lv.disconnect());
+    }
+  })();
+  /* ---------------------------------------------------------
+     8. PAGE ENTRANCES, PROTOCOL TEXT MOTION, EASED NAV SCROLL
+     --------------------------------------------------------- */
+  (function entrances() {
+    const pages = $$(".lore-engine, .lore-arch, .lore-say, .lore-close");
+    const enter = (el) => {
+      el.classList.add("is-entered");
+      if (el.classList.contains("lore-arch")) { const svg = $("svg", el); if (svg) { svg.classList.add("lz-drawing"); setTimeout(() => svg.classList.remove("lz-drawing"), 2800); } }
+    };
+    if (!("IntersectionObserver" in window)) return pages.forEach(enter);
+    const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { enter(e.target); io.unobserve(e.target); } }), { threshold: 0.2 });
+    pages.forEach((p) => io.observe(p)); on(window, "pagehide", () => io.disconnect());
+  })();
+
+  (function protocol() {
+    const sec = $("#protocol"); if (!sec) return;
+    const flow = $(".flow", sec);
+    if (flow) $$(":scope > .pn-in", flow).forEach((el, i) => el.style.setProperty("--d", `${i * 0.12}s`));
+    $$(".chalk", sec).forEach((c) => c.style.setProperty("--lines", String(c.textContent.replace(/\n+$/, "").split("\n").length)));
+    const els = $$(".pn-in", sec);
+    if (!("IntersectionObserver" in window)) return els.forEach((e) => e.classList.add("is-in"));
+    const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("is-in"); io.unobserve(e.target); } }), { threshold: 0.18 });
+    els.forEach((e) => io.observe(e)); on(window, "pagehide", () => io.disconnect());
+  })();
+
+  // nav clicks glide with an ease-in-out curve; any wheel/touch/key press hands control back
+  (function glide() {
+    const root = document.documentElement; let cancel = false;
+    ["wheel", "touchstart", "keydown"].forEach((ev) => on(window, ev, () => { cancel = true; }, { passive: true }));
+    const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+    on(document, "click", (e) => {
+      const a = e.target.closest('a[href^="#"]');
+      if (!a || e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey || e.button) return;
+      const id = a.getAttribute("href"); if (id.length < 2) return;
+      const t = document.querySelector(id); if (!t) return;
+      e.preventDefault();
+      const pad = parseFloat(getComputedStyle(root).scrollPaddingTop) || 0;
+      const from = window.scrollY, to = Math.max(0, t.getBoundingClientRect().top + from - pad);
+      history.replaceState(null, "", id);
+      if (reduce) { window.scrollTo(0, to); return; }
+      const dist = to - from, dur = Math.min(1500, Math.max(700, Math.abs(dist) * 0.3));
+      let t0 = null; cancel = false; root.style.scrollBehavior = "auto";
+      const step = (ts) => {
+        if (t0 === null) t0 = ts;
+        const p = Math.min((ts - t0) / dur, 1);
+        if (!cancel) window.scrollTo(0, from + dist * ease(p));
+        if (p < 1 && !cancel) requestAnimationFrame(step); else root.style.scrollBehavior = "";
+      };
+      requestAnimationFrame(step);
+    });
   })();
 })();

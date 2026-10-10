@@ -1,3 +1,10 @@
+/* =========================================================
+   Design tokens (single source of truth for the palette)
+   green #1f5a3d · deep #10291b · cream #fbf6e6 · coral #f26a4f (the ONE accent)
+   butter #f4d88a · blush #f2b8a8 · sage #8aa863
+   ========================================================= */
+:root{--green:#1f5a3d;--deep:#10291b;--cream:#fbf6e6;--coral:#f26a4f;--butter:#f4d88a;--blush:#f2b8a8;--sage:#8aa863}
+
 * {
   margin: 0;
   padding: 0;
@@ -26,8 +33,8 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 0 12.5vw 0 12vw;
-  font-family: "Delius", cursive;
-  font-size: 1.75vw;
+  font-family: "Delius","Comic Sans MS","Chalkboard SE","Comic Neue",cursive;
+  font-size:clamp(15px,1.75vw,42px);
   color: #ffffff;
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
   background: transparent;
@@ -98,7 +105,7 @@ body {
 .hero__bg {
   position: absolute;
   inset: 0;
-  background: url("assets/background.jpg") center / cover no-repeat;
+  background: url("assets/background.webp") center / cover no-repeat;
 }
 
 /* tagline above the heading, framed like a small paper label */
@@ -118,8 +125,8 @@ body {
   max-width: 100%;
   padding: 0.45vw 1.5vw;
   text-align: center;
-  font-family: "Delius", cursive;
-  font-size: 1.05vw;
+  font-family: "Delius","Comic Sans MS","Chalkboard SE","Comic Neue",cursive;
+  font-size:clamp(12px,1.05vw,25px);
   letter-spacing: 0.16vw;
   text-transform: uppercase;
   color: #eef6ec;
@@ -144,7 +151,7 @@ body {
   width: 100%;
   text-align: center;
   white-space: nowrap;
-  font-family: "Swanky and Moo Moo", cursive;
+  font-family: "Swanky and Moo Moo","Chalkboard SE","Comic Sans MS","Marker Felt",cursive;
   font-weight: 400;
   font-size: 9.6vw;
   line-height: 1;
@@ -169,8 +176,8 @@ body {
 .hero__text {
   width: 100%;
   text-align: center;
-  font-family: "Delius", cursive;
-  font-size: 1.72vw;
+  font-family: "Delius","Comic Sans MS","Chalkboard SE","Comic Neue",cursive;
+  font-size:clamp(15px,1.72vw,41px);
   line-height: 1.34;
   color: #eef6ec;
   animation: text-in 0.9s 0.25s cubic-bezier(0.2, 0.8, 0.2, 1) both;
@@ -244,8 +251,8 @@ body {
   flex: 1;
   min-width: 0;
   padding: 1.05vw 1.6vw;
-  font-family: "Delius", cursive;
-  font-size: 1.3vw;
+  font-family: "Delius","Comic Sans MS","Chalkboard SE","Comic Neue",cursive;
+  font-size:clamp(12px,1.3vw,31px);
   color: #10291b;
   background: #fbf6e6; /* cream construction paper */
   border: 0.14vw solid #10291b;
@@ -267,8 +274,8 @@ body {
 /* coral paper cut-out: complement of the green background */
 .signup__btn {
   padding: 1.05vw 2.1vw;
-  font-family: "Swanky and Moo Moo", cursive;
-  font-size: 1.6vw;
+  font-family: "Swanky and Moo Moo","Chalkboard SE","Comic Sans MS","Marker Felt",cursive;
+  font-size:clamp(14px,1.6vw,38px);
   letter-spacing: 0.04vw;
   white-space: nowrap;
   color: #10291b;
@@ -302,8 +309,8 @@ body {
   left: 0;
   width: 100%;
   text-align: center;
-  font-family: "Delius", cursive;
-  font-size: 1.2vw;
+  font-family: "Delius","Comic Sans MS","Chalkboard SE","Comic Neue",cursive;
+  font-size:clamp(12px,1.2vw,29px);
   color: #fbf6e6;
   min-height: 1.5vw;
 }
@@ -320,7 +327,7 @@ body {
   width: 100vw;
   min-height: 53vw;
   overflow: hidden;
-  font-family: "Delicious Handrawn", cursive;
+  font-family: "Delicious Handrawn","Segoe Print","Bradley Hand","Comic Sans MS",cursive;
   color: #ffffff;
   background: url("assets/grid.jpg") top left / 36.8vw auto repeat;
 }
@@ -403,7 +410,7 @@ body {
 }
 
 .way__intro {
-  font-size: 1.35vw;
+  font-size:clamp(12px,1.35vw,32px);
   line-height: 1.5vw;
   min-height: 3vw;
   color: #f4f4f0;
@@ -428,14 +435,14 @@ body {
   align-items: center;
   gap: 0.75vw;
   font-weight: 400;
-  font-size: 1.5vw;
+  font-size:clamp(13px,1.5vw,36px);
   line-height: 1.6vw;
   margin-bottom: 1.4vw;
   color: #ffffff;
 }
 
 .way__body {
-  font-size: 1.3vw;
+  font-size:clamp(12px,1.3vw,31px);
   line-height: 1.5vw;
   color: #f1f1ec;
   max-width: 47vw;
@@ -546,10 +553,10 @@ html { scroll-behavior: smooth; scroll-padding-top: 7vh; }
 .hero__scroll {
   position: absolute; left: 50%; bottom: 3.5vh; z-index: 6; transform: translateX(-50%);
   display: flex; flex-direction: column; align-items: center; gap: 0.2vw;
-  font-family: "Delius", cursive; font-size: 1.2vw; color: #eef6ec; text-decoration: none;
+  font-family: "Delius","Comic Sans MS","Chalkboard SE","Comic Neue",cursive; font-size:clamp(12px,1.2vw,29px); color: #eef6ec; text-decoration: none;
   text-shadow: 0 1px 4px rgba(0,0,0,.5); animation: bob 2.2s ease-in-out infinite;
 }
-.hero__scroll i { font-style: normal; font-size: 2vw; color: #f26a4f; }
+.hero__scroll i { font-style: normal; font-size:clamp(17px,2vw,48px); color: #f26a4f; }
 @keyframes bob { 0%,100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, 0.9vh); } }
 .footer a { color: #fff; text-decoration: none; }
 .footer a:hover { text-decoration: underline wavy; }
@@ -598,90 +605,244 @@ html { scroll-behavior: smooth; scroll-padding-top: 7vh; }
   .js .reveal { opacity: 1; transform: none; }
 }
 
-/* ============ Engine + closing sections ============ */
-/* Shared by architecture.html + ending.html. Load AFTER style.css (reuses header, signup, reveal). */
-:root{--green:#1f5a3d;--deep:#10291b;--cream:#fbf6e6;--coral:#f26a4f;--sage:#8aa863;--blush:#f2b8a8;--butter:#f4d88a;--ink:#10291b}
-.page{position:relative;min-height:100vh;padding:9vw 8vw 5vw;font-family:"Delicious Handrawn",cursive;color:#fff;
-  background:url("assets/grid.jpg") top left/36.8vw auto repeat,#1f5a3d;overflow:hidden}
-.page::before{content:"";position:absolute;top:0;left:0;width:100%;height:.9vw;z-index:3;
-  background:repeating-linear-gradient(90deg,#fbf6e6 0 .9vw,transparent .9vw 1.6vw) center/100% .14vw no-repeat,#10291b;box-shadow:0 .25vw .6vw rgba(0,0,0,.35)}
-.page>*{position:relative;z-index:1}
-.head{text-align:center;margin-bottom:4vw}
-.pill{display:inline-block;padding:.45vw 1.5vw;font-family:"Delius",cursive;font-size:1.05vw;letter-spacing:.16vw;text-transform:uppercase;color:#eef6ec;
-  background:rgba(16,41,27,.55);border:.14vw solid rgba(251,246,230,.85);border-radius:999px;box-shadow:.25vw .25vw 0 rgba(16,41,27,.55)}
-.title{font-family:"Swanky and Moo Moo",cursive;font-weight:400;font-size:8vw;line-height:1;color:#e8f2e6;margin:1.6vw 0 1.4vw;text-shadow:0 .3vw 1.2vw rgba(0,0,0,.25)}
-.lede{max-width:52vw;margin:0 auto;font-family:"Delius",cursive;font-size:1.6vw;line-height:1.4;color:#eef6ec}
 
-/* pipeline */
-.flow{display:flex;align-items:stretch;justify-content:center;gap:1vw;margin-bottom:5vw}
-.flow__step{flex:1;max-width:15vw;padding:1.3vw 1vw;text-align:center;color:var(--ink);background:var(--cream);border:.14vw solid var(--ink);border-radius:.9vw;
-  box-shadow:.35vw .35vw 0 rgba(16,41,27,.6);transition:transform .25s cubic-bezier(.3,1.6,.5,1)}
-.flow__step:nth-child(1){transform:rotate(-2deg)}.flow__step:nth-child(3){transform:rotate(1.5deg)}.flow__step:nth-child(5){transform:rotate(-1.5deg)}.flow__step:nth-child(7){transform:rotate(2deg)}
-.flow__step:hover{transform:rotate(0) translateY(-.3vw)}
-.flow__step--code{background:var(--coral)}
-.flow__name{font-family:"Swanky and Moo Moo",cursive;font-size:1.6vw;line-height:1.1;margin-bottom:.5vw}
-.flow__what{font-size:1.15vw;line-height:1.25}
-.flow__arrow{align-self:center;font-family:"Swanky and Moo Moo",cursive;font-size:2.2vw;color:var(--butter)}
+/* =========================================================
+   Header v3: floating sticker + capsule nav with a springy pink blob
+   ========================================================= */
+html{scroll-padding-top:12vh}
+.header{height:auto;min-height:0;padding:1.1vw 3vw;font-size:clamp(12px,1.4vw,34px);text-shadow:none;background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none;
+  pointer-events:none;box-shadow:none!important;align-items:flex-start}
+.header::before{display:none}
+.header>*{pointer-events:auto}
+.header__progress{position:fixed;top:0;bottom:auto;left:0;width:100%;height:.4vw;min-height:4px;background:linear-gradient(90deg,#f26a4f,#f4d88a);z-index:11;pointer-events:none}
 
-/* paper cards */
-.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:2.6vw;max-width:84vw;margin:0 auto}
-.note{position:relative;padding:2.2vw 2.2vw 2vw;color:var(--ink);background:var(--cream);border:.14vw solid var(--ink);border-radius:1vw;box-shadow:.45vw .45vw 0 rgba(16,41,27,.6)}
-.note::before{content:"";position:absolute;top:-1vw;left:50%;width:7vw;height:2vw;transform:translateX(-50%) rotate(-3deg);background:rgba(244,216,138,.85);box-shadow:0 .1vw .3vw rgba(0,0,0,.25)}
-.note--a{grid-column:span 7}.note--b{grid-column:span 5}.note--c{grid-column:span 12}.note--d{grid-column:span 5}.note--e{grid-column:span 7}.note--f{grid-column:span 6}.note--g{grid-column:span 6}
-.note--coral{background:var(--coral)}.note--sage{background:#cfe0b8}.note--blush{background:var(--blush)}
-.note--tilt-l{transform:rotate(-.8deg)}.note--tilt-r{transform:rotate(.8deg)}
-.note__tag{display:inline-block;margin-bottom:.8vw;padding:.15vw .9vw;font-family:"Delius",cursive;font-size:1vw;background:var(--deep);color:var(--cream);border-radius:999px}
-.note__title{font-family:"Swanky and Moo Moo",cursive;font-weight:400;font-size:2.5vw;line-height:1.05;margin-bottom:.9vw}
-.note p{font-size:1.4vw;line-height:1.35}
-.note p+p{margin-top:.7vw}
-.chalk{margin-top:1.2vw;padding:1.1vw 1.3vw;background:var(--deep);color:#d9ecd3;border-radius:.7vw;border:.14vw dashed rgba(251,246,230,.5);
-  font:500 1vw/1.55 ui-monospace,Menlo,Consolas,monospace;white-space:pre-wrap;overflow-x:auto}
-.chalk b{color:var(--butter);font-weight:500}.chalk i{color:#f59a86;font-style:normal}
-.chips{display:flex;flex-wrap:wrap;gap:.8vw;margin-top:1.1vw}
-.chip{padding:.4vw 1.1vw;font-family:"Delius",cursive;font-size:1.1vw;background:var(--cream);border:.12vw solid var(--ink);border-radius:999px;box-shadow:.18vw .18vw 0 var(--ink)}
-.split{display:grid;grid-template-columns:1fr 1fr;gap:2vw;margin-top:1vw}
-.split>div{padding:1.4vw;border:.14vw dashed var(--ink);border-radius:.8vw;background:rgba(255,255,255,.45)}
-.split h4{font-family:"Swanky and Moo Moo",cursive;font-weight:400;font-size:1.9vw;margin-bottom:.4vw}
-.split p{font-size:1.25vw}
-.tally{display:flex;gap:.7vw;margin:1vw 0}
-.dot{width:1.7vw;height:1.7vw;border-radius:50%;border:.14vw solid var(--ink)}.dot--on{background:var(--sage)}
-.verdicts{display:grid;grid-template-columns:1fr 1fr;gap:.8vw;margin-top:1vw}
-.verdicts span{padding:.6vw .9vw;font-size:1.2vw;line-height:1.2;background:rgba(255,255,255,.55);border:.12vw solid var(--ink);border-radius:.6vw}
-.verdicts strong{display:block;font-family:"Swanky and Moo Moo",cursive;font-weight:400;font-size:1.4vw}
-.stamp{display:inline-block;margin-top:1.2vw;padding:.5vw 1.4vw;font-family:"Swanky and Moo Moo",cursive;font-size:1.7vw;color:var(--ink);background:var(--butter);border:.14vw solid var(--ink);border-radius:.8vw;transform:rotate(-2deg);box-shadow:.25vw .25vw 0 var(--ink)}
+/* brand = a sticker */
+.header__brand{display:inline-flex;align-items:center;gap:.4em;padding:.25em .9em .3em;font-family:"Swanky and Moo Moo","Chalkboard SE","Comic Sans MS","Marker Felt",cursive;font-size:1.5em;line-height:1.1;color:#10291b;cursor:pointer;
+  background:#f26a4f;border:.09em solid #10291b;border-radius:.7em;box-shadow:.14em .14em 0 #10291b;rotate:-3deg;
+  transition:rotate .35s cubic-bezier(.3,1.8,.5,1),scale .25s,box-shadow .2s,transform .25s}
+.header__brand::before{content:"\273F";display:inline-block;color:#fbf6e6;text-shadow:0 0 0 #10291b;-webkit-text-stroke:.04em #10291b;animation:hd-spin 6s linear infinite}
+@keyframes hd-spin{to{rotate:360deg}}
+.header__brand:hover{transform:none;rotate:2deg;scale:1.08;box-shadow:.24em .24em 0 #10291b}
+.header__brand:active{scale:.95;box-shadow:0 0 0 #10291b}
 
-/* ending page */
-.end{display:flex;flex-direction:column;align-items:center;text-align:center;min-height:100vh;padding-bottom:0}
-.end__big{font-family:"Swanky and Moo Moo",cursive;font-weight:400;font-size:9vw;line-height:1.02;color:#e8f2e6;margin:2vw 0 1.6vw;text-shadow:0 .3vw 1.2vw rgba(0,0,0,.25)}
-.end .signup{width:52vw;margin:2.6vw auto 4vw}
-.end__sticker{position:absolute!important;right:3vw;top:14vw;width:15vw;transform:rotate(12deg);filter:drop-shadow(0 .5vw .8vw rgba(0,0,0,.35));z-index:2}
-.end__girl{position:absolute!important;left:0;bottom:0;width:20vw;z-index:2;pointer-events:none}
-.pledge{display:flex;gap:2vw;justify-content:center;margin:1vw auto 0;max-width:70vw}
-.pledge .note{flex:1;padding:1.6vw}.pledge .note p{font-size:1.3vw}
-.pledge .note:nth-child(1){transform:rotate(-1.5deg)}.pledge .note:nth-child(2){transform:rotate(1deg)}.pledge .note:nth-child(3){transform:rotate(-.8deg)}
-.footer{position:relative;z-index:1;margin:6vw -8vw 0;width:calc(100% + 16vw);padding:2.6vw 12vw 2.2vw;display:flex;justify-content:space-between;align-items:flex-end;gap:3vw;text-align:left;
-  background:var(--deep);border-top:.9vw solid #0a1c12;font-family:"Delius",cursive;color:#cfe0c9}
-.footer__brand{font-family:"Swanky and Moo Moo",cursive;font-size:2.6vw;color:#fff}
-.footer__brand i{font-style:normal;color:var(--coral)}
-.footer small{display:block;margin-top:.5vw;font-size:1vw;line-height:1.4;max-width:34vw}
-.footer nav{display:flex;gap:1.8vw;font-size:1.2vw;color:#fff}
+/* nav = cream capsule */
+.header__nav{position:relative;align-items:center;gap:.1em;padding:.28em;background:#fbf6e6;border:.09em solid #10291b;border-radius:999px;box-shadow:.18em .18em 0 #10291b;
+  transition:box-shadow .3s,translate .3s}
+.header.is-scrolled .header__nav{box-shadow:.28em .28em 0 #10291b,0 .8em 1.6em rgba(0,0,0,.25)}
+.header__blob{position:absolute;left:0;top:.28em;bottom:.28em;width:0;opacity:0;z-index:0;background:#f26a4f;border:.08em solid #10291b;border-radius:999px;pointer-events:none;
+  transition:transform .5s cubic-bezier(.3,1.5,.5,1),width .5s cubic-bezier(.3,1.5,.5,1),opacity .25s}
+.header__nav a{position:relative;z-index:1;display:inline-flex;align-items:center;padding:.3em .85em;color:#10291b;border:0;border-radius:999px;background:none;box-shadow:none;overflow:visible;animation:none;
+  transition:color .2s}
+.header__nav a::before,.header__nav a::after{display:none}
+.header__nav span{display:inline-block;transition:rotate .3s cubic-bezier(.3,1.8,.5,1),scale .3s cubic-bezier(.3,1.8,.5,1)}
+.header__nav a:hover span,.header__nav a:focus-visible span{rotate:-4deg;scale:1.1}
+.header__nav a:active span{scale:.92}
+.header__nav a.is-active,.header__nav a:hover,.header__nav a:focus-visible{background:none;box-shadow:none;translate:none;color:#10291b}
+.header__nav a:focus-visible{outline:.12em dashed #f26a4f;outline-offset:.1em}
 
-
+/* call to action */
+.header__nav a:last-child{margin-left:.35em;color:#fbf6e6;background:#10291b;transition:color .2s,background .2s,scale .2s}
+.header__nav a:last-child:hover{color:#10291b;background:#f4d88a}
+.header__nav a:last-child span{animation:hd-bob 1.8s ease-in-out infinite}
+.header__nav a:last-child:hover span{animation:none}
+@keyframes hd-bob{0%,100%{translate:0 0}50%{translate:.08em -.1em}}
 @media(max-width:800px){
-  .page{padding:24vw 5vw 8vw;background-size:90vw auto}.page::before{height:2.4vw}
-  .pill{font-size:max(2.9vw,11px);padding:1.4vw 3.5vw;border-width:.4vw;line-height:1.5}
-  .title{font-size:17vw}.lede{max-width:none;font-size:4.4vw}
-  .flow{flex-direction:column;align-items:center;gap:3vw}.flow__step{max-width:70vw;width:100%;padding:4vw;border-radius:3vw;box-shadow:1vw 1vw 0 rgba(16,41,27,.6)}
-  .flow__name{font-size:6vw}.flow__what{font-size:4vw}.flow__arrow{font-size:7vw;transform:rotate(90deg)}
-  .grid{display:flex;flex-direction:column;gap:7vw;max-width:none}
-  .note{padding:6vw;border-radius:3vw;box-shadow:1.2vw 1.2vw 0 rgba(16,41,27,.6)}.note::before{width:22vw;height:6vw;top:-3vw}
-  .note__tag{font-size:3.4vw}.note__title{font-size:7vw}.note p{font-size:4.3vw}
-  .chalk{font-size:3vw;padding:3vw}.chip{font-size:3.6vw}.split{grid-template-columns:1fr}.split h4{font-size:5.5vw}.split p{font-size:4vw}
-  .dot{width:5vw;height:5vw}.verdicts span{font-size:3.6vw}.verdicts strong{font-size:4.4vw}.stamp{font-size:5vw}
-  .end__big{font-size:15vw}.end .signup{width:100%}.end__sticker{width:30vw;top:22vw;right:-2vw}.end__girl{display:none}
-  .pledge{flex-direction:column;max-width:none;gap:6vw}.pledge .note p{font-size:4.2vw}
-  .footer{flex-direction:column;align-items:flex-start;margin:10vw -5vw 0;width:calc(100% + 10vw);padding:8vw 6vw;gap:5vw}
-  .footer__brand{font-size:8vw}.footer small{font-size:3.4vw;max-width:none}.footer nav{flex-wrap:wrap;gap:4vw;font-size:3.8vw}
+  .header{padding:2.4vw 2.5vw;font-size:3.1vw;gap:1.5vw;justify-content:space-between}
+  .header{font-size:2.6vw;padding:2.4vw 2vw}
+  .header__brand{font-size:1.2em;padding:.2em .55em .25em;white-space:nowrap;rotate:-2deg}
+  .header__brand::before{display:none}
+  .header__nav{padding:.2em}.header__blob{top:.2em;bottom:.2em}
+  .header__nav a{padding:.3em .42em;white-space:nowrap}
+  .header__nav a:last-child{margin-left:.15em}
+}
+@media(prefers-reduced-motion:reduce){.header__brand::before,.header__nav a:last-child span{animation:none}.header__blob{transition:none}}
+/* ===== mobile hero fix: title + paragraph had no phone sizes; apple covered the pill ===== */
+@media (max-width: 800px) {
+  .hero__tagline { top: 10vh; padding: 0 5vw; }
+  .hero__title { top: 19vh; font-size: 15vw; }
+  .hero__content { top: 31vh; width: 88vw; gap: 5vw; }
+  .hero__text { font-size: max(4.1vw, 15px); line-height: 1.4; }
+  .hero__apple { top: auto; bottom: 9vh; right: -3vw; width: 30vw; }
+  .hero__girl { width: 38vw; }
+}
+/* ===== v4: phone nav collapses into a menu ===== */
+.header__menu{display:none}
+@media(max-width:800px){
+  .header{align-items:flex-start;flex-wrap:wrap}
+  .header__menu{display:inline-flex;align-items:center;gap:.5em;margin-left:auto;padding:.35em .9em;cursor:pointer;font-family:"Swanky and Moo Moo","Chalkboard SE","Comic Sans MS","Marker Felt",cursive;font-size:1.5em;line-height:1.1;color:#10291b;
+    background:#fbf6e6;border:.09em solid #10291b;border-radius:999px;box-shadow:.14em .14em 0 #10291b;min-height:44px}
+  .header__menu i{position:relative;width:1em;height:.7em;border-top:.12em solid #10291b;border-bottom:.12em solid #10291b}
+  .header__menu i::before{content:"";position:absolute;left:0;right:0;top:50%;height:.12em;margin-top:-.06em;background:#10291b}
+  .header__menu[aria-expanded="true"]{background:#f26a4f}
+  .header__nav{display:none;flex-direction:column;align-items:stretch;gap:.2em;width:100%;margin-top:1.6vw;padding:.5em;border-radius:1.2em;font-size:1.9em}
+  .header__nav.is-open{display:flex}
+  .header__blob{display:none}
+  .header__nav a{padding:.55em .9em;min-height:44px;white-space:normal}
+  .header__nav a:last-child{margin:.2em 0 0;justify-content:center}
 }
 
-@media (max-width:800px){ .hero__scroll{font-size:3.6vw;bottom:2vh} .hero__scroll i{font-size:6vw} .end__sticker{rotate:12deg} .page{padding-top:14vw} }
+/* ===== a11y: skip link (visible only on keyboard focus) ===== */
+.skip-link{position:fixed;left:1rem;top:-4rem;z-index:100;padding:.6em 1.1em;font-family:"Delius","Comic Sans MS","Chalkboard SE","Comic Neue",cursive;font-size:1rem;color:var(--deep);background:var(--cream);border:2px solid var(--deep);border-radius:.6em;box-shadow:.2em .2em 0 var(--deep);text-decoration:none;transition:top .2s}
+.skip-link:focus{top:1rem}
+
+
+/* =========================================================
+   Loading screen: grandma sweeps the clouds away
+   Everything is cut paper: blue construction-paper sky, cream clouds,
+   layered green hills with stitching, and the paper grandma herself.
+   ========================================================= */
+.loader{display:none}
+.js .loader{display:block;position:fixed;inset:0;z-index:1000;overflow:hidden;
+  --h:clamp(250px,57vh,520px);--g:clamp(6rem,21vh,11.5rem);--t:1.7s;
+  background:url("assets/sky-paper.jpg") 0 0/900px auto repeat,#86c0e8;background-blend-mode:multiply;
+  transition:opacity .6s ease,visibility .6s,translate .6s ease}
+.loader.is-done{opacity:0;visibility:hidden;pointer-events:none;translate:0 -4vh}
+/* paper fibre over the whole scene */
+.js .loader::after{content:"";position:absolute;inset:0;z-index:9;pointer-events:none;
+  background:none}
+.js .loader::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(120% 90% at 50% 0%,rgba(255,255,255,.14),transparent 60%)}
+
+/* wallpaper details, window, framed sun, plant */
+.ld-wainscot{position:absolute;left:0;right:0;bottom:0;height:calc(var(--g) + 17vh);background:#f4e8c6;
+  filter:drop-shadow(0 -.25rem .3rem rgba(8,40,70,.22))}
+.ld-wainscot::before{content:"";position:absolute;left:0;right:0;bottom:calc(100% - 1px);height:.9rem;
+  background:radial-gradient(circle at 50% 100%,#f4e8c6 0 .62rem,transparent .66rem) 0 0/1.4rem 100% repeat-x}
+.ld-wainscot::after{content:"";position:absolute;left:0;right:0;top:.9rem;border-top:.14rem dashed rgba(150,100,50,.45)}
+.ld-mark{position:absolute;top:3.5vh;left:0;right:0;z-index:2;text-align:center;font-family:"Swanky and Moo Moo","Chalkboard SE","Comic Sans MS","Marker Felt",cursive;
+  font-size:clamp(1.6rem,3.4vw,2.4rem);line-height:1;color:var(--cream);text-shadow:.07em .07em 0 rgba(8,40,70,.35);rotate:-1.5deg;pointer-events:none}
+.ld-window{position:absolute;left:7vw;top:8vh;width:clamp(7.5rem,24vw,17rem);aspect-ratio:1/1.1;z-index:1;
+  background:var(--cream);padding:.55rem;border-radius:.6rem;filter:drop-shadow(0 .45rem .4rem rgba(8,40,70,.32))}
+.ld-pane{position:relative;width:100%;height:100%;overflow:hidden;border-radius:.3rem;background:linear-gradient(#9fd7f0,#d4eef9)}
+.ld-pane::before,.ld-pane::after{content:"";position:absolute;background:var(--cream);z-index:2}
+.ld-pane::before{left:50%;top:0;bottom:0;width:.45rem;margin-left:-.22rem}
+.ld-pane::after{top:48%;left:0;right:0;height:.45rem}
+.ld-curtain{position:absolute;top:0;width:15%;height:88%;background:var(--coral);z-index:3;box-shadow:0 .3rem .3rem rgba(8,40,70,.25);
+  background-image:repeating-linear-gradient(90deg,transparent 0 .55rem,rgba(0,0,0,.12) .55rem .7rem)}
+.ld-curtain--l{left:-.2rem;border-radius:.5rem .2rem 2rem 2rem}.ld-curtain--r{right:-.2rem;border-radius:.2rem .5rem 2rem 2rem}
+.ld-sun{position:absolute;top:7vh;right:7vw;width:clamp(4.6rem,12vw,8.4rem);aspect-ratio:1;z-index:1;padding:.5rem;background:var(--cream);border-radius:.4rem;
+  filter:drop-shadow(0 .4rem .35rem rgba(8,40,70,.3))}
+.ld-sun svg{display:block;width:100%;height:100%;border-radius:.2rem;background:#a9dcf2}
+.ld-plant{position:absolute;right:5vw;bottom:calc(var(--g)*.42);width:clamp(4rem,9vw,7rem);height:auto;z-index:2;filter:drop-shadow(0 .4rem .3rem rgba(8,40,70,.3))}
+@media (max-width:700px){.ld-plant{display:none}}
+
+/* bunting strung between the window and the sun frame */
+.ld-bunting{position:absolute;left:34%;width:46%;top:5vh;height:24vh;z-index:1;pointer-events:none}
+.ld-bunting svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;filter:drop-shadow(0 .15rem .12rem rgba(8,40,70,.3))}
+.ld-flag{position:absolute;width:0;height:0;filter:drop-shadow(0 .25rem .2rem rgba(8,40,70,.3))}
+.ld-flag i{position:absolute;left:calc(var(--fw)*-.5);top:0;width:var(--fw);height:calc(var(--fw)*1.05);clip-path:polygon(0 0,100% 0,50% 100%);transform-origin:50% 0}
+.ld-bunting{--fw:clamp(1.5rem,3.6vw,2.7rem)}
+.ld-tack{position:absolute;top:calc(3% - .3rem);width:.6rem;height:.6rem;border-radius:50%;background:var(--butter);box-shadow:0 .1rem .1rem rgba(8,40,70,.35)}
+.ld-tack--l{left:-.3rem}.ld-tack--r{right:-.3rem}
+@media (max-width:700px){.ld-bunting{left:2%;width:96%;top:calc(8vh + clamp(7.5rem,24vw,17rem)*1.1 + .5rem);height:9vh;--fw:clamp(1.1rem,5.4vw,1.5rem)}}
+.ld-skip .loader{display:none!important}
+
+/* clouds drift outside the window and get swept away */
+.ld-cloud{position:absolute;transition:translate 1s cubic-bezier(.6,0,.9,.5)}
+.ld-cloud svg{display:block;width:100%;height:auto;animation:ld-drift 9s ease-in-out infinite alternate}
+.ld-cloud--a{top:42%;left:6%;width:58%}
+.ld-cloud--b{top:10%;right:4%;width:46%}.ld-cloud--b svg{animation-duration:11s;animation-delay:-3s}
+.ld-cloud--c{top:66%;right:10%;width:40%}.ld-cloud--c svg{animation-duration:13s;animation-delay:-6s}
+.loader.is-clear .ld-cloud--a{translate:-160% 0}
+.loader.is-clear .ld-cloud--b,.loader.is-clear .ld-cloud--c{translate:160% 0}
+
+/* title tag + progress */
+/* the sign is gone visually; kept in the DOM (hidden) so the loader script and screen readers still work */
+.ld-head{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.ld-tag{position:relative;display:grid;justify-items:center;padding:.9rem 1.6rem 1.1rem;background:var(--cream);
+  border-radius:1.1rem 1.5rem 1rem 1.4rem/1.4rem 1rem 1.5rem 1.1rem;rotate:-1.2deg;
+  filter:drop-shadow(0 .45rem .4rem rgba(8,40,70,.3))}
+.ld-tag::before{content:"";position:absolute;inset:.35rem;border:.13rem dashed rgba(16,41,27,.35);border-radius:inherit;pointer-events:none}
+.loader__title{font-family:"Swanky and Moo Moo","Chalkboard SE","Comic Sans MS","Marker Felt",cursive;font-size:clamp(2.8rem,10vw,4.8rem);line-height:1;margin:0 0 .35rem}
+.loader__msg{min-height:1.5em;margin:0 0 .8rem;font-family:"Delius","Comic Sans MS","Chalkboard SE","Comic Neue",cursive;font-size:clamp(.95rem,2.4vw,1.15rem)}
+.loader__bar{width:min(17rem,60vw);height:1rem;overflow:hidden;background:#e7dcc0;border-radius:99px;box-shadow:inset 0 .12rem .2rem rgba(60,40,10,.3)}
+.loader__bar i{display:block;height:100%;width:8%;border-radius:99px;
+  background:repeating-linear-gradient(135deg,var(--coral) 0 .6rem,#f58a73 .6rem 1.2rem);background-size:200% 100%;
+  animation:ld-crawl 1s linear infinite,ld-fill 3.2s cubic-bezier(.2,.8,.2,1) forwards;transition:width .35s ease}
+
+/* wood-plank floor (kraft paper strips) and rug */
+.ld-floor{position:absolute;left:0;right:0;bottom:0;height:var(--g);
+  --seam:rgba(70,36,12,.38);
+  background:
+    repeating-linear-gradient(90deg,transparent 0 calc(17vw - 3px),var(--seam) calc(17vw - 3px) 17vw) 0 0/100% 50% repeat-x,
+    repeating-linear-gradient(90deg,transparent 0 calc(17vw - 3px),var(--seam) calc(17vw - 3px) 17vw) 8.5vw 100%/100% 50% repeat-x,
+    linear-gradient(transparent calc(50% - 1.5px),var(--seam) calc(50% - 1.5px) calc(50% + 1.5px),transparent calc(50% + 1.5px)),
+    #c98d55}
+.ld-floor::before{content:"";position:absolute;left:0;right:0;bottom:100%;height:.9rem;background:var(--cream);box-shadow:0 .25rem .3rem rgba(8,40,70,.25)}
+.ld-rug{position:absolute;left:50%;bottom:calc(var(--g)*.12);width:calc(var(--h)*1.05);height:calc(var(--g)*.62);margin-left:calc(var(--h)*-.525);z-index:3;
+  border-radius:50%;background:var(--coral);filter:drop-shadow(0 .3rem .3rem rgba(40,15,5,.35))}
+.ld-rug::before{content:"";position:absolute;inset:14%;border-radius:50%;background:var(--butter);border:.2rem dashed var(--cream)}
+.ld-rug::after{content:"";position:absolute;inset:34%;border-radius:50%;background:var(--blush)}
+
+/* grandma: whole figure travels side to side, rocks on her feet, broom lags and flicks */
+.ld-walk{position:absolute;left:50%;bottom:calc(var(--g)*.3);width:calc(var(--h)*.694);height:var(--h);margin-left:calc(var(--h)*-.347);z-index:10;
+  opacity:0;translate:0 3vh;transition:opacity .45s ease,translate .6s cubic-bezier(.2,.9,.3,1.2);
+  animation:ld-walk var(--t) ease-in-out infinite}
+.loader.is-ready .ld-walk,.loader.is-clear .ld-walk{opacity:1}
+.ld-granny{position:relative;width:100%;height:100%;transform-origin:42% 96%;
+  filter:drop-shadow(0 .5rem .4rem rgba(8,40,70,.32));
+  animation:ld-rock var(--t) ease-in-out infinite,ld-bob calc(var(--t)/2) ease-in-out infinite}
+.ld-granny img{position:absolute;inset:0;width:100%;height:100%;display:block;user-select:none;-webkit-user-drag:none}
+.ld-broom{transform-origin:57.7% 60.8%;animation:ld-flick var(--t) ease-in-out infinite}
+
+/* paper scraps flying off the broom head */
+.ld-pile{position:absolute;left:76%;bottom:1%;width:34%;height:12%;pointer-events:none;z-index:11}
+.ld-scrap{position:absolute;height:auto;opacity:0;filter:drop-shadow(0 .14rem .12rem rgba(8,40,70,.35));animation:ld-swept calc(var(--t)*1.5) ease-in infinite;animation-delay:var(--d,0s)}
+.ld-scrap--1{left:0;bottom:10%;width:calc(var(--h)*.12);--d:0s;--rot:240deg}
+.ld-scrap--2{left:14%;bottom:0;width:calc(var(--h)*.08);--d:.3s;--rot:-200deg}
+.ld-scrap--3{left:30%;bottom:18%;width:calc(var(--h)*.13);--d:.6s;--rot:180deg}
+.ld-scrap--4{left:52%;bottom:4%;width:calc(var(--h)*.065);--d:.9s;--rot:320deg}
+.ld-scrap--5{left:64%;bottom:22%;width:calc(var(--h)*.07);--d:1.2s;--rot:-260deg}
+.ld-scrap--6{left:78%;bottom:8%;width:calc(var(--h)*.045);--d:1.5s;--rot:360deg}
+.ld-scrap--7{left:90%;bottom:26%;width:calc(var(--h)*.035);--d:1.8s;--rot:-300deg}
+
+@keyframes ld-walk{0%,100%{translate:-4.5vw 0}50%{translate:4.5vw 0}}
+@keyframes ld-rock{0%,100%{rotate:-1.8deg}50%{rotate:1.8deg}}
+@keyframes ld-bob{0%,100%{translate:0 0}50%{translate:0 -.7%}}
+@keyframes ld-flick{0%,50%,100%{rotate:0deg}25%{rotate:6deg}75%{rotate:-6deg}}
+@keyframes ld-swept{0%{opacity:0;translate:0 0;rotate:0deg;scale:.85}12%{opacity:1;scale:1}70%{opacity:1}100%{opacity:0;translate:calc(var(--h)*.8) -.6rem;rotate:var(--rot,200deg)}}
+@keyframes ld-drift{from{transform:translateX(-1.6vw)}to{transform:translateX(2.2vw)}}
+@keyframes ld-spin{to{rotate:360deg}}
+@keyframes ld-crawl{to{background-position:-2.4rem 0}}
+@keyframes ld-fill{to{width:88%}}
+@media (max-height:520px){.ld-head{top:2vh}.loader__msg{margin-bottom:.4rem}.ld-tag{padding:.5rem 1.2rem .7rem}}
+@media (prefers-reduced-motion:reduce){.ld-walk,.ld-granny,.ld-broom,.ld-cloud svg,.ld-sun svg,.ld-scrap{animation:none}}
+html.is-loading,html.is-loading body{overflow:hidden}
+/* hold the hero entrance until the loader lifts */
+.is-loading .hero__title,.is-loading .hero__tagline,.is-loading .hero__text,.is-loading .signup{animation-play-state:paused}
+/* ===== polish pass ===== */
+/* friendlier labels: handwritten sentence case on a tilted paper tag, not shouty caps */
+.hero__pill{text-transform:none;letter-spacing:.02em;font-size:clamp(14px,1.3vw,30px);color:#10291b;background:#fbf6e6;border:.14vw dashed rgba(16,41,27,.55);outline:.35vw solid #fbf6e6;outline-offset:-.1vw;box-shadow:.25vw .25vw 0 rgba(16,41,27,.55);backdrop-filter:none}
+.hero__dot{color:#f26a4f}
+@media (min-width:801px){
+  /* shift the copy column right so the girl's arm never touches the email box; fill the lower hero a bit more */
+  .hero__content{left:52.5%;width:46vw;top:45vh;gap:1.8vw}
+  .hero__text{font-size:clamp(16px,1.85vw,44px)}
+  .signup{position:relative;z-index:12}
+}
+/* fixed header: soft fade strip so nav doesn't collide with body text */
+.header::before{display:block;content:"";position:absolute;left:0;right:0;top:0;bottom:-1.6em;z-index:-1;pointer-events:none;opacity:0;transition:opacity .3s ease;
+  background:linear-gradient(rgba(16,41,27,.62),rgba(16,41,27,0));-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+  -webkit-mask-image:linear-gradient(#000 55%,transparent);mask-image:linear-gradient(#000 55%,transparent)}
+.header.is-scrolled::before{opacity:1}
+@media (max-width:800px){
+  /* "Old Way" clipping: let grid columns shrink, let headings wrap */
+  .way{grid-template-columns:minmax(0,1fr)}
+  .way__col>*{min-width:0}
+  .way__heading{white-space:normal;overflow-wrap:anywhere;font-size:12vw}
+  .way__title,.way__body{overflow-wrap:break-word}
+  /* bigger brand sticker + header text on phones */
+  .header{font-size:max(3.4vw,13px)}
+  .header__brand{font-size:1.6em}
+}
+
+/* ===== 9+ pass ===== */
+/* hero: "try a saying" chips fill the lower third and point to the engine */
+.hero__try{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:.6em .7em;margin-top:1.4vw;font-family:"Delius","Comic Sans MS","Chalkboard SE",cursive;font-size:clamp(14px,1.2vw,26px);color:#eef6ec;animation:text-in .9s .4s cubic-bezier(.2,.8,.2,1) both;position:relative;z-index:12}
+.hero__try a{padding:.3em .95em;color:#10291b;text-decoration:none;background:#f4d88a;border:.12em solid #10291b;border-radius:999px;box-shadow:.14em .14em 0 #10291b;transition:translate .15s ease,box-shadow .15s ease,background .15s ease}
+.hero__try a:nth-of-type(2){background:#f2b8a8}.hero__try a:nth-of-type(3){background:#cfe3b8}
+.hero__try a:hover,.hero__try a:focus-visible{translate:-.05em -.1em;box-shadow:.2em .25em 0 #10291b}
+.is-loading .hero__try{animation-play-state:paused}
+@media (max-width:800px){.hero__try{margin-top:3vw;font-size:max(3.5vw,13px)}}
+/* never allow sideways scroll on phones */
+html,body{overflow-x:clip}

@@ -4,24 +4,69 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lore Lab</title>
+  <meta name="theme-color" content="#1f5a3d">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌼</text></svg>">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Lore Lab">
+  <meta property="og:description" content="Lore Lab tests family weather sayings as honest experiments with open-weight Gemma. Then you go touch grass.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="description" content="Lore Lab tests family weather sayings as honest experiments with open-weight Gemma.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Delicious+Handrawn&family=Delius&family=Swanky+and+Moo+Moo&display=swap" rel="stylesheet">
+  <link rel="preload" as="image" href="assets/granny-body.webp" fetchpriority="high">
+  <link rel="preload" as="image" href="assets/granny-broom.webp" fetchpriority="high">
+  <link rel="preload" as="image" href="assets/sky-paper.jpg">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="lore.css">
-  <script>document.documentElement.classList.add("js");</script>
+  <link rel="stylesheet" href="sections.css">
+  <script>(function(){var r=document.documentElement,seen=false,EVERY_VISIT=true;try{seen=!EVERY_VISIT&&!!localStorage.getItem("loreLoaderSeen")&&!/[?&]loader/.test(location.search)}catch(e){}r.classList.add("js");r.classList.add(seen?"ld-skip":"is-loading")})();</script>
 </head>
 <body id="top">
+  <script>(function(){var n=0;window.ldImg=function(){if(++n===2){window.ldReadyAt=Date.now();var l=document.getElementById("loader");l&&l.classList.add("is-ready")}}})();</script>
+  <div class="loader" id="loader" role="status" aria-live="polite" aria-busy="true">
+    <div class="ld-wainscot" aria-hidden="true"></div>
+    <p class="ld-mark" aria-hidden="true">Lore Lab</p>
+    <div class="ld-bunting" aria-hidden="true"><svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0 3Q50 153 100 3" fill="none" stroke="#fbf6e6" stroke-width="2" vector-effect="non-scaling-stroke"/></svg><b class="ld-flag" style="left:4.5%;top:16.0%"><i style="background:#f26a4f"></i></b><b class="ld-flag" style="left:13.6%;top:38.3%"><i style="background:#f4d88a"></i></b><b class="ld-flag" style="left:22.7%;top:55.7%"><i style="background:#f2b8a8"></i></b><b class="ld-flag" style="left:31.8%;top:68.1%"><i style="background:#fbf6e6"></i></b><b class="ld-flag" style="left:40.9%;top:75.5%"><i style="background:#8aa863"></i></b><b class="ld-flag" style="left:50.0%;top:78.0%"><i style="background:#f26a4f"></i></b><b class="ld-flag" style="left:59.1%;top:75.5%"><i style="background:#f4d88a"></i></b><b class="ld-flag" style="left:68.2%;top:68.1%"><i style="background:#f2b8a8"></i></b><b class="ld-flag" style="left:77.3%;top:55.7%"><i style="background:#fbf6e6"></i></b><b class="ld-flag" style="left:86.4%;top:38.3%"><i style="background:#8aa863"></i></b><b class="ld-flag" style="left:95.5%;top:16.0%"><i style="background:#f26a4f"></i></b><span class="ld-tack ld-tack--l"></span><span class="ld-tack ld-tack--r"></span></div>
+    <div class="ld-window" aria-hidden="true">
+      <div class="ld-pane">
+        <div class="ld-cloud ld-cloud--a"><svg viewBox='0 0 160 80'><g fill='#dcebf4' transform='translate(3 5)'><circle cx='40' cy='52' r='24'/><circle cx='72' cy='38' r='30'/><circle cx='108' cy='46' r='24'/><circle cx='130' cy='56' r='16'/><rect x='24' y='52' width='120' height='20' rx='10'/></g><g fill='#fffaf0'><circle cx='40' cy='52' r='24'/><circle cx='72' cy='38' r='30'/><circle cx='108' cy='46' r='24'/><circle cx='130' cy='56' r='16'/><rect x='24' y='52' width='120' height='20' rx='10'/></g></svg></div>
+        <div class="ld-cloud ld-cloud--b"><svg viewBox='0 0 160 80'><g fill='#dcebf4' transform='translate(3 5)'><circle cx='40' cy='52' r='24'/><circle cx='72' cy='38' r='30'/><circle cx='108' cy='46' r='24'/><circle cx='130' cy='56' r='16'/><rect x='24' y='52' width='120' height='20' rx='10'/></g><g fill='#fffaf0'><circle cx='40' cy='52' r='24'/><circle cx='72' cy='38' r='30'/><circle cx='108' cy='46' r='24'/><circle cx='130' cy='56' r='16'/><rect x='24' y='52' width='120' height='20' rx='10'/></g></svg></div>
+        <div class="ld-cloud ld-cloud--c"><svg viewBox='0 0 160 80'><g fill='#dcebf4' transform='translate(3 5)'><circle cx='40' cy='52' r='24'/><circle cx='72' cy='38' r='30'/><circle cx='108' cy='46' r='24'/><circle cx='130' cy='56' r='16'/><rect x='24' y='52' width='120' height='20' rx='10'/></g><g fill='#fffaf0'><circle cx='40' cy='52' r='24'/><circle cx='72' cy='38' r='30'/><circle cx='108' cy='46' r='24'/><circle cx='130' cy='56' r='16'/><rect x='24' y='52' width='120' height='20' rx='10'/></g></svg></div>
+      </div>
+      <i class="ld-curtain ld-curtain--l"></i><i class="ld-curtain ld-curtain--r"></i>
+    </div>
+    <div class="ld-sun" aria-hidden="true"><svg viewBox='0 0 200 200'><g fill='#f0a92b' transform='translate(3 5)' opacity='.35'><rect x='94' y='14' width='12' height='34' rx='6' transform='rotate(0 100 100)'/><rect x='94' y='14' width='12' height='34' rx='6' transform='rotate(45 100 100)'/><rect x='94' y='14' width='12' height='34' rx='6' transform='rotate(90 100 100)'/><rect x='94' y='14' width='12' height='34' rx='6' transform='rotate(135 100 100)'/><rect x='94' y='14' width='12' height='34' rx='6' transform='rotate(180 100 100)'/><rect x='94' y='14' width='12' height='34' rx='6' transform='rotate(225 100 100)'/><rect x='94' y='14' width='12' height='34' rx='6' transform='rotate(270 100 100)'/><rect x='94' y='14' width='12' height='34' rx='6' transform='rotate(315 100 100)'/><circle cx='100' cy='100' r='46'/></g><g fill='#f6b92d'><rect x='94' y='14' width='12' height='34' rx='6' transform='rotate(0 100 100)'/><rect x='94' y='14' width='12' height='34' rx='6' transform='rotate(45 100 100)'/><rect x='94' y='14' width='12' height='34' rx='6' transform='rotate(90 100 100)'/><rect x='94' y='14' width='12' height='34' rx='6' transform='rotate(135 100 100)'/><rect x='94' y='14' width='12' height='34' rx='6' transform='rotate(180 100 100)'/><rect x='94' y='14' width='12' height='34' rx='6' transform='rotate(225 100 100)'/><rect x='94' y='14' width='12' height='34' rx='6' transform='rotate(270 100 100)'/><rect x='94' y='14' width='12' height='34' rx='6' transform='rotate(315 100 100)'/></g><circle cx='100' cy='100' r='46' fill='#f9d23e'/></svg></div>
+    <svg class='ld-plant' viewBox='0 0 100 140' aria-hidden='true'><g fill='#3b8043'><path d='M50 78C30 70 14 48 12 22c24 4 38 24 38 56z'/><path d='M50 78C70 70 86 48 88 22 64 26 50 46 50 78z'/></g><g fill='#58a85b'><path d='M50 80C42 56 44 30 50 6c8 24 8 50 0 74z'/><path d='M50 84C28 82 10 70 4 52c22-2 40 10 46 32z' opacity='.95'/><path d='M50 84C72 82 90 70 96 52c-22-2-40 10-46 32z' opacity='.95'/></g><path d='M22 84h56l-8 50H30z' fill='#f26a4f'/><rect x='18' y='78' width='64' height='12' rx='4' fill='#f58a73'/><path d='M26 108h48' stroke='#fbf6e6' stroke-width='2' stroke-dasharray='5 4' stroke-linecap='round' fill='none'/></svg>
+    <div class="ld-head">
+      <div class="ld-tag">
+        <p class="loader__title">Lore Lab</p>
+        <p class="loader__msg" id="loader-msg">Sweeping the clouds away&hellip;</p>
+        <div class="loader__bar" aria-hidden="true"><i id="loader-fill"></i></div>
+      </div>
+    </div>
+    <div class="ld-floor" aria-hidden="true"></div>
+    <div class="ld-rug" aria-hidden="true"></div>
+    <div class="ld-walk">
+      <div class="ld-granny">
+        <img class="ld-body" src="assets/granny-body.webp" alt="" width="783" height="1128" fetchpriority="high" onload="window.ldImg&&ldImg()" onerror="window.ldImg&&ldImg()">
+        <img class="ld-broom" src="assets/granny-broom.webp" alt="" width="783" height="1128" fetchpriority="high" onload="window.ldImg&&ldImg()" onerror="window.ldImg&&ldImg()">
+      </div>
+      <div class="ld-pile" aria-hidden="true"><svg class="ld-scrap ld-scrap--1" viewBox="0 0 114 71" aria-hidden="true"><polygon points="5,50 40,5 70,30 112,20 85,66 30,68" fill="#f6c935"/></svg><svg class="ld-scrap ld-scrap--2" viewBox="0 0 75 119" aria-hidden="true"><polygon points="8,40 50,4 70,70 40,116 6,90" fill="#f2b8a8"/></svg><svg class="ld-scrap ld-scrap--3" viewBox="0 0 122 92" aria-hidden="true"><polygon points="4,60 36,8 80,34 118,10 100,86 40,88" fill="#fbf6e6"/></svg><svg class="ld-scrap ld-scrap--4" viewBox="0 0 61 60" aria-hidden="true"><polygon points="6,30 34,4 58,36 28,58" fill="#f26a4f"/></svg><svg class="ld-scrap ld-scrap--5" viewBox="0 0 64 62" aria-hidden="true"><polygon points="4,38 40,6 62,30 50,58 14,56" fill="#f6c935"/></svg><svg class="ld-scrap ld-scrap--6" viewBox="0 0 39 40" aria-hidden="true"><polygon points="4,24 24,4 36,28 14,38" fill="#8aa863"/></svg><svg class="ld-scrap ld-scrap--7" viewBox="0 0 30 21" aria-hidden="true"><polygon points="3,14 20,2 28,12 10,19" fill="#f2b8a8"/></svg></div>
+    </div>
+  </div>
+  <a class="skip-link" href="#way">Skip to content</a>
 
   <header class="header">
-    <a href="index.html"><a href="#top"><span class="header__brand">Lore Lab</span></a></a>
-    <nav class="header__nav">
+    <a href="#top"><span class="header__brand">Lore Lab</span></a>
+    <button class="header__menu" id="header-menu" type="button" aria-expanded="false" aria-controls="header-nav"><span>Menu</span><i aria-hidden="true"></i></button>
+    <nav class="header__nav" id="header-nav">
       <a href="#way"><span>Stance</span></a>
       <a href="#engine"><span>Engine</span></a>
       <a href="#architecture"><span>Architecture</span></a>
       <a href="#protocol"><span>Protocol</span></a>
-      <a href="#field-reports"><span>Field Reports</span></a>
-      <a href="#join"><span>Post &#8599;</span></a>
+      <a href="#statement"><span>Manifesto</span></a>
+      <a href="#join"><span>Touch grass &#8599;</span></a>
     </nav>
     <div class="header__progress" aria-hidden="true"></div>
   </header>
@@ -29,11 +74,11 @@
   <main class="hero">
     <div class="hero__bg" aria-hidden="true"></div>
 
-    <p class="hero__tagline"><span class="hero__pill">Open-Weight Gemma <i class="hero__dot">&bull;</i> 10-Second Field Ledger <i class="hero__dot">&bull;</i> Zero Cloud Tracking</span></p>
+    <p class="hero__tagline"><span class="hero__pill">Open-weight Gemma <i class="hero__dot">&bull;</i> A 5-second field ledger <i class="hero__dot">&bull;</i> No cloud tracking</span></p>
 
     <h1 class="hero__title">LORE LAB</h1>
     <div class="hero__content">
-      <p class="hero__text">The brutalist open-weight engine designed to force you outside. Translate centuries of weather proverbs on local silicon, step onto the grass to watch the swifts and the sky, and score ancient sayings against 10 years of atmospheric data—then put your phone away</p>
+      <p class="hero__text">Test your family&rsquo;s weather sayings against ten years of real data. Then step outside, watch the swifts and the sky, and put your phone away.</p>
 
       <form class="signup" id="signup" novalidate>
         <label class="signup__label" for="signup-email">Email for updates</label>
@@ -41,16 +86,20 @@
         <button class="signup__btn" type="submit">Get Updates</button>
         <p class="signup__msg" id="signup-msg" role="status" aria-live="polite"></p>
       </form>
+      <div class="hero__try">
+        <span>Or try a saying:</span>
+        <a href="#engine">Red sky at night</a><a href="#engine">Cows lying down</a><a href="#engine">Swallows flying low</a>
+      </div>
     </div>
 
-    <img class="hero__apple" src="assets/apple.png" alt="">
-    <img class="hero__girl" src="assets/girl.png" alt="">
+    <img class="hero__apple" src="assets/apple.webp" alt="" width="900" height="900" decoding="async">
+    <img class="hero__girl" src="assets/girl.webp" alt="" width="1100" height="1100" decoding="async">
     <a class="hero__scroll" href="#way"><span>scroll down</span><i aria-hidden="true">&darr;</i></a>
   </main>
 
   <section class="way" id="way">
     <div class="way__shade" aria-hidden="true"></div>
-    <div class="way__stamp" aria-hidden="true"><img src="assets/cat-stamp.png" alt=""></div>
+    <div class="way__stamp" aria-hidden="true"><img src="assets/cat-stamp.webp" alt="" width="800" height="800" loading="lazy" decoding="async"></div>
 
     <div class="way__col way__col--old">
       <h2 class="way__heading reveal">THE OLD WAY</h2>
@@ -111,11 +160,6 @@
         <h2 class="lore-title" id="lore-engine-title">LET&rsquo;S PUT AN OLD SAYING TO THE TEST.</h2>
         <p class="lore-lede">A proverb becomes a hypothesis. The hypothesis meets weather evidence, or you step outside and look. Then we hold the result up against what ordinary chance would have done anyway.</p>
       </header>
-      <ol class="lore-recipe lore-in">
-        <li><b>1</b><span>Write the saying down, in any language.</span></li>
-        <li><b>2</b><span>Review what Gemma proposes. Settle anything vague yourself.</span></li>
-        <li><b>3</b><span>Test it against weather history, or go and look at the sky.</span></li>
-      </ol>
 
       <div class="lore-desk lore-in" id="lore-desk">
         <div class="lore-tabs" role="tablist" aria-label="Experiment steps">
@@ -179,200 +223,268 @@
     </div>
   </section>
 
-  <!-- ===================== LORE LAB · SYSTEM ARCHITECTURE ===================== -->
-  <section class="lore lore-arch" id="architecture" aria-labelledby="lore-arch-title">
-    <div class="lore-wrap">
-      <header class="lore-head lore-in">
-        <span class="lore-pill">Blueprint <i>&bull;</i> Seven parts</span>
-        <h2 class="lore-title" id="lore-arch-title">HOW THE LAB IS WIRED</h2>
-        <p class="lore-lede">Pick a part to see what it takes in and what it hands on. Or trace one journey through the system.</p>
+  <!-- ===================== ARCHITECTURE · scroll-driven schematic ===================== -->
+  <section class="ax" id="architecture" aria-labelledby="ax-title">
+    <div class="ax__glow" aria-hidden="true"></div>
+    <div class="ax__wrap">
+      <header class="ax__head" id="ax-head">
+        <svg class="ax__circuit" viewBox="0 0 1500 560" preserveAspectRatio="xMaxYMid slice" aria-hidden="true" focusable="false">
+          <g class="ax-c">
+            <path pathLength="1" d="M1500 80H1220V230H980V170"/><path pathLength="1" d="M1500 480H1300V380H1040V450H860"/>
+            <path pathLength="1" d="M1500 300H1360V150H1120"/><path pathLength="1" d="M1100 560V500H1180"/>
+            <circle cx="980" cy="170" r="7"/><circle cx="860" cy="450" r="7"/><circle cx="1120" cy="150" r="6"/><circle cx="1180" cy="500" r="5"/>
+          </g>
+        </svg>
+        <div class="ax__spot" aria-hidden="true"></div>
+        <h2 class="ax__title" id="ax-title">HOW THE LAB<br><span class="ax__hl">IS WIRED</span></h2>
+        <p class="ax__lede">Scroll through the machine. Each part lights up on the schematic as you reach it, or tap a box to jump to it.</p>
       </header>
-      <div class="lore-trace lore-in" role="group" aria-label="Trace a path through the system">
-        <button type="button" data-trace="all" aria-pressed="true">Whole system</button>
-        <button type="button" data-trace="lab" aria-pressed="false">Lab Test</button>
-        <button type="button" data-trace="field" aria-pressed="false">Field Test</button>
-        <button type="button" data-trace="outcome" aria-pressed="false">Outcome check</button>
+      <div class="ax__body">
+        <ol class="ax__rows" id="ax-rows" aria-label="System parts"></ol>
+        <aside class="ax__panel" aria-label="System schematic">
+          <div class="ax__chips" id="ax-chips" role="group" aria-label="Trace a path through the system">
+            <button type="button" data-trace="all" aria-pressed="true">Whole system</button>
+            <button type="button" data-trace="lab" aria-pressed="false">Lab Test</button>
+            <button type="button" data-trace="field" aria-pressed="false">Field Test</button>
+            <button type="button" data-trace="outcome" aria-pressed="false">Outcome check</button>
+          </div>
+          <div class="ax__dgm" id="ax-dgm"></div>
+          <div class="ax__cap" id="ax-cap" aria-live="polite"></div>
+        </aside>
       </div>
-      <div class="lore-arch-grid lore-in">
-        <div>
-          <div class="lore-diagram" id="lore-diagram"></div>
-          <ul class="lore-stack" id="lore-stack" aria-label="System parts"></ul>
-        </div>
-        <aside class="lore-detail" id="lore-detail" aria-live="polite"></aside>
-      </div>
-      <ol class="lore-steps lore-in" id="lore-steps"></ol>
-      <p class="lore-archnote">Follows the architecture in the product requirements. Parts are shown as designed; this diagram does not report which are live.</p>
+      
     </div>
   </section>
 
-  <section class="page" id="protocol-notes">
-    <div class="head">
-      <span class="pill reveal">Gemma proposes <i class="hero__dot">&bull;</i> Code decides</span>
-      <h2 class="title reveal">THE PROTOCOL</h2>
-      <p class="lede reveal">Five stops between your grandmother's saying and an honest answer. The model translates, plain Python judges, and you step outside for the part no satellite can see.</p>
+  <!-- ===================== PROTOCOL · stacking cards ===================== -->
+  <section class="px" id="protocol" aria-labelledby="px-title">
+    <div class="px__top" id="px-top">
+      <div class="px__badge" aria-hidden="true">
+        <svg viewBox="0 0 200 200"><defs><path id="px-circ" d="M100 100m-74 0a74 74 0 1 1 148 0a74 74 0 1 1-148 0"/></defs>
+          <text><textPath href="#px-circ" textLength="455">GEMMA PROPOSES &bull; CODE DECIDES &bull; YOU GO LOOK &bull;</textPath></text></svg>
+        <span>&nearr;</span>
+      </div>
+      <span class="px__pill">Gemma proposes <i>/</i> Code decides</span>
+      <h2 class="px__title" id="px-title">THE PROTOCOL</h2>
+      <p class="px__lede">Five stops between a saying and an honest answer. The model translates, plain Python judges, and you step outside for the rest.</p>
     </div>
 
-    <div class="flow">
-      <div class="reveal flow__step"><div class="flow__name">Proverb</div><div class="flow__what">Any language, with its source or "unknown"</div></div>
-      <span class="reveal flow__arrow" aria-hidden="true">&rarr;</span>
-      <div class="reveal flow__step"><div class="flow__name">Gemma proposes</div><div class="flow__what">A structured, testable hypothesis</div></div>
-      <span class="reveal flow__arrow" aria-hidden="true">&rarr;</span>
-      <div class="reveal flow__step flow__step--code"><div class="flow__name">Code decides</div><div class="flow__what">Lab Test or Field Test, by whitelist</div></div>
-      <span class="reveal flow__arrow" aria-hidden="true">&rarr;</span>
-      <div class="reveal flow__step"><div class="flow__name">Test it</div><div class="flow__what">10-year backtest, or go look outside</div></div>
-      <span class="reveal flow__arrow" aria-hidden="true">&rarr;</span>
-      <div class="reveal flow__step"><div class="flow__name">Verdict</div><div class="flow__what">Counts, chance and a plain-words reading</div></div>
-    </div>
+    <div class="px__marq" aria-hidden="true"><div class="px__track"><span>Proverb <i>/</i> Propose <i>/</i> Decide <i>/</i> Test <i>/</i> Verdict <i>/</i> </span><span>Proverb <i>/</i> Propose <i>/</i> Decide <i>/</i> Test <i>/</i> Verdict <i>/</i> </span><span>Proverb <i>/</i> Propose <i>/</i> Decide <i>/</i> Test <i>/</i> Verdict <i>/</i> </span><span>Proverb <i>/</i> Propose <i>/</i> Decide <i>/</i> Test <i>/</i> Verdict <i>/</i> </span></div></div>
 
-    <div class="grid">
-      <article class="note note--a note--tilt-l reveal">
-        <span class="note__tag">Step 1 &middot; open weights</span>
-        <h2 class="note__title">Gemma proposes</h2>
-        <p>Local open-weight Gemma reads the proverb, translates it and sorts the sign into a closed vocabulary. It never judges whether the saying is true, and it never invents a threshold. Anything vague goes into an ambiguities list for you to settle.</p>
-        <div class="chalk"><b>sign.kind</b>   atmospheric | animal | plant | celestial | body
-<b>proxy.variable</b>   pressure_msl | wind_direction_10m | ...| <i>none</i>
-<b>proxy.fit</b>   good | rough | <i>none</i>
-<b>threshold_suggestion</b>   <i>null</i>   // always. You set the number.</div>
-      </article>
+    <div class="px__stack" id="px-stack">
 
-      <article class="note note--b note--coral note--tilt-r reveal">
-        <span class="note__tag">Step 2 &middot; plain Python</span>
-        <h2 class="note__title">Code decides</h2>
-        <p>A small model should not be the judge of what can be tested. Backtestability is computed by deterministic code and stored on the hypothesis.</p>
-        <div class="chalk">backtestable =
-  sign.kind == <b>"atmospheric"</b>
-  and proxy.variable in <b>WHITELIST</b>
-  and proxy.fit != <b>"none"</b></div>
-        <p>A "rough" fit is labelled Rough match and needs your explicit OK.</p>
-      </article>
-
-      <article class="note note--c note--sage reveal">
-        <span class="note__tag">Two ways to test</span>
-        <h2 class="note__title">Lab Test and Field Test</h2>
-        <div class="split">
-          <div>
-            <h4>Lab Test</h4>
-            <p>The sign shows up in weather data. We score it against about 10 years of Open-Meteo history for your spot. Big sample, instant answer, modelled reanalysis rather than station readings.</p>
-            <div class="chips"><span class="chip">pressure change</span><span class="chip">wind direction</span><span class="chip">high cloud</span><span class="chip">humidity</span></div>
+      <article class="px-card px-card--butter">
+        <div class="px-card__in">
+          <div class="px-card__text">
+            <span class="px-card__num">01</span>
+            <p class="px-card__tag">Input</p>
+            <h3 class="px-card__h">Start with a saying.</h3>
+            <p class="px-card__p">Type a proverb in any language and say where you heard it. No account, and your family&rsquo;s sayings stay on your machine.</p>
           </div>
-          <div>
-            <h4>Field Test</h4>
-            <p>Swifts, cows, crickets, the look of the moon: no instrument records them, so you are the instrument. Look, tap Seen or Not seen, put your phone away. Small sample, and the app says so.</p>
-            <div class="chips"><span class="chip">animals</span><span class="chip">plants</span><span class="chip">sounds</span><span class="chip">the moon</span></div>
+          <div class="px-card__viz">
+            <div class="px-input">
+              <p class="px-input__label">A saying</p>
+              <p class="px-input__field">Red sky at night, shepherd&rsquo;s delight.<span class="px-caret"></span></p>
+              <div class="px-input__row"><div><p class="px-input__label">Language</p><p class="px-input__sm">English (auto)</p></div><div><p class="px-input__label">Source</p><p class="px-input__sm">unknown</p></div></div>
+              <p class="px-input__btn">Send to Gemma &rarr;</p>
+            </div>
           </div>
         </div>
       </article>
 
-      <article class="note note--d note--blush note--tilt-l reveal">
-        <span class="note__tag">Step 4 &middot; outcomes</span>
-        <h2 class="note__title">Lazy outcome check</h2>
-        <p>No scheduler, no queue. Each look stores a time to resolve after. Whenever the app next opens, one idempotent function fills in what the sky actually did.</p>
-        <div class="chalk">resolvePending()
-  find looks that are due
-  claim the row  <b>(no double-resolve)</b>
-  fetch hourly rain for the window
-  <i>missing hour?</i> retry, up to 5 times
-  save outcome, update scorecard</div>
-      </article>
-
-      <article class="note note--e note--tilt-r reveal" id="protocol">
-        <span class="note__tag">Step 5 &middot; the scorecard</span>
-        <h2 class="note__title">Never a verdict the data can't back</h2>
-        <p>Every card shows the bar to beat (how often it rains anyway) next to the hit rate, with sample size beside every number. Under the minimum, you get a notebook page of blank tally dots instead of a percentage.</p>
-        <div class="tally" aria-label="3 of 10 looks logged"><span class="dot dot--on"></span><span class="dot dot--on"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
-        <div class="verdicts">
-          <span><strong>On the trail</strong>Still collecting looks</span>
-          <span><strong>Promising</strong>Beats chance</span>
-          <span><strong>Same as chance</strong>A real finding</span>
-          <span><strong>Backfires</strong>Worse than chance</span>
+      <article class="px-card px-card--lime">
+        <div class="px-card__in">
+          <div class="px-card__text">
+            <span class="px-card__num">02</span>
+            <p class="px-card__tag">Open weights</p>
+            <h3 class="px-card__h">Gemma proposes.</h3>
+            <p class="px-card__p">Local open-weight Gemma translates the proverb and sorts the sign into a closed vocabulary. It never judges if the saying is true and never invents a threshold. Anything vague is left for you to settle.</p>
+          </div>
+          <div class="px-card__viz">
+            <div class="px-win"><div class="px-win__bar"><i></i><i></i><i></i><span>hypothesis</span></div>
+<pre class="px-win__code"><b>sign.kind</b>              atmospheric | animal
+                         | plant | celestial | body
+<b>proxy.variable</b>        pressure_msl
+                         | wind_direction_10m | &hellip;
+                         | <u>none</u>
+<b>proxy.fit</b>             good | rough | <u>none</u>
+<b>threshold_suggestion</b>  <u>null</u>  <em>// always. You set the number.</em></pre></div>
+          </div>
         </div>
       </article>
 
-      <article class="note note--f note--sage note--tilt-r reveal">
-        <span class="note__tag">Committed before any result</span>
-        <h2 class="note__title">Pre-set constants</h2>
-        <p>Written into the README before a single result is viewed, so the experiment can be audited.</p>
-        <div class="chalk">MIN_N_BACKTEST    = 30 sign-present days
-MIN_N_LIVE        = 10 sign-present looks
-RAIN_THRESHOLD_MM = total rain in the window
-WINDOW            = next full hour + window_hours</div>
+      <article class="px-card px-card--coral">
+        <div class="px-card__in">
+          <div class="px-card__text">
+            <span class="px-card__num">03</span>
+            <p class="px-card__tag">Plain Python</p>
+            <h3 class="px-card__h">Code decides.</h3>
+            <p class="px-card__p">A small model shouldn&rsquo;t judge what can be tested. Deterministic code decides, and a &ldquo;rough&rdquo; fit needs your explicit OK.</p>
+          </div>
+          <div class="px-card__viz">
+            <div class="px-win"><div class="px-win__bar"><i></i><i></i><i></i><span>backtestable.py</span></div>
+<pre class="px-win__code">backtestable =
+    sign.kind == <b>&quot;atmospheric&quot;</b>
+    and proxy.variable in <b>WHITELIST</b>
+    and proxy.fit != <b>&quot;none&quot;</b></pre></div>
+          </div>
+        </div>
       </article>
 
-      <article class="note note--g note--tilt-l reveal">
-        <span class="note__tag">House rules</span>
-        <h2 class="note__title">Honest by design</h2>
-        <p>Backtest and field results are shown separately and never pooled. One place and a short history is a hint, not proof. No streaks, badges or leaderboards, because the reward is the open question.</p>
-        <span class="stamp">Same as chance is a result</span>
+      <article class="px-card px-card--blush">
+        <div class="px-card__in">
+          <div class="px-card__text">
+            <span class="px-card__num">04</span>
+            <p class="px-card__tag">Two ways to test</p>
+            <h3 class="px-card__h">Test it.</h3>
+            <div class="px-two">
+              <div><h4>Lab Test</h4><p>The sign shows up in weather data. We score it against about 10 years of Open-Meteo history for your spot.</p></div>
+              <div><h4>Field Test</h4><p>No instrument records swifts or cows, so you are the instrument. Look, tap Seen or Not seen, put your phone away.</p></div>
+            </div>
+          </div>
+          <div class="px-card__viz">
+            <p class="px-note">No scheduler, no queue. Whenever the app next opens, one function fills in what the sky actually did.</p>
+            <div class="px-win"><div class="px-win__bar"><i></i><i></i><i></i><span>resolvePending()</span></div>
+<pre class="px-win__code">find looks that are due
+claim the row  <b>(no double-resolve)</b>
+fetch hourly rain for the window
+<u>missing hour?</u> retry, up to 5 times
+save outcome, update scorecard</pre></div>
+          </div>
+        </div>
       </article>
+
+      <article class="px-card px-card--deep">
+        <div class="px-card__in">
+          <div class="px-card__text">
+            <span class="px-card__num">05</span>
+            <p class="px-card__tag">The scorecard</p>
+            <h3 class="px-card__h">Never a verdict the data can&rsquo;t back.</h3>
+            <p class="px-card__p">Every card shows the bar to beat (how often it rains anyway) next to the hit rate and sample size. Too few looks? You get blank tally dots, not a percentage.</p>
+          </div>
+          <div class="px-card__viz">
+            <div class="px-score">
+              <p class="px-score__cap">3 of 10 looks logged</p>
+              <div class="px-score__dots" aria-label="3 of 10 looks logged"><span class="on"></span><span class="on"></span><span class="on"></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+              <ul class="px-score__v">
+                <li><b>On the trail</b>Still collecting looks</li>
+                <li><b>Promising</b>Beats chance</li>
+                <li><b>Same as chance</b>A real finding</li>
+                <li><b>Backfires</b>Worse than chance</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </article>
+      
+
+
     </div>
-  </section>
 
 
-  <!-- ===================== LORE LAB · FIELD REPORT ===================== -->
-  <section class="lore lore-fieldreport" id="field-reports" aria-labelledby="lore-fr-title">
-    <div class="lore-wrap">
-      <header class="lore-head lore-in">
-        <span class="lore-pill">Field notebook <i>&bull;</i> Looks, then outcomes</span>
-        <h2 class="lore-title" id="lore-fr-title">TONIGHT, YOU&rsquo;RE THE INSTRUMENT.</h2>
-        <p class="lore-lede">No satellite records a swift, a cow or the look of the moon. Look up, tap what you saw, and put the phone away. The sky gets checked after the window closes.</p>
-      </header>
-
-      <div class="lore-fr-grid">
-        <div class="lore-in">
-          <div class="lore-obs" id="lore-obs"></div>
-          <ul class="lore-states" aria-label="How a look travels">
-            <li data-s="logged"><strong>Logged</strong>Your look was saved.</li>
-            <li data-s="pending"><strong>Pending</strong>The window hasn&rsquo;t been checked yet.</li>
-            <li data-s="resolved"><strong>Resolved</strong>We know what the sky did.</li>
-            <li data-s="failed"><strong>Couldn&rsquo;t resolve</strong>Weather data wasn&rsquo;t available.</li>
-          </ul>
-          <ul class="lore-obslist" id="lore-obslist" aria-label="Your looks"></ul>
-        </div>
-        <div class="lore-in" id="lore-cards"></div>
+    <div class="px__faq">
+      <div class="px-sec-h"><p class="px-sec-tag">Fair questions</p><h3>Read this before you trust a result.</h3></div>
+      <div class="px-faq" id="px-faq">
+        <div class="px-q"><button type="button" aria-expanded="false"><span>Does Gemma decide if my saying is true?</span><i></i></button><div class="px-q__a"><p>No. Gemma translates the saying and sorts the sign into a closed vocabulary. It never judges whether the saying is true and never invents a threshold. Anything vague goes into an ambiguities list, and you set the number.</p></div></div>
+        <div class="px-q"><button type="button" aria-expanded="false"><span>What if nothing in the weather data matches?</span><i></i></button><div class="px-q__a"><p>Then it&rsquo;s a Field Test. Swifts, cows, crickets and the look of the moon aren&rsquo;t recorded by any instrument, so you are the instrument. A &ldquo;rough&rdquo; fit is labelled Rough match and needs your explicit OK before it runs as a Lab Test.</p></div></div>
+        <div class="px-q"><button type="button" aria-expanded="false"><span>What is the &ldquo;bar to beat&rdquo;?</span><i></i></button><div class="px-q__a"><p>How often it rains anyway. Every card shows it next to the hit rate, so a saying only looks good if it does better than the sky does on its own.</p></div></div>
+        <div class="px-q"><button type="button" aria-expanded="false"><span>Why am I seeing dots instead of a percentage?</span><i></i></button><div class="px-q__a"><p>Because the sample is under the minimum: 30 sign-present days for a backtest, 10 sign-present looks for a field test. Below that, the app withholds the percentage and the verdict rather than print one the data can&rsquo;t back.</p></div></div>
+        <div class="px-q"><button type="button" aria-expanded="false"><span>Is &ldquo;Same as chance&rdquo; a failure?</span><i></i></button><div class="px-q__a"><p>No, it&rsquo;s a real finding. If the saying did no better than the bar to beat, Lore Lab says so plainly. The four verdicts are On the trail, Promising, Same as chance and Backfires.</p></div></div>
+        <div class="px-q"><button type="button" aria-expanded="false"><span>Are backtest and field results ever combined?</span><i></i></button><div class="px-q__a"><p>Never. They are shown separately. And one place with a short history is a hint, not proof; the app says so every time.</p></div></div>
       </div>
-
-      <div class="lore-keyrow lore-in" id="lore-key" aria-label="The four verdicts"></div>
-      <p class="lore-sev lore-in">Field Tests and Lab Tests are scored separately and never pooled. One place and a short history is a hint, not proof.</p>
     </div>
   </section>
 
-  <section class="page end" id="join">
-    <img class="end__sticker" src="assets/apple.png" alt="">
-    <img class="end__girl" src="assets/girl.png" alt="">
-
-    <span class="pill reveal">Open weights <i class="hero__dot">&bull;</i> Zero cloud tracking <i class="hero__dot">&bull;</i> Free</span>
-    <h2 class="end__big reveal">PUT YOUR<br>PHONE AWAY.</h2>
-    <p class="lede reveal">Your grandmother said it. Lore Lab goes outside with you to find out if she was right. Leave your email and we'll tell you when the lab opens, then you go look at the sky.</p>
-
-    <form class="signup reveal" id="signup-end" novalidate>
-      <label class="signup__label" for="signup-email-end">Email for updates</label>
-      <input class="signup__input" id="signup-email-end" type="email" name="email" placeholder="Enter your email to get updates" autocomplete="email" required>
-      <button class="signup__btn" type="submit">Get Updates</button>
-      <p class="signup__msg" id="signup-msg-end" role="status" aria-live="polite"></p>
-    </form>
-
-    <div class="pledge">
-      <div class="note note--sage reveal"><p>No accounts, no streaks, no badges. The reward is the open question.</p></div>
-      <div class="note note--blush reveal"><p>Your family's sayings stay on your own machine.</p></div>
-      <div class="note reveal"><p>One place and a short history is a hint, not proof. We say so every time.</p></div>
+  <!-- ===================== STATEMENT (plain sage page) ===================== -->
+  <section class="lore lore-say" id="statement" aria-labelledby="lore-say-title">
+    <div class="lore-wrap">
+      <h2 class="lore-say__big lore-split" id="lore-say-title">WE DON&rsquo;T FLATTER ANCIENT<br class="lore-say__br"> LORE. WE <mark>TEST IT.</mark></h2>
     </div>
+  </section>
 
-    <footer class="footer">
+  <!-- ===================== CLOSING (green grid + paper-cut grass) ===================== -->
+  <section class="lore lore-close" id="join" aria-labelledby="lore-close-title">
+    <div class="lore-wrap lore-close__in">
+      <span class="lore-pill lore-in">Open weights <i>&bull;</i> No cloud tracking <i>&bull;</i> Free</span>
+      <h2 class="lore-close__big lore-split" id="lore-close-title">PUT YOUR<br>PHONE AWAY.</h2>
+      <p class="lore-lede lore-in">Your grandmother said it. Lore Lab goes outside with you to find out if she was right. Leave your email and we&rsquo;ll tell you when the lab opens, then you go look at the sky.</p>
+      <form class="signup lore-in" id="signup-end" novalidate>
+        <label class="signup__label" for="signup-email-end">Email for updates</label>
+        <input class="signup__input" id="signup-email-end" type="email" name="email" placeholder="Enter your email to get updates" autocomplete="email" required>
+        <button class="signup__btn" type="submit">Get Updates</button>
+        <p class="signup__msg" id="signup-msg-end" role="status" aria-live="polite"></p>
+      </form>
+      <a class="lore-btn lore-btn--ghost lore-close__alt lore-in" href="#engine">Or test a saying first &uarr;</a>
+    </div>
+    <svg class="lore-grass" id="lore-grass" viewBox="0 0 1200 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"></svg>
+    <footer class="lore-foot">
       <div>
-        <div class="footer__brand">Lore Lab<i>.</i></div>
-        <small>Built for the Hacktoberfest Open-Source AI Challenge, Week 1: Touch Grass. Powered by open-weight Gemma.</small>
+        <div class="lore-foot__brand">Lore Lab<i>.</i></div>
+        <small>Built for the &ldquo;Touch Grass&rdquo; Hackathon &bull; Powered by Open-Weight Edge AI</small>
       </div>
-      <nav>
-        <a href="index.html#way">Stance</a>
-        <a href="architecture.html">Engine</a>
-        <a href="architecture.html#architecture">Architecture</a>
-        <a href="architecture.html#field-reports">Field Reports</a>
-        <a href="ending.html">Post &#8599;</a>
+      <nav aria-label="Footer">
+        <a href="#way">Stance</a>
+        <a href="#engine">Engine</a>
+        <a href="#architecture">Architecture</a>
+        <a href="#protocol">Protocol</a>
+        <a href="#statement">Manifesto</a>
+        <a href="#join">Touch grass &#8599;</a>
       </nav>
     </footer>
   </section>
 
+  <script>
+  // Loading screen: waits for page + fonts, keeps granny on screen for MIN_SHOW ms, then lifts away.
+  (function () {
+    var root = document.documentElement, el = document.getElementById("loader");
+    if (root.classList.contains("ld-skip")) { if (el) el.remove(); root.classList.remove("is-loading"); return; }
+    if (!el) { root.classList.remove("is-loading"); return; }
+    var msg = document.getElementById("loader-msg"), fill = document.getElementById("loader-fill");
+    var lines = ["Sweeping the clouds away\u2026", "Checking the swifts\u2026", "Reading the sky\u2026", "Putting the phone away\u2026"];
+    var n = 0, t0 = Date.now(), done = false;
+    var cycle = setInterval(function () { n = (n + 1) % lines.length; msg.textContent = lines[n]; }, 900);
+    function finish() {
+      if (done) return; done = true; clearInterval(cycle);
+      try { localStorage.setItem("loreLoaderSeen", "1"); } catch (e) {}
+      var w = getComputedStyle(fill).width; fill.style.animation = "ld-crawl 1s linear infinite"; fill.style.width = w; void fill.offsetWidth; fill.style.width = "100%";
+      msg.textContent = "Sky\u2019s clear. Go touch grass.";
+      el.classList.add("is-clear");                       // clouds part, shards sweep out
+      setTimeout(function () {
+        el.classList.add("is-done"); el.setAttribute("aria-busy", "false");
+        root.classList.remove("is-loading");
+        setTimeout(function () { el.remove(); }, 800);
+      }, 900);
+    }
+    // Timing: the loader clears only after (a) the page has loaded, (b) web fonts are ready (capped),
+    // and (c) granny has been fully on screen for MIN_SHOW ms, counted from when she appeared.
+    var MIN_SHOW = 2400, loaded = false, fontsOk = false, queued = false, polling = false;
+    var walk = document.querySelector(".ld-walk");
+    var reduceM = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+    // granny counts as "on screen" once her fade-in has actually finished (not merely once her files arrived)
+    if (walk) walk.addEventListener("transitionend", function (e) { if (e.propertyName === "opacity" && !window.ldShownAt) window.ldShownAt = Date.now(); });
+    function shownAt() {
+      if (window.ldShownAt) return window.ldShownAt;
+      var r = window.ldReadyAt;                            // fallback if no transition event ever fires
+      return (r && (reduceM || Date.now() - r > 1500)) ? r : 0;
+    }
+    function check() {
+      if (done || queued || !loaded || !fontsOk) return;
+      var r = shownAt();
+      if (!r) { if (!polling) { polling = true; setTimeout(function () { polling = false; check(); }, 100); } return; }
+      queued = true;
+      setTimeout(finish, Math.max(0, MIN_SHOW - (Date.now() - r)));
+    }
+    function onLoad() { loaded = true; check(); }
+    if (document.readyState === "complete") onLoad(); else window.addEventListener("load", onLoad);
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(function () { fontsOk = true; check(); }, function () { fontsOk = true; check(); });
+      setTimeout(function () { fontsOk = true; check(); }, 2500);   // slow fonts must not hold the page hostage
+    } else { fontsOk = true; }
+    setTimeout(finish, 9000); // failsafe: never trap the visitor
+  })();
+  </script>
   <script src="script.js"></script>
   <script src="lore.js"></script>
+  <script src="sections.js"></script>
 </body>
 </html>
