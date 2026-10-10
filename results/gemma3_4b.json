@@ -1,0 +1,252 @@
+{
+  "model": "gemma3:4b",
+  "prompt_version": "v2.1",
+  "cases": 21,
+  "json_valid": 21,
+  "sign_kind_correct": 17,
+  "sign_kind_total": 18,
+  "backtestable_correct": 19,
+  "backtestable_total": 20,
+  "rows": [
+    {
+      "text": "When the glass falls low, prepare for a blow.",
+      "expected_kind": "atmospheric",
+      "expected_backtestable": true,
+      "kind": "atmospheric",
+      "backtestable": true,
+      "fit": "good",
+      "language": "English",
+      "ambiguities": []
+    },
+    {
+      "text": "Wind from the west, weather at its best; wind from the east, bad for man and beast.",
+      "expected_kind": "atmospheric",
+      "expected_backtestable": true,
+      "kind": "atmospheric",
+      "backtestable": true,
+      "fit": "rough",
+      "language": "English",
+      "ambiguities": [
+        "What constitutes 'best' or 'bad' weather? What is the timescale of the change?"
+      ]
+    },
+    {
+      "text": "When the wind turns south, rain is in its mouth.",
+      "expected_kind": "atmospheric",
+      "expected_backtestable": true,
+      "kind": "atmospheric",
+      "backtestable": true,
+      "fit": "rough",
+      "language": "English",
+      "ambiguities": []
+    },
+    {
+      "text": "A rapid drop in the barometer brings a gale.",
+      "expected_kind": "atmospheric",
+      "expected_backtestable": true,
+      "kind": "atmospheric",
+      "backtestable": true,
+      "fit": "good",
+      "language": "English",
+      "ambiguities": [
+        "How rapid a drop counts as rapid?"
+      ]
+    },
+    {
+      "text": "Red sky at night, sailor's delight; red sky in morning, sailor's warning.",
+      "expected_kind": "celestial",
+      "expected_backtestable": false,
+      "kind": "atmospheric",
+      "backtestable": true,
+      "fit": "good",
+      "language": "English",
+      "ambiguities": []
+    },
+    {
+      "text": "Ring around the moon, rain is coming soon.",
+      "expected_kind": "celestial",
+      "expected_backtestable": false,
+      "kind": "celestial",
+      "backtestable": false,
+      "fit": "rough",
+      "language": "English",
+      "ambiguities": []
+    },
+    {
+      "text": "Abendrot, Gutwetterbot'; Morgenrot bringt Wolkennot.",
+      "expected_kind": "celestial",
+      "expected_backtestable": false,
+      "kind": "celestial",
+      "backtestable": false,
+      "fit": "rough",
+      "language": "German",
+      "ambiguities": [
+        "How significant a change in cloud cover is required to be considered 'trouble'?"
+      ]
+    },
+    {
+      "text": "Halo around the sun means rain before the day is done.",
+      "expected_kind": "celestial",
+      "expected_backtestable": false,
+      "kind": "celestial",
+      "backtestable": false,
+      "fit": "rough",
+      "language": "English",
+      "ambiguities": [
+        "Halo size and clarity are subjective and may not correlate with rain intensity or probability"
+      ]
+    },
+    {
+      "text": "When cows lie down in the pasture, expect rain.",
+      "expected_kind": "animal",
+      "expected_backtestable": false,
+      "kind": "animal",
+      "backtestable": false,
+      "fit": "none",
+      "language": "English",
+      "ambiguities": [
+        "Whether a single cow counts or most of the herd must be lying down"
+      ]
+    },
+    {
+      "text": "Swifts flying low means rain.",
+      "expected_kind": "animal",
+      "expected_backtestable": false,
+      "kind": "animal",
+      "backtestable": false,
+      "fit": "none",
+      "language": "English",
+      "ambiguities": []
+    },
+    {
+      "text": "Count cricket chirps to tell how warm it is tonight.",
+      "expected_kind": "animal",
+      "expected_backtestable": false,
+      "kind": "animal",
+      "backtestable": false,
+      "fit": "none",
+      "language": "English",
+      "ambiguities": [
+        "How many chirps per minute counts as warm?"
+      ]
+    },
+    {
+      "text": "When frogs croak loudly by the pond, rain is near.",
+      "expected_kind": "animal",
+      "expected_backtestable": false,
+      "kind": "animal",
+      "backtestable": false,
+      "fit": "none",
+      "language": "English",
+      "ambiguities": [
+        "How loud does 'loudly' need to be?"
+      ]
+    },
+    {
+      "text": "चींटियां अंडे लेकर चलें तो वर्षा निश्चित है।",
+      "expected_kind": "animal",
+      "expected_backtestable": false,
+      "kind": "animal",
+      "backtestable": false,
+      "fit": "none",
+      "language": "Hindi",
+      "ambiguities": [
+        "How many ants carrying eggs must be observed?"
+      ]
+    },
+    {
+      "text": "Si les fourmis font de hauts dômes, l'hiver sera rude.",
+      "expected_kind": "animal",
+      "expected_backtestable": false,
+      "kind": "animal",
+      "backtestable": false,
+      "fit": "none",
+      "language": "french",
+      "ambiguities": [
+        "What constitutes a 'high mound'?"
+      ]
+    },
+    {
+      "text": "When pine cones close up tight, rain is in sight.",
+      "expected_kind": "plant",
+      "expected_backtestable": false,
+      "kind": "plant",
+      "backtestable": false,
+      "fit": "rough",
+      "language": "English",
+      "ambiguities": [
+        "How closed counts as tight?"
+      ]
+    },
+    {
+      "text": "Dandelions folding their blossoms during the day means rain.",
+      "expected_kind": "plant",
+      "expected_backtestable": false,
+      "kind": "plant",
+      "backtestable": false,
+      "fit": "none",
+      "language": "English",
+      "ambiguities": [
+        "How much folding counts as 'folding their blossoms'?"
+      ]
+    },
+    {
+      "text": "When leaves show their undersides, rain is coming.",
+      "expected_kind": "plant",
+      "expected_backtestable": false,
+      "kind": "plant",
+      "backtestable": false,
+      "fit": "rough",
+      "language": "English",
+      "ambiguities": [
+        "How much of the leaf showing its underside counts as 'showing its underside'?"
+      ]
+    },
+    {
+      "text": "My aching knee says rain is on the way.",
+      "expected_kind": "body",
+      "expected_backtestable": false,
+      "kind": "body",
+      "backtestable": false,
+      "fit": "none",
+      "language": "English",
+      "ambiguities": []
+    },
+    {
+      "text": "When the salt shaker cakes, rain is on the way.",
+      "expected_kind": null,
+      "expected_backtestable": false,
+      "kind": "other",
+      "backtestable": false,
+      "fit": "none",
+      "language": "English",
+      "ambiguities": [
+        "What constitutes 'caking'?"
+      ]
+    },
+    {
+      "text": "When the ditch smells pungent, rain will fall.",
+      "expected_kind": null,
+      "expected_backtestable": false,
+      "kind": "other",
+      "backtestable": false,
+      "fit": "none",
+      "language": "English",
+      "ambiguities": [
+        "What constitutes a 'pungent' smell?"
+      ]
+    },
+    {
+      "text": "Dew on the grass, no rain will come to pass.",
+      "expected_kind": null,
+      "expected_backtestable": null,
+      "kind": "atmospheric",
+      "backtestable": true,
+      "fit": "rough",
+      "language": "English",
+      "ambiguities": [
+        "What constitutes 'dew on the grass'? Does it need to be widespread, or just a small amount?"
+      ]
+    }
+  ]
+}
