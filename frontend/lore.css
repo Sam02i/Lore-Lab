@@ -455,3 +455,36 @@ section.lore.lore-close{padding-bottom:0}
   .lore-tab:not(.is-active){font-size:0;gap:0}
   .lore-tab:not(.is-active) b{font-size:14px}
 }
+
+/* =========================================================
+   Engine: simpler + roomier (only touches #engine)
+   ========================================================= */
+/* one column everywhere inside the engine: phone card first, notebook page under it */
+.lore-engine .lore-fr-inline{display:block}
+.lore-engine .lore-fr-inline .lore-obs{max-width:30em;margin:0 auto 2em}
+.lore-engine .lore-fr-inline .lore-card{margin:0}
+.lore-engine .lore-obs .lore-q{font-size:1.45em}
+/* the four-box legend and the repeated "Gemma proposes" note were noise */
+.lore-engine .lore-states,.lore-engine .lore-decides{display:none}
+/* developer status stays hidden while the backend is connected */
+.lore-engine .lore-side section:has(.lore-conn.is-ok){display:none}
+/* language is auto-detected, so the box is gone; source gets the full row */
+.lore-engine #lore-form .lore-row{grid-template-columns:1fr}
+.lore-engine #lore-form .lore-row>div:nth-child(2){display:none}
+/* slimmer side note, bigger working area */
+.lore-engine .lore-sheet{grid-template-columns:minmax(0,1fr) 14em}
+.lore-engine .lore-main{padding:2em 2.4em 2.2em}
+.lore-engine .lore-card{padding-right:1.4em}
+.lore-engine .lore-obslist li{font-size:1em}
+@media(max-width:980px){
+  .lore-engine .lore-sheet{grid-template-columns:1fr}
+  .lore-engine .lore-main{padding:1.4em 1.1em}
+}
+
+/* guided number box + plain mode line */
+.lore-thr{display:flex;align-items:center;gap:.7em}
+.lore-thr .lore-field{flex:1}
+.lore-thr__unit{min-width:3em;font-size:1.15em}
+.lore-fieldset .lore-help{font-size:.88em;opacity:.9;margin-top:.55em}
+.lore-fieldset .lore-chips{margin-top:.7em}
+.lore-modeline{margin:0 0 1em;padding:.6em .9em;font-family:"Delius","Comic Sans MS","Chalkboard SE","Comic Neue",cursive;font-size:.95em;background:var(--sage-l);border:.1em solid var(--ink);border-radius:.5em}

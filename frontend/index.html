@@ -158,14 +158,14 @@
       <header class="lore-head lore-in">
         <span class="lore-pill">Gemma proposes <i>&bull;</i> Code decides</span>
         <h2 class="lore-title" id="lore-engine-title">LET&rsquo;S PUT AN OLD SAYING TO THE TEST.</h2>
-        <p class="lore-lede">A proverb becomes a hypothesis. The hypothesis meets weather evidence, or you step outside and look. Then we hold the result up against what ordinary chance would have done anyway.</p>
+        <p class="lore-lede">Type a saying. We turn it into a small test, then check it against past weather or send you outside to look.</p>
       </header>
 
       <div class="lore-desk lore-in" id="lore-desk">
         <div class="lore-tabs" role="tablist" aria-label="Experiment steps">
           <button class="lore-tab is-active" role="tab" id="lore-tab-1" aria-controls="lore-p1" aria-selected="true" data-go="1"><b>1</b>Saying</button>
-          <button class="lore-tab" role="tab" id="lore-tab-2" aria-controls="lore-p2" aria-selected="false" data-go="2" disabled><b>2</b>Hypothesis</button>
-          <button class="lore-tab" role="tab" id="lore-tab-3" aria-controls="lore-p3" aria-selected="false" data-go="3" disabled><b>3</b>Test</button>
+          <button class="lore-tab" role="tab" id="lore-tab-2" aria-controls="lore-p2" aria-selected="false" data-go="2" disabled><b>2</b>Check</button>
+          <button class="lore-tab" role="tab" id="lore-tab-3" aria-controls="lore-p3" aria-selected="false" data-go="3" disabled><b>3</b>Place</button>
           <button class="lore-tab" role="tab" id="lore-tab-4" aria-controls="lore-p4" aria-selected="false" data-go="4" disabled><b>4</b>Result</button>
         </div>
         <div class="lore-sheet">
@@ -211,7 +211,7 @@
             </section>
             <section>
               <h4>Who decides what</h4>
-              <p>Gemma <b>proposes</b> a hypothesis. Plain code <b>decides</b> whether it can be backtested. You settle every number and every vague word.</p>
+              <p>Gemma reads the saying. Plain code picks how to test it. <b>You</b> choose every number.</p>
             </section>
             <section id="lore-side-mode" hidden>
               <h4>This experiment</h4>
@@ -519,7 +519,12 @@ save outcome, update scorecard</pre></div>
     endpoints: {
       extractHypothesis: { method: "POST", path: "/api/extract" },
       confirmHypothesis: { method: "POST", path: "/api/hypotheses/:id/confirm" },
-      runBacktest:       { method: "POST", path: "/api/hypotheses/:id/backtest" }
+      runBacktest:       { method: "POST", path: "/api/hypotheses/:id/backtest" },
+      startFieldTest:    { method: "POST", path: "/api/hypotheses/:id/field-test" },
+      submitObservation: { method: "POST", path: "/api/experiments/:id/observations" },
+      listObservations:  { method: "GET",  path: "/api/observations" },
+      scorecards:        { method: "GET",  path: "/api/scorecards" },
+      resolvePending:    { method: "POST", path: "/api/resolve-pending" }
     }
   };
   </script>

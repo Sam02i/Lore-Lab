@@ -72,7 +72,7 @@
       translation: h.translation_en ?? h.translation ?? null,
       sign: { kind: sign.kind ?? null, text: sign.observable ?? sign.description ?? "", how: sign.how_to_observe ?? "", when: sign.when_observable ?? sign.when ?? "" },
       prediction: { outcome: pred.outcome ?? h.outcome ?? "", windowHours: num(pred.window_hours ?? h.window_hours) },
-      proxy: proxy ? { variable: proxy.variable ?? null, fit: proxy.fit ?? null, rationale: proxy.rationale ?? null, unit: proxy.unit ?? "" } : null,
+      proxy: proxy ? { variable: proxy.variable ?? null, feature: proxy.feature ?? null, fit: proxy.fit ?? null, rationale: proxy.rationale ?? null, unit: proxy.unit ?? "" } : null,
       ambiguities: (h.ambiguities || []).map((a) => (typeof a === "string" ? { text: a, options: null } : { text: a.question ?? a.text ?? "", options: a.options || null })),
       thresholdSuggestion: h.threshold_suggestion ?? null,
       backtestable: bt, testMode: mode,
@@ -279,8 +279,43 @@
     } catch (_) { /* corpus is optional */ }
   })();
 
+  /* Plain-language guide for the number the user has to choose */
+  const VAR_NAME = { pressure_msl: "air pressure", cloud_cover_high: "high cloud", relative_humidity_2m: "humidity", wind_direction_10m: "wind direction" };
+  const friendlyVar = (v) => VAR_NAME[v] || (v ? String(v).replace(/_/g, " ") : "");
+  function thresholdGuide(p) {
+    const v = p?.variable, f = p?.feature;
+    if (v === "pressure_msl" && f === "level")
+      return { q: "How low must the air pressure be?", unit: "hPa", ph: "e.g. 1000", chips: [],
+        help: "A barometer (“the glass”) measures air pressure. A normal day is around 1013 hPa. Type the pressure it must be at or below for the sign to count." };
+    if (v === "pressure_msl")
+      return { q: "How big a pressure drop counts as a “falling glass”?", unit: "hPa", ph: "e.g. 2", chips: [["Small", 1], ["Medium", 2], ["Sharp", 3]],
+        help: "A barometer (“the glass”) measures air pressure. Type how many hPa it must fall in a few hours. Use a plain positive number: 1 is a small drop, 3 or more is a sharp one." };
+    if (v === "cloud_cover_high")
+      return { q: "How much of the sky must be covered by high cloud?", unit: "%", ph: "e.g. 50", chips: [["A little", 30], ["Half the sky", 50], ["Most of it", 80]],
+        help: "High cloud is the thin, wispy kind far above you. 0% is a clear sky and 100% means it covers all of it. Type the percentage it must reach." };
+    if (v === "relative_humidity_2m")
+      return { q: "How humid must the air be?", unit: "%", ph: "e.g. 80", chips: [["Muggy", 70], ["Very muggy", 80], ["Soaked", 90]],
+        help: "100% means the air is holding all the water it can. Around 60% feels normal and above 80% feels muggy. Type the percentage it must reach." };
+    if (v === "wind_direction_10m")
+      return { q: "Which way must the wind blow from?", unit: "degrees", ph: "e.g. 270", chips: [["North", 0], ["East", 90], ["South", 180], ["West", 270]],
+        help: "Compass bearings: north is 0, east is 90, south is 180, west is 270. The sign counts when the wind comes from within 45 degrees of your number." };
+    return { q: `How high must ${friendlyVar(v) || "the value"} be?`, unit: p?.unit || "", ph: "Type a number", chips: [],
+      help: "Type the number at which you would say “the sign is there”." };
+  }
+  function thresholdHTML(h) {
+    const g = thresholdGuide(h.proxy);
+    return `<fieldset class="lore-fieldset"><legend>Your number</legend>
+      <label for="lh-th">${esc(g.q)}</label>
+      <div class="lore-thr"><input class="lore-field" id="lh-th" type="number" step="any" inputmode="decimal" required placeholder="${esc(g.ph)}"><span class="lore-thr__unit">${esc(g.unit)}</span></div>
+      <input type="hidden" id="lh-unit" value="${esc(g.unit)}">
+      <p class="lore-help">${esc(g.help)}</p>
+      ${g.chips.length ? `<div class="lore-chips" aria-label="Quick picks">${g.chips.map(([t, n]) => `<button type="button" class="lore-chip" data-fill="${n}">${esc(t)} (${n})</button>`).join("")}</div>` : ""}
+      <p class="lore-help"><b>You</b> choose this number. Pick it now, before you see any result, so the test stays fair.</p></fieldset>`;
+  }
+
   /* Step 2: review + edit */
   on(panes[1], "input", () => eng.valid && eng.valid()); on(panes[1], "change", () => eng.valid && eng.valid());
+  on(panes[1], "click", (e) => { const c = e.target.closest("[data-fill]"); if (!c) return; const t = $("#lh-th", panes[1]); if (!t) return; t.value = c.dataset.fill; t.dispatchEvent(new Event("input", { bubbles: true })); t.focus(); });
   function renderHyp(h) {
     const fit = h.proxy?.fit, rough = fit === "rough", hasProxy = !!h.proxy?.variable && fit && fit !== "none";
     const lab = h.testMode === "lab" || h.backtestable === true;
@@ -295,26 +330,23 @@
       : `<input class="lore-field" data-amb="${i}" type="text" aria-label="Settle: ${esc(a.text)}" placeholder="Say what you mean">`}</div>`).join("");
     panes[1].innerHTML = `
       <h3>Does this say what you meant?</h3>
-      <p class="lore-intro">Gemma proposed this. Nothing is tested until you confirm it, and you can edit anything.</p>
+      <p class="lore-intro">Check that this matches what they meant. Fix anything that is off. Nothing is tested until you say it looks right.</p>
       <blockquote class="lore-orig">${esc(h.original)}<small>${h.translation ? `In English: ${esc(h.translation)}` : ""}${h.source ? ` · Said by ${esc(h.source)}` : ""}</small></blockquote>
-      ${chips ? `<ul class="lore-meta">${chips}</ul>` : ""}
+      ${h.testMode ? `<p class="lore-modeline">${h.testMode === "lab" ? "We can check this one against ten years of past weather." : "Weather instruments can’t see this sign, so you’ll check it by going outside and looking."}</p>` : ""}
       <div class="lore-grid2">
         <div><label for="lh-sign">The sign to look for</label><textarea class="lore-field" id="lh-sign" rows="3">${esc(h.sign.text)}</textarea></div>
-        <div><label for="lh-how">How to observe it</label><textarea class="lore-field" id="lh-how" rows="3">${esc(h.sign.how)}</textarea></div>
-        <div><label for="lh-outcome">Predicted weather</label><input class="lore-field" id="lh-outcome" type="text" value="${esc(h.prediction.outcome)}"></div>
-        <div><label for="lh-window">Time window (hours)</label><input class="lore-field" id="lh-window" type="number" min="1" step="1" inputmode="numeric" value="${h.prediction.windowHours ?? ""}"></div>
+        <div><label for="lh-how">How to check it</label><textarea class="lore-field" id="lh-how" rows="3">${esc(h.sign.how)}</textarea></div>
+        <div><label for="lh-outcome">What the saying says will happen</label><input class="lore-field" id="lh-outcome" type="text" value="${esc(h.prediction.outcome)}"></div>
+        <div><label for="lh-window">How many hours later do we check?</label><input class="lore-field" id="lh-window" type="number" min="1" step="1" inputmode="numeric" value="${h.prediction.windowHours ?? ""}"></div>
       </div>
-      ${lab ? `<fieldset class="lore-fieldset"><legend>Your threshold</legend>
-        <div class="lore-grid2"><div><label for="lh-th">${esc(h.proxy?.variable || "Value")} counts as “the sign” when it reaches</label><input class="lore-field" id="lh-th" type="number" step="any" inputmode="decimal" required placeholder="A number you choose"></div>
-        <div><label for="lh-unit">Unit</label><input class="lore-field" id="lh-unit" type="text" value="${esc(h.proxy?.unit || "")}" placeholder="e.g. hPa"></div></div>
-        <p class="lore-help">The model never picks this number. You do.</p></fieldset>` : ""}
-      ${rough ? `<fieldset class="lore-fieldset lore-fieldset--warn"><legend>Rough match</legend>
-        <label class="lore-check"><input type="checkbox" id="lh-rough"><span>I understand weather data only roughly approximates this sign, and I’m happy to test it that way.</span></label></fieldset>` : ""}
-      ${h.ambiguities.length ? `<fieldset class="lore-fieldset"><legend>Needs your call</legend>${amb}</fieldset>` : ""}
+      ${lab ? thresholdHTML(h) : ""}
+      ${rough ? `<fieldset class="lore-fieldset lore-fieldset--warn"><legend>Only a rough match</legend>
+        <label class="lore-check"><input type="checkbox" id="lh-rough"><span>Weather data can only roughly measure this sign (a halo around the moon, for example, shows up as thin high cloud). Tick this if you are happy to test it that way.</span></label></fieldset>` : ""}
+      ${h.ambiguities.length ? `<fieldset class="lore-fieldset"><legend>Say what you mean</legend><p class="lore-help">Gemma wasn’t sure what these words mean. Answer in your own words so the test is fair.</p>${amb}</fieldset>` : ""}
       ${h.proxy?.rationale ? `<details class="lore-why"><summary>Why this weather variable?</summary><p>${esc(h.proxy.rationale)}</p></details>` : ""}
       <p class="lore-decides"><b>Gemma proposes. Code decides.</b> Whether this can be backtested is computed by plain code from a whitelist, not guessed by the model.</p>
-      <div class="lore-actions"><button class="lore-btn lore-btn--coral" id="lh-confirm" type="button" disabled>Confirm this hypothesis</button>
-        <button class="lore-btn lore-btn--ghost" type="button" data-go="1">Rewrite the saying</button></div>`;
+      <div class="lore-actions"><button class="lore-btn lore-btn--coral" id="lh-confirm" type="button" disabled>Looks right, continue</button>
+        <button class="lore-btn lore-btn--ghost" type="button" data-go="1">Change the saying</button></div>`;
     const confirm = $("#lh-confirm", panes[1]);
     const valid = () => {
       const okAmb = $$("[data-amb]", panes[1]).every((x) => x.value.trim());
@@ -350,9 +382,12 @@
   /* Step 3: Lab vs Field */
   const ICON_LAB = '<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M18 6h12M21 6v14L9 40a3 3 0 0 0 3 4h24a3 3 0 0 0 3-4L27 20V6" fill="#fbf6e6" stroke="#10291b" stroke-width="3" stroke-linejoin="round"/><path d="M14 33h20" stroke="#10291b" stroke-width="3"/></svg>';
   const ICON_FIELD = '<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="9" fill="#f4d88a" stroke="#10291b" stroke-width="3"/><path d="M24 4v7M24 37v7M4 24h7M37 24h7M10 10l5 5M33 33l5 5M38 10l-5 5M15 33l-5 5" stroke="#10291b" stroke-width="3" stroke-linecap="round"/></svg>';
+  const CITIES = { "Delhi": [28.6139, 77.2090], "Mumbai": [19.0760, 72.8777], "Pune": [18.5204, 73.8567], "Bengaluru": [12.9716, 77.5946], "Kolkata": [22.5726, 88.3639], "Chennai": [13.0827, 80.2707], "Hyderabad": [17.3850, 78.4867], "London": [51.5074, -0.1278], "New York": [40.7128, -74.0060] };
   function locationBlock() {
-    return `<fieldset class="lore-fieldset"><legend>Where?</legend>
-      <div class="lore-loc"><div><label for="ll-label">Place name</label><input class="lore-field" id="ll-label" type="text" placeholder="e.g. my balcony" autocomplete="off"></div>
+    return `<fieldset class="lore-fieldset"><legend>Where are you?</legend>
+      <label for="ll-city">City</label>
+      <select class="lore-field" id="ll-city"><option value="">Choose your city…</option>${Object.keys(CITIES).map((c) => `<option>${c}</option>`).join("")}<option value="__other">Somewhere else</option></select>
+      <div class="lore-loc" id="ll-custom" hidden><div><label for="ll-label">Place name</label><input class="lore-field" id="ll-label" type="text" placeholder="e.g. my balcony" autocomplete="off"></div>
       <div><label for="ll-lat">Latitude</label><input class="lore-field" id="ll-lat" type="number" step="any" min="-90" max="90" inputmode="decimal"></div>
       <div><label for="ll-lon">Longitude</label><input class="lore-field" id="ll-lon" type="number" step="any" min="-180" max="180" inputmode="decimal"></div></div>
       <div class="lore-actions" style="margin-top:.8em"><button class="lore-btn lore-btn--ghost" type="button" id="ll-geo">Use my current location</button></div>
@@ -360,16 +395,24 @@
   }
   function readLocation() {
     const lat = num($("#ll-lat").value), lon = num($("#ll-lon").value);
-    if (lat === null || lon === null || Math.abs(lat) > 90 || Math.abs(lon) > 180) { showAlert("Enter a valid latitude and longitude, or use your current location.", "info"); return null; }
+    if (lat === null || lon === null || Math.abs(lat) > 90 || Math.abs(lon) > 180) { showAlert("Pick your city first, or use your current location.", "info"); return null; }
     return (S.location = { label: $("#ll-label").value.trim(), lat, lon });
   }
   function wireGeo() {
+    const city = $("#ll-city"), custom = $("#ll-custom");
+    on(city, "change", () => {
+      const v = city.value;
+      if (v === "__other") { custom.hidden = false; return; }
+      custom.hidden = true;
+      if (CITIES[v]) { $("#ll-label").value = v; $("#ll-lat").value = CITIES[v][0]; $("#ll-lon").value = CITIES[v][1]; }
+      else { $("#ll-lat").value = ""; $("#ll-lon").value = ""; }
+    });
     on($("#ll-geo"), "click", () => {
-      if (!navigator.geolocation) return ($("#ll-note").textContent = "This browser can’t share a location. Enter coordinates instead.");
+      if (!navigator.geolocation) return ($("#ll-note").textContent = "This browser can’t share a location. Pick a city instead.");
       $("#ll-note").textContent = "Asking your device…";
       navigator.geolocation.getCurrentPosition(
-        (p) => { $("#ll-lat").value = p.coords.latitude.toFixed(4); $("#ll-lon").value = p.coords.longitude.toFixed(4); $("#ll-note").textContent = "Got it. Weather is looked up for this one spot."; },
-        () => { $("#ll-note").textContent = "Location wasn’t shared. Enter coordinates instead."; }, { timeout: 10000 });
+        (p) => { city.value = "__other"; custom.hidden = false; $("#ll-lat").value = p.coords.latitude.toFixed(4); $("#ll-lon").value = p.coords.longitude.toFixed(4); $("#ll-note").textContent = "Got it. Weather is looked up for this one spot."; },
+        () => { $("#ll-note").textContent = "Location wasn’t shared. Pick a city instead."; }, { timeout: 10000 });
     });
   }
   function renderTest(h, mode) {
@@ -378,7 +421,7 @@
       const rough = h.proxy?.fit === "rough";
       panes[2].innerHTML = `
         <div class="lore-mode lore-mode--lab">${ICON_LAB}<div><span class="lore-tag">Lab Test</span><h3>This one shows up in the weather data.</h3>
-        <p>Approximated by <b>${esc(h.proxy?.variable || "a supported weather variable")}</b> (${rough ? "a rough match" : "a good match"}). We score it against about ten years of Open-Meteo history for your spot: a big sample, modelled reanalysis rather than station readings.</p></div></div>
+        <p>We use <b>${esc(friendlyVar(h.proxy?.variable) || "a weather measurement")}</b> as a stand-in for this sign (${rough ? "a rough match" : "a good match"}) and check it against about ten years of past weather at your spot.</p></div></div>
         ${locationBlock()}
         <div class="lore-actions"><button class="lore-btn lore-btn--coral" id="ll-run" type="button">Run the backtest</button><button class="lore-btn lore-btn--ghost" type="button" data-go="2">Back to the hypothesis</button></div>`;
       wireGeo(); on($('[data-go="2"]', panes[2]), "click", () => go(2));
@@ -566,7 +609,7 @@
   const ST = { logged: "Logged", pending: "Pending", resolved: "Resolved", failed: "Couldn’t resolve" };
 
   function mountField() {
-    panes[3].innerHTML = `<h3>Field test ready.</h3><p class="lore-intro">Go outside, look, tap what you saw, and put the phone away. The sky gets checked after the window closes.</p>
+    panes[3].innerHTML = `<h3>Go outside and look.</h3><p class="lore-intro">Look for a couple of minutes, tap what you saw, then put the phone away. We check the sky for you later.</p>
       <div class="lore-fr-inline"><div><div class="lore-obs" id="lore-obs"></div>
         <ul class="lore-states" aria-label="How a look travels"><li data-s="logged"><strong>Logged</strong>Your look was saved.</li><li data-s="pending"><strong>Pending</strong>The window hasn’t been checked yet.</li><li data-s="resolved"><strong>Resolved</strong>We know what the sky did.</li><li data-s="failed"><strong>Couldn’t resolve</strong>Weather data wasn’t available.</li></ul>
         <ul class="lore-obslist" id="lore-obslist" aria-label="Your looks"></ul></div>
