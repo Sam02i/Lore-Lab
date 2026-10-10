@@ -19,13 +19,13 @@
       { id: "api", name: "Backend API", sub: ["Coordinates every", "request"], x: 215, y: 120, kind: "",
         what: "Coordinates proverb, hypothesis, observation and result operations between the UI and everything behind it.",
         takes: "Requests from the UI.", gives: "Calls to the hypothesis service, weather client and database; results back to the UI." },
-      { id: "hyp", name: "Hypothesis", sub: ["Gemma proposes,", "code validates"], x: 0, y: 250, kind: "code",
+      { id: "hyp", name: "Hypothesis", sub: ["Gemma proposes,", "code validates"], x: 0, y: 250, kind: "model",
         what: "Open-weight Gemma turns a proverb into a structured hypothesis. The response is validated, and plain code (not the model) decides whether it\u2019s backtestable.",
         takes: "A proverb in any language, plus its source.", gives: "Sign kind, observable sign, proxy and fit, ambiguities, and a threshold left empty for you to set." },
       { id: "wea", name: "Weather client", sub: ["Open-Meteo history", "and recent hours"], x: 215, y: 250, kind: "ext",
         what: "Fetches historical and recent weather from Open-Meteo.",
         takes: "A place and a time window.", gives: "Hourly weather data for scoring and for resolving outcomes." },
-      { id: "out", name: "Outcome check", sub: ["Resolves pending looks", "when the app reopens"], x: 430, y: 250, kind: "",
+      { id: "out", name: "Outcome check", sub: ["Resolves pending looks", "when the app reopens"], x: 430, y: 250, kind: "code",
         what: "A lazy, idempotent check: when the app next opens it finds due looks, claims each row so none resolve twice, fetches hourly rain for the window (retrying up to five times) and saves the outcome.",
         takes: "Looks whose window has closed.", gives: "Saved outcomes, and an updated scorecard." },
       { id: "score", name: "Scoring", sub: ["Base rate, hit rate,", "lift, interval, verdict"], x: 215, y: 400, kind: "code",
@@ -65,8 +65,9 @@
         "It fetches hourly rain for the window through the weather client, retrying up to five times if an hour is missing.",
         "The outcome is saved and the scoring service updates the scorecard." ] },
     };
-    const KIND = { "": "Part", code: "Plain code decides", ext: "External data", store: "Storage" };
+    const KIND = { "": "Plumbing", model: "Gemma proposes \u00b7 code validates", code: "Plain code decides", ext: "External data", store: "Storage" };
     const ORDER = ["ui", "api", "hyp", "wea", "score", "out", "db"];
+    const CAPS = { ui: "Where you type a saying and tap Seen or Not seen.", api: "Routes every request between the UI and the parts behind it.", hyp: "Gemma proposes a structured hypothesis; plain code validates it.", wea: "Fetches ten years of Open-Meteo history and recent hours.", score: "Plain code computes base rate, hit rate, lift and the verdict.", out: "Fills in what the sky did, the next time the app opens.", db: "Keeps proverbs, hypotheses, looks, outcomes and results." };
     const byId = Object.fromEntries(NODES.map((n) => [n.id, n]));
     const talksTo = (id) => [...new Set(EDGES.filter((e) => e.a === id || e.b === id).map((e) => byId[e.a === id ? e.b : e.a].name))];
 
@@ -74,13 +75,12 @@
     const rows = $("#ax-rows");
     rows.innerHTML = ORDER.map((id, i) => {
       const n = byId[id];
-      return `<li class="ax-row${n.kind ? " ax-row--" + n.kind : ""}" data-node="${id}">
-        <span class="ax-row__n">${String(i + 1).padStart(2, "0")}</span>
-        <div><span class="ax-row__tag">${KIND[n.kind]}</span>
-        <h3 class="ax-row__name">${esc(n.name)}</h3>
-        <p class="ax-row__what">${esc(n.what)}</p>
+      return `<li class="ax-row${n.kind ? " ax-row--" + n.kind : ""}" data-node="${id}"><details>
+        <summary><span class="ax-row__n">${String(i + 1).padStart(2, "0")}</span><span class="ax-row__tag">${KIND[n.kind]}</span>
+        <h4 class="ax-row__name">${esc(n.name)}</h4><span class="ax-row__cap">${esc(CAPS[id])}</span><span class="ax-row__more" aria-hidden="true">Details</span></summary>
+        <div class="ax-row__body"><p class="ax-row__what">${esc(n.what)}</p>
         <dl class="ax-row__io"><div><dt>Takes in</dt><dd>${esc(n.takes)}</dd></div><div><dt>Hands on</dt><dd>${esc(n.gives)}</dd></div></dl>
-        <p class="ax-row__talks">Talks to <b>${esc(talksTo(id).join(", "))}</b></p></div></li>`;
+        <p class="ax-row__talks">Talks to <b>${esc(talksTo(id).join(", "))}</b></p></div></details></li>`;
     }).join("");
 
     // schematic (right)
@@ -88,7 +88,7 @@
     const edgeSvg = EDGES.map((e) => `<path class="ax-e" id="ax-${e.id}" d="${e.d}" marker-end="url(#ax-arr)"${e.both ? ' marker-start="url(#ax-arr)"' : ""}/>`).join("");
     const lblSvg = EDGES.map((e) => `<text class="ax-l" id="ax-l-${e.id}" x="${e.lx}" y="${e.ly}" text-anchor="${e.anchor || "middle"}">${esc(e.lbl)}</text>`).join("");
     const nodeSvg = NODES.map((n, i) => `<g class="ax-n${n.kind ? " ax-n--" + n.kind : ""}" id="ax-n-${n.id}" data-node="${n.id}" style="--n:${i}" role="button" tabindex="0" aria-label="${esc(n.name)}">
-      <rect x="${n.x}" y="${n.y}" width="${W}" height="${H}" rx="12"/><circle class="dot" cx="${n.x + 16}" cy="${n.y + 16}" r="4"/>
+      <rect x="${n.x}" y="${n.y}" width="${W}" height="${H}" rx="12"/>${n.kind === "model" ? `<clipPath id="ax-clip-${n.id}"><rect x="${n.x}" y="${n.y}" width="${W}" height="${H}" rx="12"/></clipPath><rect class="ax-split" x="${n.x}" y="${n.y + H - 9}" width="${W}" height="9" clip-path="url(#ax-clip-${n.id})"/>` : ""}<circle class="dot" cx="${n.x + 16}" cy="${n.y + 16}" r="4"/>
       <text class="nm" x="${n.x + W / 2}" y="${n.y + 36}" text-anchor="middle">${esc(n.name)}</text>
       <text class="sb" x="${n.x + W / 2}" y="${n.y + 54}" text-anchor="middle">${esc(n.sub[0])}</text>
       <text class="sb" x="${n.x + W / 2}" y="${n.y + 68}" text-anchor="middle">${esc(n.sub[1])}</text></g>`).join("");
@@ -103,7 +103,7 @@
       field: [["e1", "e2"], ["e1", "e10"], ["e8", "e10"]],
       outcome: [["e4"], ["e4"], ["e6"], ["e7", "e9", "e8"]],
     };
-    const st = { active: "ui", trace: "all", step: null, playing: true, inView: false };
+    const st = { active: null, trace: "all", step: null, playing: true, inView: false };
     const chips = $("#ax-chips");
     const playBtn = document.createElement("button");
     playBtn.type = "button"; playBtn.className = "ax-play"; playBtn.textContent = "Pause"; chips.appendChild(playBtn);
@@ -147,8 +147,8 @@
         } else cap.innerHTML = `<b>${esc(T.title)}</b><ol>${T.steps.map((s) => `<li>${esc(s)}</li>`).join("")}</ol>`;
       } else if (st.active) {
         const n = byId[st.active];
-        cap.innerHTML = `<b>${esc(n.name)}</b>Talks to ${esc(talksTo(n.id).join(", "))}.`;
-      } else cap.innerHTML = "";
+        cap.innerHTML = `<b>${esc(n.name)}</b>${esc(CAPS[n.id])} <span class="ax__cap-sub">Talks to ${esc(talksTo(n.id).join(", "))}.</span>`;
+      } else cap.innerHTML = `<b>How to read it</b>Lime boxes are where Gemma proposes. Coral boxes are plain code that decides. Tap any box, or trace a path above.`;
       $$(".ax-row").forEach((r) => r.classList.toggle("is-active", r.dataset.node === st.active));
     }
 
@@ -174,14 +174,10 @@
     else st.inView = true;
 
     const setActive = (id) => { if (id !== st.active) { st.active = id; if (st.trace === "all") paint(); else $$(".ax-row").forEach((r) => r.classList.toggle("is-active", r.dataset.node === id)); } };
-    // scroll drives the active part
-    if ("IntersectionObserver" in window) {
-      const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) setActive(e.target.dataset.node); }), { rootMargin: "-42% 0px -42% 0px", threshold: 0 });
-      $$(".ax-row").forEach((r) => io.observe(r));
-    }
     $$(".ax-row").forEach((r) => r.addEventListener("mouseenter", () => { if (window.matchMedia("(hover:hover)").matches) setActive(r.dataset.node); }));
-    // clicking a box jumps to its row
-    const jump = (id) => { const r = $(`.ax-row[data-node="${id}"]`); if (r) r.scrollIntoView({ block: "center", behavior: reduce ? "auto" : "smooth" }); stopTimer(); st.trace = "all"; st.step = null; $$("button[data-trace]", chips).forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.trace === "all"))); st.active = id; paint(); };
+    // clicking a box selects it and opens its details card (the diagram stays on screen)
+    const jump = (id) => { stopTimer(); st.trace = "all"; st.step = null; $$("button[data-trace]", chips).forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.trace === "all"))); st.active = id; $$(".ax-row details").forEach((d) => { d.open = d.parentElement.dataset.node === id; }); paint(); };
+    $$(".ax-row summary").forEach((sm) => sm.addEventListener("click", () => setActive(sm.parentElement.parentElement.dataset.node)));
     dgm.addEventListener("click", (e) => { const g = e.target.closest("[data-node]"); if (g) jump(g.dataset.node); });
     dgm.addEventListener("keydown", (e) => { if (e.key !== "Enter" && e.key !== " ") return; const g = e.target.closest("[data-node]"); if (g) { e.preventDefault(); jump(g.dataset.node); } });
     chips.addEventListener("click", (e) => { const b = e.target.closest("[data-trace]"); if (b) setTrace(b.dataset.trace); });
@@ -283,4 +279,61 @@
   document.addEventListener("keydown", (e) => { if (e.key === "Escape") set(false); });
   document.addEventListener("click", (e) => { if (!e.target.closest(".header")) set(false); });
   window.matchMedia("(min-width:801px)").addEventListener("change", () => set(false));
+})();
+/* ---------------------------------------------------------
+   ONE RUN: a single saying walked from proverb to scorecard.
+   Swap the values in RUN with the real output of your app
+   (hypothesis JSON, counts, verdict) and change `label`.
+   --------------------------------------------------------- */
+(function () {
+  "use strict";
+  const strip = document.getElementById("run-strip");
+  if (!strip) return;
+  const RUN = {
+    label: "Example walkthrough \u00b7 sample figures",
+    saying: "When the wind is in the east, \u2019tis neither good for man nor beast.",
+    source: "My grandmother", lang: "English (auto)",
+    hypothesis: {
+      sign: { kind: "atmospheric", text: "wind from the east" },
+      proxy: { variable: "wind_direction_10m", fit: "good" },
+      threshold_suggestion: null,
+      ambiguities: ["What counts as \u201ceast\u201d?", "What is \u201cnot good\u201d: rain, cold, wind?"],
+    },
+    checks: ["sign.kind == \"atmospheric\"", "proxy.variable in WHITELIST", "proxy.fit != \"none\""],
+    mode: "Lab Test",
+    data: { years: 10, source: "Open-Meteo", days: 3650, signDays: 412 },
+    result: { baseRate: 31, hitRate: 34, lo: 29, hi: 39, verdict: "Same as chance", note: "A real finding." },
+  };
+  const esc = (t) => String(t).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const lbl = document.getElementById("run-label"); if (lbl) lbl.textContent = RUN.label;
+  const H = RUN.hypothesis, D = RUN.data, R = RUN.result;
+  const json = `{
+  "sign.kind": "${H.sign.kind}",
+  "proxy.variable":
+    "${H.proxy.variable}",
+  "proxy.fit": "${H.proxy.fit}",
+  "threshold_suggestion": ${H.threshold_suggestion},
+  "ambiguities": [
+${H.ambiguities.map((a) => `    "${a}"`).join(",\n")}
+  ]
+}`;
+  const lit = Math.max(1, Math.round((D.signDays / D.days) * 100));
+  const cells = Array.from({ length: 100 }, (_, i) => `<i${i < lit ? ' class="on"' : ""}></i>`).join("");
+  const stages = [
+    { c: "saying", n: "01", who: "You", h: "A saying", b: `<p class="run-q">&ldquo;${esc(RUN.saying)}&rdquo;</p><p class="run-meta">${esc(RUN.source)} &middot; ${esc(RUN.lang)}</p>` },
+    { c: "model", n: "02", who: "Gemma proposes", h: "A hypothesis", b: `<pre class="run-code">${esc(json)}</pre><p class="run-meta">The threshold is always null. You set the number.</p>` },
+    { c: "code", n: "03", who: "Code decides", h: "Can it be tested?", b: `<ul class="run-checks">${RUN.checks.map((c) => `<li><span>&#10003;</span><code>${esc(c)}</code></li>`).join("")}</ul><p class="run-meta"><b>${esc(RUN.mode)}</b>: it shows up in weather data.</p>` },
+    { c: "data", n: "04", who: "The evidence", h: "Ten years of sky", b: `<div class="run-grid" aria-hidden="true">${cells}</div><p class="run-meta"><b>${D.signDays}</b> of ${D.days.toLocaleString("en")} days showed the sign. ${esc(D.source)}, about ${D.years} years, hourly.</p>` },
+    { c: "score", n: "05", who: "The scorecard", h: R.verdict, b: `<div class="run-bars"><div><span>Bar to beat <small>it rains anyway</small></span><div class="run-bar"><i style="--w:${R.baseRate}%"></i><em>${R.baseRate}%</em></div></div><div><span>Hit rate <small>n = ${D.signDays}</small></span><div class="run-bar run-bar--hit"><i style="--w:${R.hitRate}%"></i><em>${R.hitRate}%</em></div></div></div><p class="run-meta">95% interval ${R.lo}&ndash;${R.hi}%. <b>${esc(R.verdict)}</b>: ${esc(R.note)}</p>` },
+  ];
+  strip.innerHTML = stages.map((s, i) => `<article class="run-st run-st--${s.c}" style="--i:${i}"><p class="run-st__who"><b>${s.n}</b>${esc(s.who)}</p><h3 class="run-st__h">${esc(s.h)}</h3>${s.b}</article>`).join("");
+
+  const replay = document.getElementById("run-replay");
+  const play = () => { strip.classList.remove("is-in"); void strip.offsetWidth; strip.classList.add("is-in"); };
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if ("IntersectionObserver" in window && !reduce) {
+    const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { strip.classList.add("is-in"); io.disconnect(); } }), { threshold: 0.25 });
+    io.observe(strip);
+  } else strip.classList.add("is-in");
+  if (replay) replay.addEventListener("click", play);
 })();
