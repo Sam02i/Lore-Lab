@@ -1,12 +1,13 @@
 import datetime as dt
+import os
 from pathlib import Path
 import httpx
 import pandas as pd
 
 from config import HISTORY_YEARS
 
-CACHE = Path("cache")
-CACHE.mkdir(exist_ok = True)
+CACHE = Path(os.environ.get("LORE_DATA_DIR", ".")) / "cache"
+CACHE.mkdir(parents=True, exist_ok=True)
 
 HOURLY = ["pressure_msl","cloud_cover_high","relative_humidity_2m", "wind_direction_10m","precipitation"]
 

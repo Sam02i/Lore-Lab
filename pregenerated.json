@@ -1,0 +1,288 @@
+{
+  "model": "gemma3:4b",
+  "prompt_version": "v2.1",
+  "items": {
+    "swifts flying low means rain": {
+      "original_text": "Swifts flying low means rain",
+      "language": "English",
+      "english_translation": "Swifts flying low means rain",
+      "sign": {
+        "description": "Swifts flying low",
+        "how_to_observe": "eyes",
+        "kind": "animal",
+        "observable_by": "eyes",
+        "best_time_of_day": "any"
+      },
+      "outcome": {
+        "event": "rain",
+        "window_hours": 12
+      },
+      "proxy": {
+        "variable": "none",
+        "feature": "none",
+        "why_it_fits": null,
+        "fit": "none"
+      },
+      "live_only_reason": "Swift behavior is not in any weather dataset.",
+      "ambiguities": []
+    },
+    "when the glass falls low prepare for a blow": {
+      "original_text": "When the glass falls low, prepare for a blow.",
+      "language": "English",
+      "english_translation": "When the barometer falls low, prepare for a storm.",
+      "sign": {
+        "description": "falling barometer",
+        "how_to_observe": "instrument",
+        "kind": "atmospheric",
+        "observable_by": "instrument",
+        "best_time_of_day": "any"
+      },
+      "outcome": {
+        "event": "wind",
+        "window_hours": 12
+      },
+      "proxy": {
+        "variable": "pressure_msl",
+        "feature": "change_3h",
+        "why_it_fits": "A falling barometer indicates a decrease in atmospheric pressure, which is a key indicator of approaching storms and strong winds.",
+        "fit": "good"
+      },
+      "live_only_reason": null,
+      "ambiguities": []
+    },
+    "red sky at night shepherds delight red sky in the morning shepherds warning": {
+      "original_text": "Red sky at night, shepherd’s delight; red sky in the morning, shepherd’s warning.",
+      "language": "English",
+      "english_translation": "Red sky at night, shepherd’s delight; red sky in the morning, shepherd’s warning.",
+      "sign": {
+        "description": "Red sky",
+        "how_to_observe": "eyes",
+        "kind": "atmospheric",
+        "observable_by": "eyes",
+        "best_time_of_day": "night"
+      },
+      "outcome": {
+        "event": "wind",
+        "window_hours": 12
+      },
+      "proxy": {
+        "variable": "cloud_cover_high",
+        "feature": "change_3h",
+        "why_it_fits": null,
+        "fit": "good"
+      },
+      "live_only_reason": null,
+      "ambiguities": [
+        "What constitutes a 'red sky'? What is the timescale of the change?"
+      ]
+    },
+    "when the wind is out of the east tis neither good for man nor beast": {
+      "original_text": "When the wind is out of the east, 'tis neither good for man nor beast.",
+      "language": "English",
+      "english_translation": "When the wind is out of the east, it is neither good for man nor beast.",
+      "sign": {
+        "description": "wind direction",
+        "how_to_observe": "eyes",
+        "kind": "atmospheric",
+        "observable_by": "eyes",
+        "best_time_of_day": "any"
+      },
+      "outcome": {
+        "event": "other",
+        "window_hours": 12
+      },
+      "proxy": {
+        "variable": "wind_direction_10m",
+        "feature": "level",
+        "why_it_fits": "Wind direction is a measurable atmospheric variable. The proverb describes a general negative effect, which can be approximated by a change in wind direction.",
+        "fit": "rough"
+      },
+      "live_only_reason": null,
+      "ambiguities": [
+        "What constitutes 'neither good'? Does this refer to health, comfort, or other factors?"
+      ]
+    },
+    "rain before seven fine before eleven": {
+      "original_text": "Rain before seven, fine before eleven.",
+      "language": "English",
+      "english_translation": "Rain before seven, fine before eleven.",
+      "sign": {
+        "description": "Change in weather conditions",
+        "how_to_observe": "eyes",
+        "kind": "atmospheric",
+        "observable_by": "eyes",
+        "best_time_of_day": "any"
+      },
+      "outcome": {
+        "event": "clear",
+        "window_hours": 12
+      },
+      "proxy": {
+        "variable": "cloud_cover_high",
+        "feature": "change_3h",
+        "why_it_fits": null,
+        "fit": "rough"
+      },
+      "live_only_reason": null,
+      "ambiguities": [
+        "How much change in cloud cover counts as 'fine' before eleven?"
+      ]
+    },
+    "dew on the grass no rain will come to pass": {
+      "original_text": "Dew on the grass, no rain will come to pass.",
+      "language": "English",
+      "english_translation": "Dew on the grass, no rain will come to pass.",
+      "sign": {
+        "description": "Dew on the grass",
+        "how_to_observe": "eyes",
+        "kind": "atmospheric",
+        "observable_by": "eyes",
+        "best_time_of_day": "any"
+      },
+      "outcome": {
+        "event": "other",
+        "window_hours": 12
+      },
+      "proxy": {
+        "variable": "relative_humidity_2m",
+        "feature": "level",
+        "why_it_fits": "Dew formation is strongly correlated with relative humidity. High dew indicates high humidity, which is a precursor to rain.",
+        "fit": "rough"
+      },
+      "live_only_reason": null,
+      "ambiguities": [
+        "What constitutes 'dew on the grass'? Does it need to be widespread, or just a small amount?"
+      ]
+    },
+    "when the bees crowd into their hive again it is a sign of thunder and of rain": {
+      "original_text": "When the bees crowd into their hive again, it is a sign of thunder and of rain.",
+      "language": "English",
+      "english_translation": "When bees crowd into their hive again, it is a sign of thunder and rain.",
+      "sign": {
+        "description": "bees crowding into their hive",
+        "how_to_observe": "eyes",
+        "kind": "animal",
+        "observable_by": "eyes",
+        "best_time_of_day": "any"
+      },
+      "outcome": {
+        "event": "rain",
+        "window_hours": 12
+      },
+      "proxy": {
+        "variable": "none",
+        "feature": "none",
+        "why_it_fits": null,
+        "fit": "none"
+      },
+      "live_only_reason": "Bees behavior is not in any weather dataset.",
+      "ambiguities": [
+        "How many bees constitute 'crowding'?"
+      ]
+    },
+    "mackerel sky mackerel sky never long wet never long dry": {
+      "original_text": "Mackerel sky, mackerel sky, never long wet, never long dry.",
+      "language": "English",
+      "english_translation": "Mackerel sky, mackerel sky, never long wet, never long dry.",
+      "sign": {
+        "description": "Mackerel sky",
+        "how_to_observe": "eyes",
+        "kind": "atmospheric",
+        "observable_by": "eyes",
+        "best_time_of_day": "any"
+      },
+      "outcome": {
+        "event": "rain",
+        "window_hours": 12
+      },
+      "proxy": {
+        "variable": "cloud_cover_high",
+        "feature": "level",
+        "why_it_fits": null,
+        "fit": "rough"
+      },
+      "live_only_reason": null,
+      "ambiguities": [
+        "What constitutes a 'mackerel sky'?"
+      ]
+    },
+    "hen scarts and filly tails make lofty ships wear low sails": {
+      "original_text": "Hen scarts and filly tails make lofty ships wear low sails.",
+      "language": "English",
+      "english_translation": "Hen scarts and filly tails make lofty ships wear low sails.",
+      "sign": {
+        "description": "Hen scarts and filly tails",
+        "how_to_observe": "eyes",
+        "kind": "animal",
+        "observable_by": "eyes",
+        "best_time_of_day": "any"
+      },
+      "outcome": {
+        "event": "other",
+        "window_hours": 12
+      },
+      "proxy": {
+        "variable": "none",
+        "feature": "none",
+        "why_it_fits": null,
+        "fit": "none"
+      },
+      "live_only_reason": "This proverb describes animal behavior (hen scarts and filly tails) in relation to ships and sails. Animal behavior is not a proxy for weather conditions, and there is no instrument to measure this.",
+      "ambiguities": [
+        "What constitutes a 'scart' or 'filly tail'? What is meant by 'lofty ships' and 'low sails'?"
+      ]
+    },
+    "evening red and morning gray are sure signs of a fine day": {
+      "original_text": "Evening red and morning gray are sure signs of a fine day.",
+      "language": "English",
+      "english_translation": "Evening red and morning gray are sure signs of a fine day.",
+      "sign": {
+        "description": "color of sky",
+        "how_to_observe": "eyes",
+        "kind": "other",
+        "observable_by": "eyes",
+        "best_time_of_day": "any"
+      },
+      "outcome": {
+        "event": "clear",
+        "window_hours": 12
+      },
+      "proxy": {
+        "variable": "cloud_cover_high",
+        "feature": "level",
+        "why_it_fits": null,
+        "fit": "rough"
+      },
+      "live_only_reason": null,
+      "ambiguities": [
+        "What constitutes 'red' and 'gray' in the sky? What level of cloud cover is considered 'high'?"
+      ]
+    },
+    "if a circle forms round the moon twill rain soon": {
+      "original_text": "If a circle forms 'round the moon, 'twill rain soon.",
+      "language": "English",
+      "english_translation": "If a circle forms around the moon, it will rain soon.",
+      "sign": {
+        "description": "A circle forms around the moon.",
+        "how_to_observe": "eyes",
+        "kind": "celestial",
+        "observable_by": "eyes",
+        "best_time_of_day": "night"
+      },
+      "outcome": {
+        "event": "rain",
+        "window_hours": 12
+      },
+      "proxy": {
+        "variable": "cloud_cover_high",
+        "feature": "level",
+        "why_it_fits": null,
+        "fit": "rough"
+      },
+      "live_only_reason": null,
+      "ambiguities": [
+        "How large must the circle be to indicate rain?"
+      ]
+    }
+  }
+}
