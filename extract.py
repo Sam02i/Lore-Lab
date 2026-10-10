@@ -15,6 +15,7 @@ def extract(text: str) -> Hypothesis:
                         {"role" : "user","content": f"Proverb :{text}"}],
             format = Hypothesis.model_json_schema(),
             options = {"temperature":0},
+            keep_alive = "1h",   # keep Gemma loaded between requests (first call is the slow one)
         )
         try:
             return Hypothesis.model_validate_json(r.message.content)

@@ -517,7 +517,9 @@ save outcome, update scorecard</pre></div>
   window.LORE_CONFIG = {
     apiBase: "",
     endpoints: {
-      extractHypothesis: { method: "POST", path: "/api/extract" }
+      extractHypothesis: { method: "POST", path: "/api/extract" },
+      confirmHypothesis: { method: "POST", path: "/api/hypotheses/:id/confirm" },
+      runBacktest:       { method: "POST", path: "/api/hypotheses/:id/backtest" }
     }
   };
   </script>

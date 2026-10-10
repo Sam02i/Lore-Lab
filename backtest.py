@@ -21,14 +21,40 @@ def wilson(k, n, z=1.96):
     h = z * math.sqrt(p * (1 - p) / n + z * z / (4 * n * n)) / d
     return (c - h, c + h)
 
-def build_days(df):
+def build_days(df, window_h=WINDOW_H):
     d = df.copy()
-    # outcome: precip summed over the next WINDOW_H hours (t+1 .. t+24)
-    d["future_precip"] = d["precipitation"].rolling(WINDOW_H).sum().shift(-WINDOW_H)
+    # outcome: precip summed over the next window_h hours (t+1 .. t+window_h)
+    d["future_precip"] = d["precipitation"].rolling(window_h).sum().shift(-window_h)
     d["p_change_3h"] = d["pressure_msl"] - d["pressure_msl"].shift(3)
+    d["p_change_6h"] = d["pressure_msl"] - d["pressure_msl"].shift(6)
+    # NOTE: the rows kept are decided only by future_precip and p_change_3h, exactly as
+    # before, so default results (e.g. the Delhi run) do not change.
     d = d[d.index.hour == LOOK_HOUR].dropna(subset=["future_precip", "p_change_3h"])
     d["rain"] = d["future_precip"] >= RAIN_MM
     return d
+
+
+def sign_mask(days, variable, feature, threshold):
+    """True on the days the sign is present. `threshold` is always the USER's number.
+    pressure_msl            change_3h / change_6h: pressure fell by at least `threshold` hPa
+                            level: pressure at or below `threshold` hPa
+    cloud_cover_high        high cloud cover at or above `threshold` %
+    relative_humidity_2m    humidity at or above `threshold` %
+    wind_direction_10m      wind within 45 degrees of the compass bearing `threshold`
+    """
+    if variable == "pressure_msl":
+        if feature == "level":
+            return days["pressure_msl"] <= threshold
+        col = "p_change_6h" if feature == "change_6h" else "p_change_3h"
+        return days[col] <= -abs(threshold)
+    if variable == "cloud_cover_high":
+        return days["cloud_cover_high"] >= threshold
+    if variable == "relative_humidity_2m":
+        return days["relative_humidity_2m"] >= threshold
+    if variable == "wind_direction_10m":
+        diff = (days["wind_direction_10m"] - threshold + 180) % 360 - 180
+        return diff.abs() <= 45
+    raise ValueError(f"No lab proxy for {variable}")
 
 
 def score(days, sign):
@@ -61,4 +87,3 @@ if __name__ == "__main__":
         print(f"Lift: {100 * (hit - base):+.1f} percentage points")
         print(f"Verdict: {verdict}")
         print("Caveat: one place, reanalysis data, not proof.")
-
