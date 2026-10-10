@@ -21,5 +21,5 @@ Example 4: "count crickets chips to tell the temperature"
 -> sign.kind "animal", proxy.variable "none", proxy.feature "none", proxy.fit "none", live_only_reason "Insects chirp rate cannot be measured by weather stations ; need human intervention "
 
 Example 5: "cows lying down rain is on the way"
--> sign.kind "animal" , proxy.variable "none", proxy.feature "none", proxy.fir "none", live_only_reason "Cattle posture is not tracked by weather instruments or reanalysis models", ambiguities ["Whether a single cow counts or the majority of the herd must be lying down"]
+-> sign.kind "animal" , proxy.variable "none", proxy.feature "none", proxy.fit "none", live_only_reason "Cattle posture is not tracked by weather instruments or reanalysis models", ambiguities ["Whether a single cow counts or the majority of the herd must be lying down"]
 """

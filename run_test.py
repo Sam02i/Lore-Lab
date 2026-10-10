@@ -1,4 +1,4 @@
-from extract import extract , MODEL
+from extract import extract, MODEL
 from schema import is_backtestable
 
 TESTS = [# --- LAB TESTS: Atmospheric signs with whitelisted sensor proxies (True) ---
@@ -60,5 +60,3 @@ print(f"\nModel: {MODEL}")
 print(f"JSON valid:      {valid}/{len(TESTS)}")
 print(f"Sign kind right: {kind_ok}/{n_kind}")
 print(f"Backtestable right: {bt_ok}/{n_bt}")
-
-
