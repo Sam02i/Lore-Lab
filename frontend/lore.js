@@ -91,6 +91,7 @@
       looks: num(c.looks_total ?? c.n_looks), n: num(c.n_sign_present ?? c.n), pending: num(c.n_pending), hits: num(c.hits ?? c.n_hits),
       baseRate: num(c.base_rate), hitRate: num(c.hit_rate), lo: num(c.ci_low), hi: num(c.ci_high), lift: num(c.lift),
       verdict: VERDICTS[String(c.verdict || "").toLowerCase()] || null, next: c.next_action ?? null, min: num(c.min_n),
+      window: num(c.window_hours), rainMm: num(c.rain_mm), lookHour: num(c.look_hour),
     };
   }
   function normField(r, hyp, loc) {
@@ -193,6 +194,10 @@
           <p class="lore-pend">Interval ${pct(c.lo)}–${pct(c.hi)} · n = ${n} · coral line = bar to beat</p>`;
       }
     }
+    // the exact rule behind "rain followed", so every Lab result states its own window
+    const rule = mode === "lab" && c.window
+      ? `<p class="lore-pend">Counted as rain followed when ${c.rainMm !== null ? `at least ${c.rainMm} mm` : "rain"} fell in the ${c.window} hours after a look at ${c.lookHour !== null ? `${String(c.lookHour).padStart(2, "0")}:00` : "dusk"}.</p>`
+      : "";
     const plain = verdict ? VERDICT_TEXT[verdict].plain : "The scoring service didn’t return a verdict for this card.";
     const next = c.next ?? (!enough
       ? (mode === "field" ? "Next: take another look at the next recommended time." : mode === "lab" ? "Next: a place or period with more days showing the sign." : "")
@@ -203,6 +208,7 @@
       ${mode ? `<span class="lore-modetag lore-modetag--${mode}">${mode === "lab" ? "Lab Test" : "Field Test"}</span>` : ""}</header>
       ${verdict ? verdictBadge(verdict) : ""}
       ${body}
+      ${rule}
       <p>${esc(plain)}</p>
       ${next ? `<p class="lore-next">${esc(next)}</p>` : ""}
       <p class="lore-caveat">One place and a short history is a hint, not proof.${where ? " " + esc(where) : ""}</p></article>`;
