@@ -142,19 +142,3 @@ el.addEventListener("pointerup", release);
 el.addEventListener("pointercancel", release);
 el.addEventListener("dragstart", (e) => e.preventDefault());
 }
-
-
-// Email signup forms (hero + closing): front-end only for now
-document.querySelectorAll(".signup").forEach((form) => {
-  const input = form.querySelector(".signup__input");
-  const msg = form.querySelector(".signup__msg");
-form.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value.trim());
-    msg.classList.toggle("is-error", !ok);
-    if (!ok) { msg.textContent = "That email doesn't look right. Try again?"; input.focus(); return; }
-    // TODO: send input.value to your mailing-list service here
-    msg.textContent = "You're on the list. We'll send updates, then you go touch grass.";
-    input.value = "";
-  });
-});

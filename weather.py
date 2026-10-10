@@ -3,6 +3,8 @@ from pathlib import Path
 import httpx
 import pandas as pd
 
+from config import HISTORY_YEARS
+
 CACHE = Path("cache")
 CACHE.mkdir(exist_ok = True)
 
@@ -18,7 +20,7 @@ def geocode(city:str):
     p = res[0]
     return p["name"],p["latitude"],p["longitude"]
 
-def fetch_history(lat: float, lon: float, years: int = 10) -> pd.DataFrame:
+def fetch_history(lat: float, lon: float, years: int = HISTORY_YEARS) -> pd.DataFrame:
     #* Hourly reanalysis (ERA5 via Open-Meteo archive), cached per location
 
     f = CACHE / f"{lat:.2f}_{lon:.2f}_{years}y.csv"
@@ -49,7 +51,3 @@ def fetch_history(lat: float, lon: float, years: int = 10) -> pd.DataFrame:
     df = df.set_index("time").sort_index()
     df.to_csv(f)
     return df
-
-
-
-

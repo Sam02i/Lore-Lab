@@ -3,3 +3,6 @@ cache/
 __pycache__/
 .DS_Store
 data.json
+hypotheses.json
+*.tmp
+.pytest_cache/

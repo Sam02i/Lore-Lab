@@ -9,9 +9,7 @@ import datetime as dt
 import httpx
 import pandas as pd
 
-from backtest import RAIN_MM
-
-MAX_ATTEMPTS = 5
+from config import MAX_ATTEMPTS, RAIN_MM
 
 
 def _fetch_hourly(lat: float, lon: float) -> pd.DataFrame:

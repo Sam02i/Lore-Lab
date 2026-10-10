@@ -1,0 +1,93 @@
+    [
+    {
+        "text": "Swifts flying low means rain.",
+        "source": "unknown",
+        "language": "English",
+        "verified": true,
+        "provenance": "Hero saying for the demo. Replace the source with the person who actually said it to you; never invent one."
+    },
+    {
+        "text": "When the glass falls low, prepare for a blow.",
+        "source": "unknown",
+        "language": "English",
+        "verified": true,
+        "provenance": "Traditional barometer rhyme, unattributed. Quoted and interpreted by meteorologist Jeff Haby (theweatherprediction.com/wxlore/j/)."
+    },
+    {
+        "text": "Red sky at night, shepherd's delight; red sky in the morning, shepherd's warning.",
+        "source": "unknown",
+        "language": "English",
+        "verified": true,
+        "provenance": "Traditional, unattributed. Listed on the Royal Meteorological Society's MetLink weather folklore page (metlink.org)."
+    },
+    {
+        "text": "When the wind is out of the east, 'tis neither good for man nor beast.",
+        "source": "unknown",
+        "language": "English",
+        "verified": true,
+        "provenance": "Traditional, unattributed. Listed on MetLink weather folklore (metlink.org)."
+    },
+    {
+        "text": "Rain before seven, fine before eleven.",
+        "source": "unknown",
+        "language": "English",
+        "verified": true,
+        "provenance": "Traditional, unattributed. Discussed on The Natural Navigator weather lore page (naturalnavigator.com/the-library/weather-lore/)."
+    },
+    {
+        "text": "Dew on the grass, no rain will come to pass.",
+        "source": "unknown",
+        "language": "English",
+        "verified": true,
+        "provenance": "Traditional, unattributed. Discussed on The Natural Navigator weather lore page (naturalnavigator.com/the-library/weather-lore/)."
+    },
+    {
+        "text": "When the bees crowd into their hive again, it is a sign of thunder and of rain.",
+        "source": "unknown",
+        "language": "English",
+        "verified": true,
+        "provenance": "Traditional, unattributed. Quoted on The Natural Navigator weather lore page (naturalnavigator.com/the-library/weather-lore/)."
+    },
+    {
+        "text": "Mackerel sky, mackerel sky, never long wet, never long dry.",
+        "source": "unknown",
+        "language": "English",
+        "verified": true,
+        "provenance": "Traditional, unattributed. Listed on the Old Farmer's Almanac weather proverbs page (almanac.com)."
+    },
+    {
+        "text": "Hen scarts and filly tails make lofty ships wear low sails.",
+        "source": "unknown",
+        "language": "English",
+        "verified": true,
+        "provenance": "Traditional, unattributed. Listed on the Old Farmer's Almanac weather proverbs page (almanac.com)."
+    },
+    {
+        "text": "Evening red and morning gray are sure signs of a fine day.",
+        "source": "unknown",
+        "language": "English",
+        "verified": true,
+        "provenance": "Traditional, unattributed. Listed on the Old Farmer's Almanac weather proverbs page (almanac.com)."
+    },
+    {
+        "text": "If a circle forms 'round the moon, 'twill rain soon.",
+        "source": "unknown",
+        "language": "English",
+        "verified": true,
+        "provenance": "Traditional, unattributed. Listed in a published weather lore roundup (arlenestaffordwilson.wordpress.com, 2025); the Old Farmer's Almanac also notes the moon-halo saying."
+    },
+    {
+        "text": "Abendrot Schönwetterbot'.",
+        "source": "unknown",
+        "language": "German",
+        "verified": false,
+        "provenance": "UNVERIFIED. Common German saying, but no published source was checked. Not served by the starter list; type it by hand to demo a non-English proverb, and say so in the post."
+    },
+    {
+        "text": "चींटियां अंडे लेकर चलें तो वर्षा निश्चित है।",
+        "source": "unknown",
+        "language": "Hindi",
+        "verified": false,
+        "provenance": "UNVERIFIED. Oral saying as recalled by the builder; exact wording not checked against a published collection. Not served by the starter list."
+    }
+    ]

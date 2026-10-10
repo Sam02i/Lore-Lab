@@ -3,10 +3,8 @@ import sys
 
 from weather import geocode, fetch_history
 
-RAIN_MM = 0.2   #? total perception in the window that counts as "rain"
-LOOK_HOUR = 18           #? local hour you "look outside" (dusk)
-WINDOW_H = 24            #? outcome window starts the next full hour
-MIN_N_BACKTEST = 30
+from config import (HISTORY_YEARS, LOOK_HOUR, MIN_N_BACKTEST, RAIN_MM,  # noqa: F401  (re-exported)
+                    WINDOW_H)
 
 #? Hypothesis: "falling glass" = pressure drops by at least this much in 3 hours
 
@@ -69,7 +67,7 @@ if __name__ == "__main__":
     city = " ".join(sys.argv[1:]) or "Pune"
     name, lat, lon = geocode(city)
     print(f"Location: {name} ({lat:.2f}, {lon:.2f})")
-    days = build_days(fetch_history(lat, lon))
+    days = build_days(fetch_history(lat, lon, HISTORY_YEARS))
     sign = days["p_change_3h"] <= -PRESSURE_DROP_HPA
     base, n, k = score(days, sign)
 

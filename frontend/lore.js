@@ -92,6 +92,7 @@
       baseRate: num(c.base_rate), hitRate: num(c.hit_rate), lo: num(c.ci_low), hi: num(c.ci_high), lift: num(c.lift),
       verdict: VERDICTS[String(c.verdict || "").toLowerCase()] || null, next: c.next_action ?? null, min: num(c.min_n),
       window: num(c.window_hours), rainMm: num(c.rain_mm), lookHour: num(c.look_hour),
+      notes: Array.isArray(c.notes) ? c.notes.map(String) : [], failed: num(c.n_failed), notSeen: num(c.n_not_seen),
     };
   }
   function normField(r, hyp, loc) {
@@ -180,7 +181,7 @@
       body += empty
         ? `<p>A blank page, waiting for its first ${mode === "lab" ? "sign-present day" : "look"}.</p>`
         : `<p><b>${n}</b> ${mode === "lab" ? "sign-present days" : "sign-present looks"} so far${c.hits !== null ? `, and the predicted weather followed <b>${c.hits}</b> of them` : ""}.</p>`;
-      if (c.pending) body += `<p class="lore-pend">${c.pending} still pending, not counted yet.</p>`;
+      if (c.pending) body += `<p class="lore-pend">${c.pending} still pending: logged, and waiting for the sky data.</p>`;
       if (need !== null) body += `<p class="lore-next">${need} more ${unit} with the sign before a hit rate or verdict can be shown.</p>`;
       if (c.baseRate !== null) body += `<div class="lore-nums"><div><b>${pct(c.baseRate)}</b><small>bar to beat (how often it happens anyway)</small></div></div>`;
     } else {
@@ -209,6 +210,7 @@
       ${verdict ? verdictBadge(verdict) : ""}
       ${body}
       ${rule}
+      ${(c.notes || []).map((t) => `<p class="lore-pend">${esc(t)}</p>`).join("")}
       <p>${esc(plain)}</p>
       ${next ? `<p class="lore-next">${esc(next)}</p>` : ""}
       <p class="lore-caveat">One place and a short history is a hint, not proof.${where ? " " + esc(where) : ""}</p></article>`;
