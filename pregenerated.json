@@ -283,6 +283,30 @@
       "ambiguities": [
         "How large must the circle be to indicate rain?"
       ]
+    },
+    "when the wind turns south rain is in its mouth": {
+      "original_text": "When the wind turns south, rain is in its mouth.",
+      "language": "English",
+      "english_translation": "When the wind turns south, rain is in its mouth.",
+      "sign": {
+        "description": "Wind direction change",
+        "how_to_observe": "eyes",
+        "kind": "atmospheric",
+        "observable_by": "eyes",
+        "best_time_of_day": "any"
+      },
+      "outcome": {
+        "event": "rain",
+        "window_hours": 12
+      },
+      "proxy": {
+        "variable": "wind_direction_10m",
+        "feature": "change_3h",
+        "why_it_fits": "A shift in wind direction can be recorded by weather stations. A change in wind direction is often associated with approaching weather systems that bring rain.",
+        "fit": "rough"
+      },
+      "live_only_reason": null,
+      "ambiguities": []
     }
   }
 }
