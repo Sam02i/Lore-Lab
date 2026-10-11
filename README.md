@@ -57,8 +57,7 @@ Verdicts are **Promising**, **Same as chance**, **Backfires** and **On the trail
 |---|---|---|
 | What counts as rain | 0.2 mm or more | `backtest.py` |
 | Backtest "look" time | 18:00 local | `backtest.py` |
-| Lab outcome window | 24 hours, starting at the next full hour | `backtest.py` |
-| Field outcome window | set per hypothesis; 12 hours for the salt-shaker look reported below | `server.py` |
+| Outcome window | 12 hours, starting at the next full hour (set per hypothesis; the default constant in `backtest.py` is 24) | `server.py`, `backtest.py` |
 | Minimum sign-present days (Lab) | 30 | `backtest.py` |
 | Minimum sign-present looks (Field) | 10 | Field Test |
 | Interval | Wilson, 95% | `backtest.py` |
@@ -81,7 +80,7 @@ flowchart LR
 
 ## First results
 
-### Lab Test: Delhi, 24 h window, 0.2 mm or more of rain
+### Lab Test: Delhi, 12 h window, 0.2 mm or more of rain
 
 | Saying | Sign-present days | Hit rate (95% CI) | Bar to beat | Lift | Verdict |
 |---|---|---|---|---|---|
@@ -116,7 +115,7 @@ Measured on a 21-case test set with `gemma3:4b` and prompt v2.1:
 
 ## Run it locally
 
-Requires Python 3.10+ and [Ollama](https://ollama.com).
+Requires Python 3 and [Ollama](https://ollama.com).
 
 ```bash
 git clone https://github.com/Sam02i/Lore-Lab.git
