@@ -237,6 +237,16 @@
     });
     clearAlert();
     if (focus) { const h = panes[n - 1].querySelector("h3"); if (h) { h.tabIndex = -1; h.focus({ preventScroll: true }); } }
+    if (focus) keepEngineInView();
+  }
+  // after a step change the pane height changes and the page can end up scrolled far below the engine;
+  // bring the top of the engine panel back into view (only if it has scrolled out of a comfortable spot)
+  function keepEngineInView() {
+    const sec = document.getElementById("engine"); if (!sec) return;
+    requestAnimationFrame(() => {
+      const top = sec.getBoundingClientRect().top;
+      if (top < 0 || top > window.innerHeight * 0.4) sec.scrollIntoView({ block: "start", behavior: "auto" });
+    });
   }
   tabs.forEach((t) => on(t, "click", () => go(Number(t.dataset.go))));
 
