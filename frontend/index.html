@@ -20,7 +20,7 @@
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="lore.css">
   <link rel="stylesheet" href="sections.css">
-  <script>(function(){var r=document.documentElement,seen=false,EVERY_VISIT=true;try{seen=!EVERY_VISIT&&!!localStorage.getItem("loreLoaderSeen")&&!/[?&]loader/.test(location.search)}catch(e){}r.classList.add("js");r.classList.add(seen?"ld-skip":"is-loading")})();</script>
+  <script>(function(){var r=document.documentElement,seen=false,EVERY_VISIT=true;try{seen=(!EVERY_VISIT&&!!localStorage.getItem("loreLoaderSeen")&&!/[?&]loader/.test(location.search))||/[?&]skiploader/.test(location.search)}catch(e){}r.classList.add("js");r.classList.add(seen?"ld-skip":"is-loading")})();</script>
 </head>
 <body id="top">
   <script>(function(){var n=0;window.ldImg=function(){if(++n===2){window.ldReadyAt=Date.now();var l=document.getElementById("loader");l&&l.classList.add("is-ready")}}})();</script>
@@ -63,6 +63,7 @@
     <nav class="header__nav" id="header-nav">
       <a href="#way"><span>Stance</span></a>
       <a href="#engine"><span>Engine</span></a>
+      <a href="notebook.html"><span>Logbook</span></a>
       <a href="#architecture"><span>Architecture</span></a>
       <a href="#protocol"><span>Protocol</span></a>
       <a href="#statement"><span>Manifesto</span></a>
@@ -205,6 +206,11 @@
             <section>
               <h4>Who decides what</h4>
               <p>Gemma reads the saying. Plain code picks how to test it. <b>You</b> choose every number.</p>
+            </section>
+            <section>
+              <h4>My logbook</h4>
+              <p>Every look you have logged, and what the sky did next.</p>
+              <a class="lore-btn lore-btn--butter" href="notebook.html">Open logbook</a>
             </section>
             <section id="lore-side-mode" hidden>
               <h4>This experiment</h4>

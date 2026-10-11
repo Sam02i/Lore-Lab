@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Logbook · Lore Lab</title>
+<meta name="theme-color" content="#1f5a3d">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌼</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Delius&family=Swanky+and+Moo+Moo&display=swap" rel="stylesheet">
+<style>
+  :root { --green:#1f5a3d; --deep:#10291b; --cream:#fbf6e6; --coral:#f26a4f; --butter:#f4d88a; --sage:#8aa863; --sage-l:#d1dfbc; --ink:#10291b; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--sage-l); color:var(--ink);
+         font:16px/1.5 "Delius","Comic Sans MS","Chalkboard SE","Comic Neue",cursive; }
+  .hand { font-family:"Swanky and Moo Moo","Chalkboard SE","Comic Sans MS","Marker Felt",cursive; }
+  main { max-width:820px; margin:0 auto; padding:20px 14px 72px; }
+  .top { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:14px; }
+  .back { display:inline-block; padding:.45em 1.1em; background:var(--cream); color:var(--ink); text-decoration:none;
+          border:2px solid var(--ink); border-radius:.6em; box-shadow:.2em .2em 0 var(--ink); }
+  h1 { font-size:2.1rem; line-height:1.1; margin:0; }
+  .sub { margin:6px 0 18px; }
+
+  /* the notebook sheet: ruled lines, red margin line, binder holes down the left edge (same look as the scorecards) */
+  .sheet, .card {
+    position:relative; padding:1.4em 1.4em 1.3em 3.4em;
+    background:
+      linear-gradient(90deg,transparent 2.6em,rgba(242,106,79,.55) 2.6em calc(2.6em + 2px),transparent calc(2.6em + 2px)),
+      repeating-linear-gradient(180deg,transparent 0 1.7em,rgba(31,90,61,.16) 1.7em calc(1.7em + 1px)),#fffaf0;
+    border:.12em solid var(--ink); border-radius:.4em .9em .9em .4em; box-shadow:.4em .4em 0 rgba(16,41,27,.55);
+  }
+  .sheet::before, .card::before {
+    content:""; position:absolute; left:.7em; top:1.2em; bottom:1.2em; width:.9em;
+    background:radial-gradient(circle,var(--ink) 38%,transparent 42%) 0 0/100% 2.6em repeat-y; opacity:.75;
+  }
+  .card { margin:1.4em 0 0; }
+  h2 { font-size:1.4rem; margin:0 0 .3em; line-height:1.15; }
+  .sheet > h2:not(:first-child) { margin-top:1.3em; }
+  .hint { font-size:.88rem; margin:0 0 .6em; opacity:.85; }
+
+  .entry { padding:.55em 0 .6em; border-bottom:.1em dashed rgba(16,41,27,.4); }
+  .entry:last-child { border-bottom:0; }
+  .entry .q { font-size:1.15rem; }
+  .meta { font-size:.85rem; opacity:.85; }
+  .pill { display:inline-block; margin-left:.5em; padding:0 .8em; font-size:.82rem; border:.12em solid var(--ink); border-radius:999px; background:var(--butter); }
+  .pill.resolved { background:var(--sage-l); }
+  .pill.failed { background:#f3c4bb; }
+  .seen { font-weight:700; }
+
+  .verdict { display:inline-block; margin:.4em 0; padding:.15em .9em; background:var(--sage); border:.12em solid var(--ink); border-radius:.5em; box-shadow:.15em .15em 0 var(--ink); }
+  .tally { display:flex; gap:.4em; flex-wrap:wrap; margin:.5em 0; }
+  .dot { width:1.5em; height:1.5em; border-radius:50%; border:.12em solid var(--ink); background:#fff; }
+  .dot.hit { background:var(--sage); } .dot.pending { background:var(--butter); border-style:dashed; }
+  .dot.ghost { border-style:dotted; border-color:rgba(16,41,27,.3); }
+  .card ul { margin:.4em 0 0; padding-left:1.1em; font-size:.88rem; }
+  .empty { font-style:italic; opacity:.8; }
+  .stamp { margin-top:1.4em; font-size:.8rem; opacity:.8; border-top:.1em dashed var(--ink); padding-top:.6em; }
+  @media (max-width:520px) { .sheet, .card { padding-left:3em; } h1 { font-size:1.7rem; } }
+</style>
+</head>
+<body>
+<main>
+  <div class="top">
+    <h1 class="hand">Logbook</h1>
+    <a class="back" href="/?skiploader#engine">&larr; Back to Lore Lab</a>
+  </div>
+  <p class="sub">Every outdoor look saved on this app, and what the sky did afterwards.</p>
+
+  <section class="sheet" aria-labelledby="looks-h">
+    <h2 class="hand" id="looks-h">Your looks</h2>
+    <p class="hint">Newest first. A look is pending until its window closes and the app next opens.</p>
+    <div id="looks"><p class="empty">Loading…</p></div>
+    <p class="stamp">Read-only page. It never changes a look. Opening it lets the app check any look whose window has closed. Lab Test results are listed further down.</p>
+  </section>
+
+  <h2 class="hand" style="margin:1.6em 0 0">Field scorecards</h2>
+  <p class="sub" style="margin:.2em 0 0">Outdoor looks. A Not seen look is logged but is not counted toward a verdict.</p>
+  <div id="cards"><p class="empty">Loading…</p></div>
+
+  <h2 class="hand" style="margin:1.8em 0 0">Lab results</h2>
+  <p class="sub" style="margin:.2em 0 0">Each saying scored against ten years of past weather. Every run is listed, so nothing is hidden. Never mixed with outdoor looks.</p>
+  <div id="labs"><p class="empty">Loading…</p></div>
+
+  <h2 class="hand" style="margin:1.6em 0 0">Lab Test results</h2>
+  <p class="sub" style="margin:4px 0 0">Scored against ten years of past weather. Every Lab run that was saved is listed, and these are never mixed with outdoor looks.</p>
+  <div id="labs"><p class="empty">Loading…</p></div>
+</main>
+
+<script>
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const when = (iso) => { try { return new Date(iso).toLocaleString([], { dateStyle: "medium", timeStyle: "short" }); } catch (_) { return ""; } };
+  const pct = (x) => (x === null || x === undefined ? "–" : Math.round(x * 100) + "%");
+  const LABEL = { pending: "Pending", retry: "Pending", resolved: "Resolved", failed: "Couldn’t resolve" };
+
+  function entryHTML(o) {
+    const st = o.status === "resolved" ? "resolved" : o.status === "failed" ? "failed" : "pending";
+    let line = "";
+    if (st === "resolved") line = `Rain followed: <b>${o.rain ? "yes" : "no"}</b> (${Number(o.precip_mm).toFixed(1)} mm in the window after the look)`;
+    else if (st === "failed") line = "No sky data was available for this window. Counted separately, not scored.";
+    else if (o.resolve_after) line = `Window closes ${esc(when(o.resolve_after))}.`;
+    return `<div class="entry"><div class="q">${esc(o.proverb)}</div>
+      <span class="seen">${o.seen ? "Seen" : "Not seen"}</span><span class="pill ${st}">${LABEL[st]}</span>
+      <div class="meta">${esc(o.location_label)} · looked ${esc(when(o.observed_at))}</div>
+      ${line ? `<div class="meta">${line}</div>` : ""}
+      ${o.note ? `<div class="meta">Note: ${esc(o.note)}</div>` : ""}</div>`;
+  }
+
+  function cardHTML(c) {
+    const tallyArr = c.tally || [];
+    const dots = tallyArr.map((t) => `<i class="dot ${t === "hit" ? "hit" : t === "pending" ? "pending" : ""}" title="${esc(t)}"></i>`).join("");
+    const ghosts = Array.from({ length: Math.max(0, (c.min_n || 10) - tallyArr.length) }, () => `<i class="dot ghost"></i>`).join("");
+    const enough = c.hit_rate !== null && c.hit_rate !== undefined;
+    const stats = enough
+      ? `<p>Hit rate <b>${pct(c.hit_rate)}</b> (${pct(c.ci_low)}–${pct(c.ci_high)}), bar to beat <b>${pct(c.base_rate)}</b>.</p>`
+      : `<p>${c.n_sign_present} resolved look(s) with the sign, ${c.n_pending} pending. Bar to beat: <b>${pct(c.base_rate)}</b>. No hit rate is shown until ${esc(c.min_n)} looks.</p>`;
+    const notes = (c.notes || []).map((n) => `<li>${esc(n)}</li>`).join("");
+    return `<article class="card"><h2 class="hand">${esc(c.proverb)}</h2>
+      <div class="meta">${esc(c.location_label)} · Field Test${c.n_not_seen ? ` · ${c.n_not_seen} not seen` : ""}</div>
+      <span class="verdict">${esc(c.verdict)}</span>
+      <div class="tally" aria-label="Looks so far">${dots}${ghosts}</div>
+      ${stats}
+      ${c.next_action ? `<p class="meta">${esc(c.next_action)}</p>` : ""}
+      ${notes ? `<ul>${notes}</ul>` : ""}</article>`;
+  }
+
+  function labHTML(c) {
+    const enough = c.hit_rate !== null && c.hit_rate !== undefined;
+    const rule = `Rain counted when at least ${esc(c.rain_mm)} mm fell in the ${esc(c.window_hours)} hours after a look at ${String(c.look_hour ?? 18).padStart(2, "0")}:00.`;
+    const body = enough
+      ? `<p><b>${pct(c.hit_rate)}</b> hit rate · ${esc(c.hits)} of ${esc(c.n_sign_present)} days with the sign (${pct(c.ci_low)}–${pct(c.ci_high)}).</p>
+         <p>Bar to beat: <b>${pct(c.base_rate)}</b>${c.lift ? ` · lift <b>×${Number(c.lift).toFixed(2)}</b>` : ""}.</p>`
+      : `<p>The sign showed up on ${esc(c.n_sign_present)} of ${esc(c.looks_total)} days. A verdict needs ${esc(c.min_n)}. Bar to beat: <b>${pct(c.base_rate)}</b>.</p>`;
+    return `<article class="card"><h2 class="hand">${esc(c.proverb)}</h2>
+      <div class="meta">${esc(c.location_label)} · Lab Test</div>
+      <span class="verdict">${esc(c.verdict)}</span>
+      ${body}
+      <p class="meta">${rule}</p>
+      ${c.next_action ? `<p class="meta">${esc(c.next_action)}</p>` : ""}</article>`;
+  }
+
+  async function load() {
+    const looks = document.getElementById("looks"), cards = document.getElementById("cards"), labs = document.getElementById("labs");
+    try {
+      const r = await fetch("/api/observations");
+      if (!r.ok) throw new Error(r.status);
+      const list = await r.json();
+      list.sort((a, b) => String(b.observed_at).localeCompare(String(a.observed_at)));
+      looks.innerHTML = list.length ? list.map(entryHTML).join("") : `<p class="empty">A blank page. No looks saved yet.</p>`;
+    } catch (_) {
+      looks.innerHTML = `<p class="empty">Couldn’t reach the app. Is it running? Nothing was changed.</p>`;
+    }
+    try {
+      const r = await fetch("/api/scorecards");
+      if (!r.ok) throw new Error(r.status);
+      const all = await r.json();
+      const field = all.filter((c) => c.mode === "field"), lab = all.filter((c) => c.mode === "lab");
+      cards.innerHTML = field.length ? field.map(cardHTML).join("") : `<p class="empty">No field tests yet.</p>`;
+      labs.innerHTML = lab.length ? lab.map(labHTML).join("") : `<p class="empty">No Lab Tests saved yet.</p>`;
+    } catch (_) {
+      cards.innerHTML = `<p class="empty">Couldn’t load scorecards.</p>`;
+      labs.innerHTML = `<p class="empty">Couldn’t load Lab results.</p>`;
+    }
+  }
+  load();
+</script>
+</body>
+</html>
