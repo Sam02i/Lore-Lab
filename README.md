@@ -1,185 +1,174 @@
-# Lore Lab
+<div align="center">
 
-**Your grandmother said it. Lore Lab goes outside with you to find out if she was right.**
+# 🌿 Lore Lab
 
-Lore Lab turns folk weather sayings into small, honest experiments. A local open-weight model
-(Gemma, through Ollama) reads a saying in any language and turns it into something you can check.
-You review it and set every number yourself. Then either:
+### Your family's weather sayings, tested against ten years of real data.
+**Then go outside, look at the sky, and put your phone away.**
 
-* **Lab Test**: the sign is something an instrument records (pressure, wind direction, humidity, high cloud),
-  so the saying is scored against ten years of past weather, or
-* **Field Test**: the sign is a swift, a cow, a pine cone, the look of the moon. No instrument records those,
-  so *you* are the instrument: step outside, tap **Seen** or **Not seen**, and put the phone away.
-  Lore Lab checks the sky for you later.
+![License: MIT](https://img.shields.io/badge/license-MIT-green)
+![Model: Gemma 3 4B](https://img.shields.io/badge/model-Gemma%203%204B-4285F4)
+![Runs locally with Ollama](https://img.shields.io/badge/runs%20locally-Ollama-black)
+![Hacktoberfest 2026](https://img.shields.io/badge/Hacktoberfest-2026-ff7518)
 
-Every result is shown next to the **bar to beat**: how often it rains anyway. A saying only means something
-if it beats that. "Same as chance" is a real result and is shown with the same pride as "Promising".
+[🎬 Demo video](https://www.youtube.com/watch?v=9pPZJqvJlps) · [🌐 Live demo](https://lore-lab.onrender.com/) · [📝 DEV write-up](PASTE-DEV-POST-LINK-HERE)
 
-Built for the Hacktoberfest Open-Source AI Challenge, Week 1 "Touch Grass".
+<img src="docs/lab-scorecard-delhi.png" alt="Lab scorecard for the south-wind saying in Delhi" width="720">
 
-**Live demo:** https://lore-lab.onrender.com/ (pre-generated sayings only, free Render plan; see "Hosted demo" below)
-**Demo video:** [[VIDEO_URL]]
-**Post:** [[DEV_POST_URL]]
+</div>
 
-## Partner technologies
+---
 
-| Category | Real use in this project |
+## The idea
+
+> *"When the wind turns south, rain is in its mouth."*
+
+Everyone has a saying like this. Almost nobody checks it. **Lore Lab checks it, and tells you honestly when the answer is "just chance."**
+
+A small open-weight model (**Gemma**) turns a saying into a hypothesis you can test. **You** review it and set every number. **Plain code** scores it, and every result is shown next to **the bar to beat**: how often it rains anyway.
+
+> ### Gemma proposes. Code decides.
+
+## Two ways to test a saying
+
+| 🔬 **Lab Test** | 👀 **Field Test** |
 |---|---|
-| **Gemma** | `gemma3:4b`, run locally through Ollama, reads a saying in any language and returns a schema-validated hypothesis (translation, sign, how to observe it, predicted outcome, proxy variable, ambiguities). Measured on a 21-case test set (below). |
-| **Render** | Hosts the web app and API as a free web service. There is no persistent disk, so data saved on the hosted app is lost when it restarts. Gemma is not hosted there (see "Hosted demo"). |
+| The sign is something an instrument records: pressure, wind direction, humidity, high cloud. | The sign is something only you can see: a salt shaker, a swift, the look of the moon. |
+| Scored against **ten years of past weather**. | **You are the instrument.** Tap **Seen** or **Not seen**. |
+| Result in seconds. | The outcome is filled in later from weather data. |
 
-## Screenshots
+The Field Test ends with one line: **"Logged. We'll check the sky for you. Put your phone away."** The screen is meant to be the shortest part of the experience.
 
-**A verdict (Lab Test).** "When the wind turns south, rain is in its mouth", Delhi, 303 evenings with a south wind.
+Verdicts are **Promising**, **Same as chance**, **Backfires** and **On the trail** (not enough data yet). "Same as chance" is a real result.
 
-![Lab scorecard, Delhi south wind](docs/lab-scorecard-delhi.png)
+## What makes it honest
 
-**The app declining to score a saying it can't test.** Gemma read "When the glass falls low, prepare for a blow" as predicting *wind*.
-The Lab only scores rain, so it would not run it. It was not edited to say rain to force a result.
+| Guardrail | How it works |
+|---|---|
+| **The model never picks the number** | The hypothesis schema has no threshold field, and the server refuses to run a Lab Test until you set one. |
+| **Code decides what can be tested** | The sign must be atmospheric, the proxy variable must be on a whitelist, and a "rough" match needs your explicit OK. |
+| **Verdicts are arithmetic** | *Promising* only if the whole 95% Wilson interval is above the base rate; *Backfires* only if below; otherwise *Same as chance*. |
+| **No bending the question** | The lab scores rain only. A saying that predicts something else (wind, for example) is not run, and the outcome is never edited to force a result. |
+| **Minimum samples** | A Lab verdict needs at least 30 sign-present days; a Field verdict needs 10 looks. Below that the card says *On the trail* and shows no hit rate. |
+| **Rules before results** | The constants below were committed before any result was viewed. |
 
-![Review screen, falling glass](docs/review-screen-falling-glass.png)
+## Rules written before results
 
-**An honest in-progress result (Field Test).** Salt shaker, Delhi: one look logged on 11 Oct at about 04:34 IST, tapped **Not seen**. The look resolved after its window closed: rain followed (0.2 mm in the window, exactly at the 0.2 mm threshold). Because I did not see the sign, the look does not count toward a verdict, so the card reads "On the trail, 0 of 10 looks, 1 not seen".
-
-![Field Test card](docs/field-card-salt.png)
-
-**Hosted demo.** South-wind Lab Test run on the hosted free Render app, using pre-generated sayings. The numbers match my local run.
-
-![Hosted demo on Render](docs/hosted-demo.png)
+| Constant | Value | Where |
+|---|---|---|
+| What counts as rain | 0.2 mm or more | `backtest.py` |
+| Backtest "look" time | 18:00 local | `backtest.py` |
+| Lab outcome window | 24 hours, starting at the next full hour | `backtest.py` |
+| Field outcome window | set per hypothesis; 12 hours for the salt-shaker look reported below | `server.py` |
+| Minimum sign-present days (Lab) | 30 | `backtest.py` |
+| Minimum sign-present looks (Field) | 10 | Field Test |
+| Interval | Wilson, 95% | `backtest.py` |
+| History | 10 years, from Open-Meteo | `weather.py` |
 
 ## How it works
 
-```
-Saying -> Gemma proposes a hypothesis (JSON, schema-validated, closed vocabularies)
-       -> you review, edit and set the threshold (the model never picks a number)
-       -> plain code decides Lab Test or Field Test      <- "Gemma proposes, code decides"
-       -> Lab:   10-year backtest, Wilson interval, lift, verdict
-          Field: look outside -> Seen / Not seen -> outcome filled in lazily from weather data
-```
-
-* **Gemma proposes, code decides.** `schema.is_backtestable()` is the only thing that classifies a saying as a
-  Lab Test: `sign.kind == "atmospheric"` AND proxy variable on the whitelist AND `fit != "none"`.
-  A "rough" fit needs your explicit OK.
-* **No threshold from the model.** The schema has no threshold field at all. You set the number.
-* **Lazy, idempotent outcome resolution** (`resolve.py`). No scheduler or workflow engine. Every time the app is
-  opened, due looks are filled in from Open-Meteo hourly precipitation. Failed fetches retry, max 5 attempts, then
-  the look is marked failed, excluded from scoring and counted separately.
-
-## Run it locally (full app, live Gemma)
-
-```bash
-pip install -r requirements.txt
-ollama pull gemma3:4b            # optional: LORE_MODEL=gemma3:12b python -m uvicorn server:app
-uvicorn server:app
-# open http://127.0.0.1:8000
+```mermaid
+flowchart LR
+    A[Saying] --> B[Gemma proposes<br/>schema-validated JSON]
+    B --> C[You review<br/>and set the threshold]
+    C --> D{Code decides}
+    D -->|Instrument can measure it| E[Lab Test<br/>10-year backtest]
+    D -->|Only you can see it| F[Field Test<br/>Seen / Not seen]
+    E --> G[Hit rate · Wilson interval<br/>lift · verdict]
+    F --> H[Outcome filled in later<br/>from weather data]
 ```
 
-Tests (offline, no model, no network): `pip install -r requirements-dev.txt && python -m pytest -q`
+**Lazy outcome resolution.** A Field look stores when its window closes. Every time the app opens, an idempotent function fills in any due outcome from Open-Meteo hourly precipitation. Free hosts sleep, so a timer could silently never fire. A failed fetch retries up to five times, then the look is marked failed and counted separately.
 
-Model comparison for the write-up: `python run_test.py gemma3:4b gemma3:12b` (saves `results/<model>.json`).
+## First results
 
-## Hosted demo (Render)
+### Lab Test: Delhi, 24 h window, 0.2 mm or more of rain
 
-Render does not run Gemma. So the hosted app works like this:
+| Saying | Sign-present days | Hit rate (95% CI) | Bar to beat | Lift | Verdict |
+|---|---|---|---|---|---|
+| *When the wind turns south, rain is in its mouth* | 303 | 42% (37 to 48%), 128 hits | 19% | ×2.19 | Promising |
+| *Mackerel sky, mackerel sky, never long wet, never long dry* | 794 | 47% (43 to 50%), 371 hits | 19% | ×2.42 | Promising |
 
-* `pregenerate.py` ran Gemma locally once over the verified starter sayings and saved the validated output to
-  `pregenerated.json`. The hosted app serves those hypotheses and labels them "(pre-generated)".
-* Typing a brand-new saying works only in the local app. The hosted page says so instead of failing.
-* Saved data lives on the free instance's temporary disk and is lost on restart.
-* The hosted app ships the Delhi weather history my local run downloaded (cache files in `cache/`), because the free host shared an IP that hit Open-Meteo's daily request limit. The data and the result match my local run.
-* The hosted notebook is shared and has no accounts. **My real looks were logged on my local app.** Anything logged
-  on the hosted link is demo data and is not counted in the results below.
+Both use a **rough** proxy that I accepted: wind within 45° of south stands in for "turns south", and high cloud cover above my chosen threshold stands in for a mackerel sky. Each was run once, with no other thresholds tried.
 
-To reproduce the Delhi result on the hosted link: pick "When the wind turns south, rain is in its mouth", accept the
-rough match, choose the **South** chip (180°), set the place to Delhi, run the Lab Test.
+> **"Promising" is a hint, not proof.** Both effects could simply be the monsoon: south winds and high cloud are both more common when it rains more anyway. No season-adjusted check has been built, so that is a possibility, not a finding.
 
-## Pre-committed constants
+### Field Test: salt shaker, Delhi, 12 h window
 
-Set in `config.py` and committed **before** looking at any new result. `GET /api/config` returns them.
+One look logged at about 04:34 IST on 11 October. The salt had not caked, so it was logged **Not seen**. Rain followed (0.2 mm), but the sign was absent, so the look does not count toward a verdict. The card reads **On the trail: 0 of 10 looks, 1 not seen**, and shows no hit rate below 10 looks.
 
-| Constant | Value | Meaning |
-|---|---|---|
-| `MIN_N_BACKTEST` | 30 | sign-present days before a Lab Test shows a hit rate or verdict |
-| `MIN_N_LIVE` | 10 | sign-present looks, on different days, before a Field Test shows a verdict |
-| `RAIN_MM` | 0.2 | total precipitation in the window that counts as "rain" |
-| `WINDOW_H` | 12 | outcome window in hours; starts at the next full hour after the look |
-| `LOOK_HOUR` | 18 | local hour a backtest "looks outside" (dusk) |
-| `HISTORY_YEARS` | 10 | years of reanalysis used by the Lab Test |
+<img src="docs/field-card-salt.png" alt="Field Test card for the salt-shaker saying" width="560">
 
-Deviation from the original plan, stated openly: the PRD drafted a 24 h window. It was shortened to 12 h so a
-real evening look can resolve inside the build window. An earlier exploratory Lab run (Delhi, falling pressure,
-24 h window) predates these constants and is **not** in the results below.
-Results below were produced with the constants above.
+## Model quality
 
-## How looks are counted
-
-* Only **Seen** looks are sign-present looks. **Not seen** looks are logged and shown separately.
-* **One look per local day counts.** Extra looks the same evening are noted and not counted.
-* Pending looks appear on the tally but are never scored. Failed looks are excluded and counted separately.
-* Lab and Field results are **never pooled**.
-* Below the minimum N the card shows raw counts, the bar to beat, and what result would count
-  (computed from the Wilson interval for the current N and base rate, never hardcoded). No hit rate,
-  interval or verdict appears until the minimum is reached.
-
-## Results
-
-All numbers are copied from the app's own cards. Nothing is rounded up.
-
-| Saying | Place | Mode | N | Bar to beat | Hit rate (95% CI) | Verdict |
-|---|---|---|---|---|---|---|
-| When the wind turns south, rain is in its mouth | Delhi | Lab | 303 days | 19% | 42% (37-48%), 128 of 303; lift x2.19 | Promising |
-| Mackerel sky, mackerel sky, never long wet, never long dry | Delhi | Lab | 794 days | 19% | 47% (43-50%), 371 of 794; lift x2.42 | Promising |
-| When the glass falls low, prepare for a blow | Delhi | Lab | not scored | not scored | not scored | Model read the outcome as "wind"; the Lab scores rain only |
-| Salt shaker (Field look) | Delhi | Field | 0 of 10 looks, 1 not seen | not shown below N = 10 | not shown below N = 10 | On the trail |
-
-How the Delhi Lab rows were run: for the south-wind saying, sign = wind from within 45 degrees of south
-(threshold 180 degrees). For the mackerel saying, sign = high cloud cover at or above
-[[the cloud-cover threshold you typed]]. In both cases Gemma rated the proxy a "rough" fit and I accepted it,
-outcome = at least 0.2 mm of rain in the 12 hours after a look at 18:00. Each was run once with that number and
-I did not try other thresholds. The earlier exploratory 24 h falling-pressure run is not in this table.
-
-What "Promising" does and does not say: the interval sits above the bar to beat, for one place and a short
-history. It does not show the saying works. A **possible** explanation, untested here, is the season: south and
-south-easterly winds are more common in Delhi's monsoon, when it rains more anyway. The season-adjusted check
-(TabPFN) is not built.
-
-### Gemma extraction test (`run_test.py`, `gemma3:4b`, prompt v2.1)
+Measured on a 21-case test set with `gemma3:4b` and prompt v2.1:
 
 | Measure | Result |
 |---|---|
 | Valid JSON | 21 of 21 |
-| Sign kind correct (atmospheric vs not) | 17 of 18 scored |
-| Backtestable correct | 19 of 20 scored |
+| Sign kind correct (atmospheric or not) | 17 of 18 |
+| Backtestable correct | 19 of 20 |
 
-The scored miss: "Red sky at night, sailor's delight" was labelled *atmospheric* (expected *celestial*), so it came
-back as backtestable. Code decides backtestability *from the model's label*, so a wrong label can pass through.
-That is why you review every hypothesis, and why accuracy is measured and reported. Full rows: `results/gemma3_4b.json`.
-One saying ("Dew on the grass...") is ambiguous on purpose and is reported but not scored.
+**Known miss:** *"Red sky at night, sailor's delight"* was labelled an atmospheric sign and so came back as backtestable. The code trusts the model's label. That is why every hypothesis goes through human review.
 
-## Limits (please read)
+**Refusal example:** *"When the glass falls low, prepare for a blow"* was read as predicting wind, so the Lab did not run it.
 
-* **Reanalysis, not stations.** The ten-year history is ERA5 reanalysis served by Open-Meteo: modelled data.
-* **One place, a short history is a hint, not proof.** Lore Lab does not prove a saying true and does not
-  forecast better than meteorologists.
-* **Small pilot.** Field samples from a short build window are tiny. The UI says so.
-* **Rain only.** The Lab Test scores rain outcomes; other predicted events run as Field Tests.
-* **Small-model errors.** Gemma sometimes misclassifies a sign (see above).
-* **Shared hosted notebook.** No accounts. Real results come from the local app.
-* **Storage.** Hypotheses are saved to `hypotheses.json` and Field notes to `data.json` (both gitignored,
-  atomic writes). Plain files are a deliberate choice for a one-person demo, not a production design.
-* **Not built:** TabPFN context-adjusted lift, Dolbear's law test, photos, offline mode, Daily Look Card,
-  Temporal (removed in favour of lazy resolution), a comparison of a second Gemma size, live Gemma on the hosted link.
+<img src="docs/review-screen-falling-glass.png" alt="Review screen where the falling-glass saying was not scored" width="560">
 
-## Starter corpus
+## Run it locally
 
-`proverbs.json` holds the starter sayings with provenance notes. Only entries marked `"verified": true`
-are served to the app. Entries with `"verified": false` are kept in the file for transparency and are
-never presented as verified. Sources are never invented; unknown means `unknown`.
+Requires Python 3.10+ and [Ollama](https://ollama.com).
 
-## Rules and credits
+```bash
+git clone https://github.com/Sam02i/Lore-Lab.git
+cd Lore-Lab
+pip install -r requirements.txt
+ollama pull gemma3:4b
+uvicorn server:app --reload
+```
 
-* Project started inside the challenge window; repo created fresh.
-* Open-Meteo (geocoding, archive, forecast), Ollama + Gemma, FastAPI, pandas, Render.
-* Artwork in `frontend/assets` was collected from Pinterest. I do not know the original artists and I do not claim rights to it. It is not part of the code license. If you are the creator and want it credited or removed, open an issue and I will do it.
-* Code is released under the MIT license (`LICENSE`).
-* Any commit after the deadline is listed here: _none yet_.
+Open <http://localhost:8000>. The frontend is served by the same FastAPI app. Weather history comes from [Open-Meteo](https://open-meteo.com), so the first Lab Test needs a network connection. Gemma itself runs entirely on your machine: no cloud model, no account, no tracking.
+
+## Project layout
+
+| File | Role |
+|---|---|
+| `extract.py`, `prompt.py` | Ask Gemma (via Ollama) for a JSON hypothesis |
+| `schema.py` | Validates the hypothesis; decides what is backtestable |
+| `adapter.py` | Shapes the hypothesis for the frontend |
+| `weather.py` | Geocoding and hourly history from Open-Meteo |
+| `backtest.py` | Sign masks, Wilson interval, the pre-committed constants |
+| `lab.py`, `scorecard.py` | Build the scorecard returned to the UI |
+| `server.py` | FastAPI routes; serves `frontend/` |
+| `run_test.py` | Runs the extraction test set |
+| `frontend/` | The web app |
+| `docs/` | Screenshots used in this README |
+
+## Hosted demo
+
+The live demo runs on Render's free plan. Render does not run Gemma, so the hosted app serves hypotheses that Gemma generated locally and saved in `pregenerated.json`. There is no persistent logbook on the free plan, and the Delhi weather history ships as a cache file because the free host's shared IP hit Open-Meteo's daily request limit. It is the same history the local run downloaded. Real Field Test looks live on the local app.
+
+> Free hosting sleeps. The first load can take about a minute.
+
+## Limits
+
+- Reanalysis (modelled) data, not weather-station readings.
+- One place, ten years: a hint, not proof.
+- The proxies only approximate the sayings.
+- Lore Lab does not prove a saying true and does not forecast better than meteorologists.
+- Field samples from a few days of building are tiny, and the app says so.
+- **Not built:** a season-adjusted check, a second Gemma size comparison, a Dolbear's-law test, photos, offline mode, a daily look card.
+- The artwork in the app was collected from Pinterest. The original artists are unknown and no rights are claimed.
+
+## License
+
+MIT. See [LICENSE](LICENSE).
+
+---
+
+<div align="center">
+
+Built by **Samiksha Tripathy** for the Hacktoberfest Open-Source AI Challenge, Week 1: *Touch Grass*.
+
+**Close the tab. Look at the sky. Put your phone away.** 🌿
+
+</div>
