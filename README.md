@@ -39,7 +39,7 @@ The Lab only scores rain, so it would not run it. It was not edited to say rain 
 
 ![Review screen, falling glass](docs/review-screen-falling-glass.png)
 
-**An honest in-progress result (Field Test).** [[caption: e.g. "Salt shaker caking, Delhi: 1 look, resolved on Mon 12 Oct. On the trail, 1 of 10 looks."]]
+**An honest in-progress result (Field Test).** Salt shaker, Delhi: one look logged on 11 Oct at about 04:34 IST, tapped **Not seen**. Its outcome window closes at 17:30 IST on 11 Oct. A Not seen look does not count toward a verdict, so the card reads "On the trail, 0 of 10 looks, 1 not seen".
 
 ![Field Test card](docs/field-card-salt.png)
 
@@ -127,12 +127,15 @@ All numbers are copied from the app's own cards. Nothing is rounded up.
 | Saying | Place | Mode | N | Bar to beat | Hit rate (95% CI) | Verdict |
 |---|---|---|---|---|---|---|
 | When the wind turns south, rain is in its mouth | Delhi | Lab | 303 days | 19% | 42% (37-48%), 128 of 303; lift x2.19 | Promising |
+| Mackerel sky, mackerel sky, never long wet, never long dry | Delhi | Lab | 794 days | 19% | 47% (43-50%), 371 of 794; lift x2.42 | Promising |
 | When the glass falls low, prepare for a blow | Delhi | Lab | not scored | not scored | not scored | Model read the outcome as "wind"; the Lab scores rain only |
-| [[Salt shaker: "When the salt shaker cakes, rain is on the way"]] | Delhi | Field | [[n]] of 10 | [[%]] | not shown below N = 10 | On the trail |
+| Salt shaker (Field look) | Delhi | Field | 0 of 10 looks, 1 not seen | not shown below N = 10 | not shown below N = 10 | On the trail |
 
-How the Delhi row was run: sign = wind from within 45 degrees of south ([[confirm: threshold 180 degrees]]),
-Gemma rated the proxy a "rough" fit and I accepted it, outcome = at least 0.2 mm of rain in the 12 hours after a look
-at 18:00. I ran this once with that number and did not try other thresholds.
+How the Delhi Lab rows were run: for the south-wind saying, sign = wind from within 45 degrees of south
+([[confirm: threshold 180 degrees]]). For the mackerel saying, sign = high cloud cover at or above
+[[the cloud-cover threshold you typed]]. In both cases Gemma rated the proxy a "rough" fit and I accepted it,
+outcome = at least 0.2 mm of rain in the 12 hours after a look at 18:00. Each was run once with that number and
+I did not try other thresholds. The earlier exploratory 24 h falling-pressure run is not in this table.
 
 What "Promising" does and does not say: the interval sits above the bar to beat, for one place and a short
 history. It does not show the saying works. A **possible** explanation, untested here, is the season: south and
@@ -177,4 +180,5 @@ never presented as verified. Sources are never invented; unknown means `unknown`
 * Project started inside the challenge window; repo created fresh.
 * Open-Meteo (geocoding, archive, forecast), Ollama + Gemma, FastAPI, pandas, Render.
 * Artwork in `frontend/assets`: [[who made it, or its licence; delete this line if it is all your own]]
+* Code is released under the MIT license (`LICENSE`).
 * Any commit after the deadline is listed here: _none yet_.
