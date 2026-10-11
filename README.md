@@ -17,7 +17,7 @@ if it beats that. "Same as chance" is a real result and is shown with the same p
 
 Built for the Hacktoberfest Open-Source AI Challenge, Week 1 "Touch Grass".
 
-**Live demo:** [[RENDER_URL]] (starter sayings only; see "Hosted demo" below)
+**Live demo:** [[RENDER_URL]] (pre-generated sayings only, free Render plan; see "Hosted demo" below)
 **Demo video:** [[VIDEO_URL]]
 **Post:** [[DEV_POST_URL]]
 
@@ -26,7 +26,7 @@ Built for the Hacktoberfest Open-Source AI Challenge, Week 1 "Touch Grass".
 | Category | Real use in this project |
 |---|---|
 | **Gemma** | `gemma3:4b`, run locally through Ollama, reads a saying in any language and returns a schema-validated hypothesis (translation, sign, how to observe it, predicted outcome, proxy variable, ambiguities). Measured on a 21-case test set (below). |
-| **Render** | Hosts the web app and API as a web service with a persistent disk, so saved looks survive restarts. Gemma is not hosted there (see "Hosted demo"). |
+| **Render** | Hosts the web app and API as a free web service. There is no persistent disk, so data saved on the hosted app is lost when it restarts. Gemma is not hosted there (see "Hosted demo"). |
 
 ## Screenshots
 
@@ -43,7 +43,7 @@ The Lab only scores rain, so it would not run it. It was not edited to say rain 
 
 ![Field Test card](docs/field-card-salt.png)
 
-**Hosted demo.** [[caption]]
+**Hosted demo.** South-wind Lab Test run on the hosted free Render app, using pre-generated sayings. The numbers match my local run.
 
 ![Hosted demo on Render](docs/hosted-demo.png)
 
@@ -85,7 +85,8 @@ Render does not run Gemma. So the hosted app works like this:
 * `pregenerate.py` ran Gemma locally once over the verified starter sayings and saved the validated output to
   `pregenerated.json`. The hosted app serves those hypotheses and labels them "(pre-generated)".
 * Typing a brand-new saying works only in the local app. The hosted page says so instead of failing.
-* Saved data (`data.json`, `hypotheses.json`, the weather cache) lives on a persistent disk set by `LORE_DATA_DIR`.
+* Saved data lives on the free instance's temporary disk and is lost on restart.
+* The hosted app ships the Delhi weather history my local run downloaded (cache files in `cache/`), because the free host shared an IP that hit Open-Meteo's daily request limit. The data and the result match my local run.
 * The hosted notebook is shared and has no accounts. **My real looks were logged on my local app.** Anything logged
   on the hosted link is demo data and is not counted in the results below.
 
@@ -132,7 +133,7 @@ All numbers are copied from the app's own cards. Nothing is rounded up.
 | Salt shaker (Field look) | Delhi | Field | 0 of 10 looks, 1 not seen | not shown below N = 10 | not shown below N = 10 | On the trail |
 
 How the Delhi Lab rows were run: for the south-wind saying, sign = wind from within 45 degrees of south
-([[confirm: threshold 180 degrees]]). For the mackerel saying, sign = high cloud cover at or above
+(threshold 180 degrees). For the mackerel saying, sign = high cloud cover at or above
 [[the cloud-cover threshold you typed]]. In both cases Gemma rated the proxy a "rough" fit and I accepted it,
 outcome = at least 0.2 mm of rain in the 12 hours after a look at 18:00. Each was run once with that number and
 I did not try other thresholds. The earlier exploratory 24 h falling-pressure run is not in this table.
