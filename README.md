@@ -39,7 +39,7 @@ The Lab only scores rain, so it would not run it. It was not edited to say rain 
 
 ![Review screen, falling glass](docs/review-screen-falling-glass.png)
 
-**An honest in-progress result (Field Test).** Salt shaker, Delhi: one look logged on 11 Oct at about 04:34 IST, tapped **Not seen**. Its outcome window closes at 17:30 IST on 11 Oct. A Not seen look does not count toward a verdict, so the card reads "On the trail, 0 of 10 looks, 1 not seen".
+**An honest in-progress result (Field Test).** Salt shaker, Delhi: one look logged on 11 Oct at about 04:34 IST, tapped **Not seen**. The look resolved after its window closed: rain followed (0.2 mm in the window, exactly at the 0.2 mm threshold). Because I did not see the sign, the look does not count toward a verdict, so the card reads "On the trail, 0 of 10 looks, 1 not seen".
 
 ![Field Test card](docs/field-card-salt.png)
 
