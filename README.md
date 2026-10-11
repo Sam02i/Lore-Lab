@@ -17,7 +17,7 @@ if it beats that. "Same as chance" is a real result and is shown with the same p
 
 Built for the Hacktoberfest Open-Source AI Challenge, Week 1 "Touch Grass".
 
-**Live demo:** [[RENDER_URL]] (pre-generated sayings only, free Render plan; see "Hosted demo" below)
+**Live demo:** https://lore-lab.onrender.com/ (pre-generated sayings only, free Render plan; see "Hosted demo" below)
 **Demo video:** [[VIDEO_URL]]
 **Post:** [[DEV_POST_URL]]
 
@@ -180,6 +180,6 @@ never presented as verified. Sources are never invented; unknown means `unknown`
 
 * Project started inside the challenge window; repo created fresh.
 * Open-Meteo (geocoding, archive, forecast), Ollama + Gemma, FastAPI, pandas, Render.
-* Artwork in `frontend/assets`: [[who made it, or its licence; delete this line if it is all your own]]
+* Artwork in `frontend/assets` was collected from Pinterest. I do not know the original artists and I do not claim rights to it. It is not part of the code license. If you are the creator and want it credited or removed, open an issue and I will do it.
 * Code is released under the MIT license (`LICENSE`).
 * Any commit after the deadline is listed here: _none yet_.
