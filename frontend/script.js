@@ -3,6 +3,7 @@ const heroBg = document.querySelector(".hero__bg");
 const progress = document.querySelector(".header__progress");
 const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const links = [...document.querySelectorAll(".header__nav a")]
+  .filter((a) => (a.getAttribute("href") || "").startsWith("#"))
   .map((a) => ({ a, t: document.querySelector(a.getAttribute("href")) }))
   .filter((l) => l.t);
 
@@ -14,7 +15,7 @@ function update() {
   header.classList.toggle("is-scrolled", y > 10);
   const max = document.documentElement.scrollHeight - window.innerHeight;
   progress.style.transform = `scaleX(${max > 0 ? y / max : 0})`;
-  if (!reduce) heroBg.style.transform = `translateY(${Math.min(y * 0.2, window.innerHeight * 0.08)}px)`;
+  if (!reduce && heroBg) heroBg.style.transform = `translateY(${Math.min(y * 0.2, window.innerHeight * 0.08)}px)`;
   let cur = null, best = -Infinity;
   const line = window.innerHeight * 0.4;
   for (const l of links) {

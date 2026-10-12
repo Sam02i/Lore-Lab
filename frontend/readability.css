@@ -1,0 +1,184 @@
+/* =========================================================
+   Lore Lab · readability.css
+   Loaded LAST (after style.css, lore.css, sections.css).
+   To undo everything: delete the <link> to this file.
+   Rule of thumb: handwriting for headings, Nunito for anything you read.
+   ========================================================= */
+
+:root{
+  --font-body:"Nunito","Segoe UI",system-ui,-apple-system,sans-serif;
+  --read-body:"Nunito","Segoe UI",system-ui,-apple-system,sans-serif;
+}
+
+/* ---------- 1. Body text: one clean, readable font ---------- */
+.header,
+.hero__pill,
+.hero__text,
+.hero__try,
+.hero__scroll,
+.way,
+.ax,
+.px,
+.lore{
+  font-family:var(--read-body);
+}
+.header{font-weight:700}
+.hero__pill,.hero__try,.hero__scroll{font-weight:700}
+
+/* handwriting stays for big headings */
+.way__heading{font-family:"Swanky and Moo Moo","Chalkboard SE","Comic Sans MS",cursive}
+.way__title{font-weight:800}
+
+/* ---------- 2. Hero: a soft panel so the grid doesn't cut through the words ---------- */
+.hero__bg::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 48% 42% at 50% 46%,rgba(12,38,24,.72),rgba(12,38,24,.45) 55%,transparent 78%);
+}
+.hero__text{
+  font-weight:600;line-height:1.5;
+  text-shadow:0 1px 3px rgba(0,0,0,.65),0 0 14px rgba(0,0,0,.45);
+}
+.hero__title{text-shadow:0 .05em .25em rgba(0,0,0,.45)}
+
+/* ---------- 3. "Old Way / Lore Lab Way": dimmer grid, bigger and calmer text ---------- */
+.way{
+  background:
+    linear-gradient(rgba(10,40,24,.55),rgba(10,40,24,.55)),
+    url("assets/grid.jpg") top left / 36.8vw auto repeat;
+}
+.way__intro{
+  font-size:clamp(15px,1.35vw,32px);
+  line-height:1.5;
+}
+.way__title{
+  font-size:clamp(17px,1.55vw,36px);
+  line-height:1.3;
+  margin-bottom:.6em;
+}
+.way__body{
+  font-size:clamp(15px,1.3vw,31px);
+  line-height:1.55;
+  font-weight:500;
+  color:#fbfbf6;
+  max-width:min(47vw,38em);
+}
+.way__item{margin-bottom:2.4vw}
+.way__item:last-child{margin-bottom:0}
+
+/* ---------- 4. Experiment engine (lore.css): lift the tiny text ---------- */
+.lore{--fs:clamp(16px,1.25vw,21px)}
+
+.lore-help,
+.lore-meta li,
+.lore-chip,
+.lore-modetag,
+.lore-card .lore-caveat,
+.lore-card .lore-pend,
+.lore-states li,
+.lore-key,
+.lore-orig small,
+.lore-stack small,
+.lore-stack .lz-link{
+  font-size:max(.88em,14px);
+  opacity:1;
+}
+.lore-side,
+.lore-pane>p.lore-intro,
+.lore-ambig p,
+.lore-check,
+details.lore-why,
+.lore-group>p,
+.lore-card .lore-next,
+.lore-obs dl,
+.lore-obs details,
+.lore-obslist{
+  font-size:max(.95em,15px);
+  line-height:1.5;
+}
+.lore label,.lore .lore-label{font-size:.95em;font-weight:700}
+.lore-field{font-size:max(1em,16px)} /* 16px stops iOS zooming into the box */
+.lore-decides{font-size:max(.9em,14px);line-height:1.5}
+
+/* small-caps style labels were hard to scan: sentence case, lighter tracking */
+.lore-pill,.lore-kick,.lore-detail dt{letter-spacing:.06em}
+
+/* disabled buttons: still readable */
+.lore button:disabled,.lore button[disabled]{opacity:.75}
+
+/* ---------- 5. Keyboard focus + reduced motion ---------- */
+:where(a,button,input,textarea,summary,[tabindex]):focus-visible{
+  outline:3px solid #f4d88a;outline-offset:3px;border-radius:.3em;
+}
+@media (prefers-reduced-motion:reduce){
+  .way__stamp,.hero__scroll{animation:none!important}
+}
+
+/* ---------- 6. Phones ---------- */
+@media (max-width:800px){
+  .way{
+    background:
+      linear-gradient(rgba(10,40,24,.55),rgba(10,40,24,.55)),
+      url("assets/grid.jpg") top left / 90vw auto repeat;
+  }
+  .way__body{max-width:none;font-size:16px}
+  .way__title{font-size:18px}
+  .way__intro{font-size:16px}
+  .hero__bg::after{
+    background:radial-gradient(ellipse 80% 40% at 50% 46%,rgba(12,38,24,.75),rgba(12,38,24,.45) 60%,transparent 85%);
+  }
+}
+
+
+/* =========================================================
+   Site restructure: home = tool first, depth lives on how-it-works.html
+   ========================================================= */
+
+/* home: the shortened "Old Way / Lore Lab Way" no longer needs a poster-sized box */
+.way{min-height:0;padding-bottom:clamp(2.5rem,5vw,5rem)}
+.way__more{
+  grid-column:1 / -1;position:relative;z-index:2;
+  margin:clamp(1.5rem,3vw,3rem) 0 0;text-align:center;
+}
+.way__more a{
+  display:inline-block;padding:.55em 1.5em;
+  font:800 clamp(16px,1.4vw,24px)/1.2 var(--read-body);
+  color:#10291b;text-decoration:none;background:#f4d88a;
+  border:.12em solid #10291b;border-radius:999px;box-shadow:.18em .18em 0 #10291b;
+  transition:translate .15s ease,box-shadow .15s ease;
+}
+.way__more a:hover,.way__more a:focus-visible{translate:-.06em -.1em;box-shadow:.26em .3em 0 #10291b}
+
+/* how-it-works page: short intro under the fixed header */
+.how-intro{
+  padding:clamp(7.5rem,19vh,11rem) 6vw clamp(2.5rem,6vh,4rem);
+  text-align:center;color:#fbf6e6;background:#1f5a3d;
+}
+.how-intro__title{
+  margin:0 auto;max-width:12em;
+  font:400 clamp(2.6rem,7.5vw,6.5rem)/.98 "Swanky and Moo Moo","Chalkboard SE","Comic Sans MS",cursive;
+  text-shadow:0 .05em .2em rgba(0,0,0,.35);
+}
+.how-intro__lede{
+  max-width:38em;margin:1.2em auto 0;
+  font:600 clamp(17px,1.5vw,24px)/1.55 var(--read-body);
+}
+.how-intro__links{
+  display:flex;flex-wrap:wrap;justify-content:center;gap:.7em;margin:1.6em 0 0;
+}
+.how-intro__links a{
+  padding:.35em 1.1em;font:700 clamp(15px,1.2vw,20px)/1.2 var(--read-body);
+  color:#10291b;text-decoration:none;background:#f4d88a;
+  border:.12em solid #10291b;border-radius:999px;box-shadow:.14em .14em 0 #10291b;
+}
+.how-intro__links a:nth-child(2){background:#f2b8a8}
+.how-intro__links a:nth-child(3){background:#cfe3b8}
+.how-intro__links a:nth-child(4){background:#fbf6e6}
+.how-intro__links a:hover,.how-intro__links a:focus-visible{translate:-.05em -.1em;box-shadow:.2em .25em 0 #10291b}
+
+/* end-of-page call to action */
+.how-end .lore-close__big{opacity:1;translate:none}
+.how-end .lore-lede,.how-end .lore-close__alt{opacity:1;translate:none}
+
+@media (max-width:800px){
+  .way__more a{font-size:16px}
+}

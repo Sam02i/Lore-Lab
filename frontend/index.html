@@ -22,12 +22,14 @@
   <link href="https://fonts.googleapis.com/css2?family=Caveat+Brush&family=Patrick+Hand&display=swap" rel="stylesheet">
   <!-- TEMPORARY: style.css and sections.css still name the old fonts. Delete this line after running swap-fonts.sh on them. -->
   <link href="https://fonts.googleapis.com/css2?family=Delicious+Handrawn&family=Delius&family=Swanky+and+Moo+Moo&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="preload" as="image" href="assets/granny-body.webp" fetchpriority="high">
   <link rel="preload" as="image" href="assets/granny-broom.webp" fetchpriority="high">
   <link rel="preload" as="image" href="assets/sky-paper.jpg">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="lore.css">
   <link rel="stylesheet" href="sections.css">
+  <link rel="stylesheet" href="readability.css">
   <script>(function(){var r=document.documentElement,seen=false,EVERY_VISIT=true;try{seen=(!EVERY_VISIT&&!!localStorage.getItem("loreLoaderSeen")&&!/[?&]loader/.test(location.search))||/[?&]skiploader/.test(location.search)}catch(e){}r.classList.add("js");r.classList.add(seen?"ld-skip":"is-loading")})();</script>
 </head>
 <body id="top">
@@ -63,18 +65,15 @@
       <div class="ld-pile" aria-hidden="true"><svg class="ld-scrap ld-scrap--1" viewBox="0 0 114 71" aria-hidden="true"><polygon points="5,50 40,5 70,30 112,20 85,66 30,68" fill="#f6c935"/></svg><svg class="ld-scrap ld-scrap--2" viewBox="0 0 75 119" aria-hidden="true"><polygon points="8,40 50,4 70,70 40,116 6,90" fill="#f2b8a8"/></svg><svg class="ld-scrap ld-scrap--3" viewBox="0 0 122 92" aria-hidden="true"><polygon points="4,60 36,8 80,34 118,10 100,86 40,88" fill="#fbf6e6"/></svg><svg class="ld-scrap ld-scrap--4" viewBox="0 0 61 60" aria-hidden="true"><polygon points="6,30 34,4 58,36 28,58" fill="#f26a4f"/></svg><svg class="ld-scrap ld-scrap--5" viewBox="0 0 64 62" aria-hidden="true"><polygon points="4,38 40,6 62,30 50,58 14,56" fill="#f6c935"/></svg><svg class="ld-scrap ld-scrap--6" viewBox="0 0 39 40" aria-hidden="true"><polygon points="4,24 24,4 36,28 14,38" fill="#8aa863"/></svg><svg class="ld-scrap ld-scrap--7" viewBox="0 0 30 21" aria-hidden="true"><polygon points="3,14 20,2 28,12 10,19" fill="#f2b8a8"/></svg></div>
     </div>
   </div>
-  <a class="skip-link" href="#way">Skip to content</a>
+  <a class="skip-link" href="#engine">Skip to content</a>
 
   <header class="header">
     <a href="#top"><span class="header__brand">Lore Lab</span></a>
     <button class="header__menu" id="header-menu" type="button" aria-expanded="false" aria-controls="header-nav"><span>Menu</span><i aria-hidden="true"></i></button>
     <nav class="header__nav" id="header-nav">
-      <a href="#way"><span>Stance</span></a>
-      <a href="#engine"><span>Engine</span></a>
+      <a href="#engine"><span>Test a saying</span></a>
       <a href="notebook.html"><span>Logbook</span></a>
-      <a href="#architecture"><span>Architecture</span></a>
-      <a href="#protocol"><span>Protocol</span></a>
-      <a href="#statement"><span>Manifesto</span></a>
+      <a href="how-it-works.html"><span>How it works</span></a>
       <a href="#join"><span>Touch grass &#8599;</span></a>
     </nav>
     <div class="header__progress" aria-hidden="true"></div>
@@ -96,63 +95,8 @@
 
     <img class="hero__apple" src="assets/apple.webp" alt="" width="900" height="900" decoding="async">
     <img class="hero__girl" src="assets/girl.webp" alt="" width="1100" height="1100" decoding="async">
-    <a class="hero__scroll" href="#way"><span>scroll down</span><i aria-hidden="true">&darr;</i></a>
+    <a class="hero__scroll" href="#engine"><span>scroll down</span><i aria-hidden="true">&darr;</i></a>
   </main>
-
-  <section class="way" id="way">
-    <div class="way__shade" aria-hidden="true"></div>
-    <div class="way__stamp" aria-hidden="true"><img src="assets/cat-stamp.webp" alt="" width="800" height="800" loading="lazy" decoding="async"></div>
-
-    <div class="way__col way__col--old">
-      <h2 class="way__heading reveal">THE OLD WAY</h2>
-      <p class="way__intro reveal">How closed corporate AI and modern weather apps trap you behind glass with agreeable hallucinations</p>
-
-      <article class="way__item reveal">
-        <h3 class="way__title"><span class="way__icon way__icon--x"></span>Sycophantic Chat Confirmation Bias</h3>
-        <p class="way__body">Ask a closed frontier model if cows lying down predicts rain, and it drafts a polite 400-word agreeable essay. No base rates, no confidence intervals, zero statistical rigor—just automated flattery masquerading as insight.</p>
-      </article>
-
-      <article class="way__item reveal">
-        <h3 class="way__title"><span class="way__icon way__icon--x"></span>The 10-Day Radar Doomscroll</h3>
-        <p class="way__body">Commercial weather apps engineered like casinos—littered with animated radar loops, ad-bloated hourly forecasts, and notification spam designed to keep your eyes glued to glass instead of looking up at the horizon.</p>
-      </article>
-
-      <article class="way__item reveal">
-        <h3 class="way__title"><span class="way__icon way__icon--x"></span>Cloud Surveillance for Family Lore</h3>
-        <p class="way__body">Sending your grandmother's regional dialect, generational oral history, and precise backyard coordinates over corporate API paywalls to subsidize closed training clusters.</p>
-      </article>
-
-      <article class="way__item reveal">
-        <h3 class="way__title"><span class="way__icon way__icon--x"></span>Black-Box "Truth" Engines</h3>
-        <p class="way__body">Proprietary models that fake confidence. When an unmeasurable biological sign appears, closed assistants invent fake correlations instead of admitting: "There is no satellite dataset for swallows."</p>
-      </article>
-    </div>
-
-    <div class="way__col way__col--new">
-      <h2 class="way__heading reveal">LORE LAB WAY</h2>
-      <p class="way__intro reveal">Open-weight intelligence, ruthless statistical honesty, and an app that tells you to put your phone away.</p>
-
-      <article class="way__item reveal">
-        <h3 class="way__title"><span class="way__icon way__icon--check"></span>Brutal Statistical Honesty</h3>
-        <p class="way__body">We don't flatter ancient lore. We compute 10-year base rates, calculate Wilson score intervals, and measure true lift. If your grandmother's saying did no better than a coin flip, Lore Lab prints it plainly: "Same as chance. That's a real finding."</p>
-      </article>
-
-      <article class="way__item reveal">
-        <h3 class="way__title"><span class="way__icon way__icon--check"></span>5-Second Field Observations</h3>
-        <p class="way__body">Look up at the swifts, tap Seen or Not seen, and step away. The interface explicitly instructs: "Logged. We'll check the sky for you. Put your phone away." The screen is an observation notebook, not a destination.</p>
-      </article>
-
-      <article class="way__item reveal">
-        <h3 class="way__title"><span class="way__icon way__icon--check"></span>Local Gemma on Open Silicon</h3>
-        <p class="way__body">Run open-weight Gemma locally on your own machine. Multilingual proverbs—in German, Spanish, Hindi, or English—are interpreted on-device. Generational folk wisdom never leaves your local hardware.</p>
-      </article>
-
-      <article class="way__item reveal">
-        <h3 class="way__title"><span class="way__icon way__icon--check"></span>Gemma Proposes, Code Decides</h3>
-        <p class="way__body">Zero LLM hallucinations in the science layer. Open weights extract hypotheses into strict Pydantic schemas, but deterministic, auditable Python code enforces the sensor whitelist. Honest code, open weights, real grass.</p>
-      </article>
-    </div>
-  </section>
 
   <!-- ===================== LORE LAB · EXPERIMENT ENGINE ===================== -->
   <section class="lore lore-engine" id="engine" aria-labelledby="lore-engine-title">
@@ -230,207 +174,47 @@
     </div>
   </section>
 
-  <!-- ===================== ONE RUN · saying to scorecard ===================== -->
-  <section class="run" id="run" aria-labelledby="run-title">
-    <div class="run__wrap">
-      <header class="run__head">
-        <span class="run__pill" id="run-label">Example walkthrough</span>
-        <h2 class="run__title" id="run-title">ONE SAYING,<br>START TO FINISH.</h2>
-        <p class="run__lede">Follow a single proverb through the lab. Gemma proposes, code decides, and the scorecard says only what the data can back.</p>
-      </header>
-      <div class="run__strip" id="run-strip"></div>
+  <section class="way" id="way">
+    <div class="way__shade" aria-hidden="true"></div>
+    <div class="way__stamp" aria-hidden="true"><img src="assets/cat-stamp.webp" alt="" width="800" height="800" loading="lazy" decoding="async"></div>
+
+    <div class="way__col way__col--old">
+      <h2 class="way__heading reveal">THE OLD WAY</h2>
+      <p class="way__intro reveal">How closed corporate AI and modern weather apps trap you behind glass with agreeable hallucinations</p>
+
+      <article class="way__item reveal">
+        <h3 class="way__title"><span class="way__icon way__icon--x"></span>Sycophantic Chat Confirmation Bias</h3>
+        <p class="way__body">Ask a closed frontier model if cows lying down predicts rain, and it drafts a polite 400-word agreeable essay. No base rates, no confidence intervals, zero statistical rigor—just automated flattery masquerading as insight.</p>
+      </article>
+
+      <article class="way__item reveal">
+        <h3 class="way__title"><span class="way__icon way__icon--x"></span>The 10-Day Radar Doomscroll</h3>
+        <p class="way__body">Commercial weather apps engineered like casinos—littered with animated radar loops, ad-bloated hourly forecasts, and notification spam designed to keep your eyes glued to glass instead of looking up at the horizon.</p>
+      </article>
+
+
     </div>
+
+    <div class="way__col way__col--new">
+      <h2 class="way__heading reveal">LORE LAB WAY</h2>
+      <p class="way__intro reveal">Open-weight intelligence, ruthless statistical honesty, and an app that tells you to put your phone away.</p>
+
+      <article class="way__item reveal">
+        <h3 class="way__title"><span class="way__icon way__icon--check"></span>Brutal Statistical Honesty</h3>
+        <p class="way__body">We don't flatter ancient lore. We compute 10-year base rates, calculate Wilson score intervals, and measure true lift. If your grandmother's saying did no better than a coin flip, Lore Lab prints it plainly: "Same as chance. That's a real finding."</p>
+      </article>
+
+      <article class="way__item reveal">
+        <h3 class="way__title"><span class="way__icon way__icon--check"></span>5-Second Field Observations</h3>
+        <p class="way__body">Look up at the swifts, tap Seen or Not seen, and step away. The interface explicitly instructs: "Logged. We'll check the sky for you. Put your phone away." The screen is an observation notebook, not a destination.</p>
+      </article>
+
+
+    </div>
+    <p class="way__more reveal"><a href="how-it-works.html">See how it works</a></p>
   </section>
 
-  <!-- ===================== ARCHITECTURE · scroll-driven schematic ===================== -->
-  <section class="ax" id="architecture" aria-labelledby="ax-title">
-    <div class="ax__glow" aria-hidden="true"></div>
-    <div class="ax__wrap">
-      <header class="ax__head" id="ax-head">
-        <svg class="ax__circuit" viewBox="0 0 1500 560" preserveAspectRatio="xMaxYMid slice" aria-hidden="true" focusable="false">
-          <g class="ax-c">
-            <path pathLength="1" d="M1500 80H1220V230H980V170"/><path pathLength="1" d="M1500 480H1300V380H1040V450H860"/>
-            <path pathLength="1" d="M1500 300H1360V150H1120"/><path pathLength="1" d="M1100 560V500H1180"/>
-            <circle cx="980" cy="170" r="7"/><circle cx="860" cy="450" r="7"/><circle cx="1120" cy="150" r="6"/><circle cx="1180" cy="500" r="5"/>
-          </g>
-        </svg>
-        <div class="ax__spot" aria-hidden="true"></div>
-        <h2 class="ax__title" id="ax-title">HOW THE LAB<br><span class="ax__hl">IS WIRED</span></h2>
-        <p class="ax__lede">The whole machine on one page. Tap a box to see what it does, or trace a path to watch a request travel.</p>
-      </header>
-      <div class="ax__body">
-        <aside class="ax__panel" aria-label="System schematic">
-          <div class="ax__dgm" id="ax-dgm"></div>
-          <div class="ax__side">
-            <ul class="ax__legend" aria-label="Colour key">
-              <li><i class="lg lg--model"></i>Gemma proposes</li>
-              <li><i class="lg lg--code"></i>Plain code decides</li>
-              <li><i class="lg lg--plain"></i>Plumbing</li>
-              <li><i class="lg lg--ext"></i>External data</li>
-              <li><i class="lg lg--store"></i>Storage</li>
-            </ul>
-            <div class="ax__chips" id="ax-chips" role="group" aria-label="Trace a path through the system">
-              <button type="button" data-trace="all" aria-pressed="true">Whole system</button>
-              <button type="button" data-trace="lab" aria-pressed="false">Lab Test</button>
-              <button type="button" data-trace="field" aria-pressed="false">Field Test</button>
-              <button type="button" data-trace="outcome" aria-pressed="false">Outcome check</button>
-            </div>
-            <div class="ax__cap" id="ax-cap" aria-live="polite"></div>
-          </div>
-        </aside>
-        <h3 class="ax__sub">The parts, one line each <small>Open any card for inputs, outputs and neighbours.</small></h3>
-        <ol class="ax__rows" id="ax-rows" aria-label="System parts"></ol>
-      </div>
-      
-    </div>
-  </section>
-
-  <!-- ===================== PROTOCOL · stacking cards ===================== -->
-  <section class="px" id="protocol" aria-labelledby="px-title">
-    <div class="px__top" id="px-top">
-      <div class="px__badge" aria-hidden="true">
-        <svg viewBox="0 0 200 200"><defs><path id="px-circ" d="M100 100m-74 0a74 74 0 1 1 148 0a74 74 0 1 1-148 0"/></defs>
-          <text><textPath href="#px-circ" textLength="455">GEMMA PROPOSES &bull; CODE DECIDES &bull; YOU GO LOOK &bull;</textPath></text></svg>
-        <span>&nearr;</span>
-      </div>
-      <span class="px__pill">Gemma proposes <i>/</i> Code decides</span>
-      <h2 class="px__title" id="px-title">THE PROTOCOL</h2>
-      <p class="px__lede">Five stops between a saying and an honest answer. The model translates, plain Python judges, and you step outside for the rest.</p>
-    </div>
-
-    <div class="px__marq" aria-hidden="true"><div class="px__track"><span>Proverb <i>/</i> Propose <i>/</i> Decide <i>/</i> Test <i>/</i> Verdict <i>/</i> </span><span>Proverb <i>/</i> Propose <i>/</i> Decide <i>/</i> Test <i>/</i> Verdict <i>/</i> </span><span>Proverb <i>/</i> Propose <i>/</i> Decide <i>/</i> Test <i>/</i> Verdict <i>/</i> </span><span>Proverb <i>/</i> Propose <i>/</i> Decide <i>/</i> Test <i>/</i> Verdict <i>/</i> </span></div></div>
-
-    <div class="px__stack" id="px-stack">
-
-      <article class="px-card px-card--butter">
-        <div class="px-card__in">
-          <div class="px-card__text">
-            <span class="px-card__num">01</span>
-            <p class="px-card__tag">Input</p>
-            <h3 class="px-card__h">Start with a saying.</h3>
-            <p class="px-card__p">Type a proverb in any language. No account, and it never leaves your machine.</p>
-          </div>
-          <div class="px-card__viz">
-            <div class="px-input">
-              <p class="px-input__label">A saying</p>
-              <p class="px-input__field">Red sky at night, shepherd&rsquo;s delight.<span class="px-caret"></span></p>
-              <div class="px-input__row"><div><p class="px-input__label">Language</p><p class="px-input__sm">English (auto)</p></div><div><p class="px-input__label">Source</p><p class="px-input__sm">unknown</p></div></div>
-              <p class="px-input__btn">Send to Gemma &rarr;</p>
-            </div>
-          </div>
-        </div>
-      </article>
-
-      <article class="px-card px-card--lime">
-        <div class="px-card__in">
-          <div class="px-card__text">
-            <span class="px-card__num">02</span>
-            <p class="px-card__tag">Open weights</p>
-            <h3 class="px-card__h">Gemma proposes.</h3>
-            <p class="px-card__p">Local Gemma translates the proverb and sorts the sign into a closed vocabulary, without judging it or inventing a threshold.</p>
-          </div>
-          <div class="px-card__viz">
-            <div class="px-win"><div class="px-win__bar"><i></i><i></i><i></i><span>hypothesis</span></div>
-<pre class="px-win__code"><b>sign.kind</b>              atmospheric | animal
-                         | plant | celestial | body
-<b>proxy.variable</b>        pressure_msl
-                         | wind_direction_10m | &hellip;
-                         | <u>none</u>
-<b>proxy.fit</b>             good | rough | <u>none</u>
-<b>threshold_suggestion</b>  <u>null</u>  <em>// always. You set the number.</em></pre></div>
-          </div>
-        </div>
-      </article>
-
-      <article class="px-card px-card--coral">
-        <div class="px-card__in">
-          <div class="px-card__text">
-            <span class="px-card__num">03</span>
-            <p class="px-card__tag">Plain Python</p>
-            <h3 class="px-card__h">Code decides.</h3>
-            <p class="px-card__p">Deterministic code, not the model, decides what can be tested.</p>
-          </div>
-          <div class="px-card__viz">
-            <div class="px-win"><div class="px-win__bar"><i></i><i></i><i></i><span>backtestable.py</span></div>
-<pre class="px-win__code">backtestable =
-    sign.kind == <b>&quot;atmospheric&quot;</b>
-    and proxy.variable in <b>WHITELIST</b>
-    and proxy.fit != <b>&quot;none&quot;</b></pre></div>
-          </div>
-        </div>
-      </article>
-
-      <article class="px-card px-card--blush">
-        <div class="px-card__in">
-          <div class="px-card__text">
-            <span class="px-card__num">04</span>
-            <p class="px-card__tag">Two ways to test</p>
-            <h3 class="px-card__h">Test it.</h3>
-            <div class="px-two">
-              <div><h4>Lab Test</h4><p>Scored against about 10 years of Open-Meteo history for your spot.</p></div>
-              <div><h4>Field Test</h4><p>No instrument records swifts or cows, so you are the instrument.</p></div>
-            </div>
-          </div>
-          <div class="px-card__viz">
-            <p class="px-note">Outcomes resolve whenever the app next opens. No scheduler, no queue.</p>
-            <div class="px-win"><div class="px-win__bar"><i></i><i></i><i></i><span>resolvePending()</span></div>
-<pre class="px-win__code">find looks that are due
-claim the row  <b>(no double-resolve)</b>
-fetch hourly rain for the window
-<u>missing hour?</u> retry, up to 5 times
-save outcome, update scorecard</pre></div>
-          </div>
-        </div>
-      </article>
-
-      <article class="px-card px-card--deep">
-        <div class="px-card__in">
-          <div class="px-card__text">
-            <span class="px-card__num">05</span>
-            <p class="px-card__tag">The scorecard</p>
-            <h3 class="px-card__h">Honest scorecards.</h3>
-            <p class="px-card__p">Every result shows the bar to beat beside the hit rate; too few looks get tally dots, not a percentage.</p>
-          </div>
-          <div class="px-card__viz">
-            <div class="px-score">
-              <p class="px-score__cap">3 of 10 looks logged</p>
-              <div class="px-score__dots" aria-label="3 of 10 looks logged"><span class="on"></span><span class="on"></span><span class="on"></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
-            </div>
-          </div>
-        </div>
-      </article>
-      
-
-
-    </div>
-
-
-    <section class="px-honest" aria-labelledby="px-honest-title">
-      <p class="px-honest__tag">The promise</p>
-      <h3 class="px-honest__h" id="px-honest-title">Never a verdict the data can&rsquo;t back.</h3>
-      <ul class="px-honest__v">
-        <li class="v1"><b>On the trail</b>Still collecting looks</li>
-        <li class="v2"><b>Promising</b>Beats chance</li>
-        <li class="v3"><b>Same as chance</b>A real finding</li>
-        <li class="v4"><b>Backfires</b>Worse than chance</li>
-      </ul>
-      <p class="px-honest__p">Under 30 sign-present days (backtest) or 10 looks (field), you get tally dots instead of a percentage. Backtest and field results are never pooled.</p>
-    </section>
-
-    <div class="px__faq">
-      <div class="px-sec-h"><p class="px-sec-tag">Fair questions</p><h3>Read this before you trust a result.</h3></div>
-      <div class="px-faq" id="px-faq">
-        <div class="px-q"><button type="button" aria-expanded="false"><span>Does Gemma decide if my saying is true?</span><i></i></button><div class="px-q__a"><p>No. Gemma translates the saying and sorts the sign into a closed vocabulary. It never judges whether the saying is true and never invents a threshold. Anything vague goes into an ambiguities list, and you set the number.</p></div></div>
-        <div class="px-q"><button type="button" aria-expanded="false"><span>What if nothing in the weather data matches?</span><i></i></button><div class="px-q__a"><p>Then it&rsquo;s a Field Test. Swifts, cows, crickets and the look of the moon aren&rsquo;t recorded by any instrument, so you are the instrument. A &ldquo;rough&rdquo; fit is labelled Rough match and needs your explicit OK before it runs as a Lab Test.</p></div></div>
-        <div class="px-q"><button type="button" aria-expanded="false"><span>What is the &ldquo;bar to beat&rdquo;?</span><i></i></button><div class="px-q__a"><p>How often it rains anyway. Every card shows it next to the hit rate, so a saying only looks good if it does better than the sky does on its own.</p></div></div>
-        <div class="px-q"><button type="button" aria-expanded="false"><span>Why am I seeing dots instead of a percentage?</span><i></i></button><div class="px-q__a"><p>Because the sample is under the minimum: 30 sign-present days for a backtest, 10 sign-present looks for a field test. Below that, the app withholds the percentage and the verdict rather than print one the data can&rsquo;t back.</p></div></div>
-        <div class="px-q"><button type="button" aria-expanded="false"><span>Is &ldquo;Same as chance&rdquo; a failure?</span><i></i></button><div class="px-q__a"><p>No, it&rsquo;s a real finding. If the saying did no better than the bar to beat, Lore Lab says so plainly. The four verdicts are On the trail, Promising, Same as chance and Backfires.</p></div></div>
-        <div class="px-q"><button type="button" aria-expanded="false"><span>Are backtest and field results ever combined?</span><i></i></button><div class="px-q__a"><p>Never. They are shown separately. And one place with a short history is a hint, not proof; the app says so every time.</p></div></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ===================== STATEMENT (plain sage page) ===================== -->
+<!-- ===================== STATEMENT (plain sage page) ===================== -->
   <section class="lore lore-say" id="statement" aria-labelledby="lore-say-title">
     <div class="lore-wrap">
       <h2 class="lore-say__big lore-split" id="lore-say-title">WE DON&rsquo;T FLATTER ANCIENT<br class="lore-say__br"> LORE. WE <mark>TEST IT.</mark></h2>
@@ -452,11 +236,9 @@ save outcome, update scorecard</pre></div>
         <small>Built for the &ldquo;Touch Grass&rdquo; Hackathon &bull; Powered by Open-Weight Edge AI</small>
       </div>
       <nav aria-label="Footer">
-        <a href="#way">Stance</a>
-        <a href="#engine">Engine</a>
-        <a href="#architecture">Architecture</a>
-        <a href="#protocol">Protocol</a>
-        <a href="#statement">Manifesto</a>
+        <a href="#engine">Test a saying</a>
+        <a href="notebook.html">Logbook</a>
+        <a href="how-it-works.html">How it works</a>
         <a href="#join">Touch grass &#8599;</a>
       </nav>
     </footer>
