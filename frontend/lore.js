@@ -460,7 +460,7 @@
         try {
           const f = normField(await api("startFieldTest", { hypothesis_id: h.id, location: loc }, { id: h.id }), h, loc);
           if (!f.id) throw new ApiError(502, "The server started the field test but didn’t return an experiment to log looks against.");
-          S.field = f; fr.exp = f; fr.phase = "ready"; fr.entries = []; fr.cards = []; mountField(); go(4);
+          S.field = f; fr.exp = f; fr.phase = "ready"; fr.entries = []; fr.cards = []; fr.calDone = false; fr.remindTime = null; mountField(); go(4);
         } catch (err) { showAlert(err); }
         finally { eng.busy = false; busy(btn, false); }
       });
@@ -616,9 +616,113 @@
      6. FIELD LOOKS: Seen / Not seen, pending outcomes and the field scorecard,
         shown inline in step 4 of a Field Test
      --------------------------------------------------------- */
-  const fr = { exp: null, phase: "none", busy: false, entries: [], cards: [] };
+  const fr = { exp: null, phase: "none", busy: false, entries: [], cards: [], remindTime: null, calDone: false };
   let obsEl = null, cardsEl = null, listEl = null;
   const ST = { logged: "Logged", pending: "Pending", resolved: "Resolved", failed: "Couldn’t resolve" };
+
+  /* ---------------------------------------------------------
+     6b. DAILY REMINDER · "Add to calendar" (.ics, no server)
+     A verdict needs 10 sign-present looks and nothing nudges anyone to look again,
+     so the card can hand over a small recurring calendar event at the saying's best time.
+     Times are "floating" (no timezone): the event fires at that clock time wherever the phone is.
+     --------------------------------------------------------- */
+  const REMIND_DAYS = 14;      // 10 sign-present looks are needed; "Not seen" days don't count, so leave some slack
+  const REMIND_MINUTES = 15;   // length of the calendar block
+  const BEST_TIME = [          // saying's best_time_of_day -> [hour, minute]; first match wins
+    ["dawn", [6, 0]], ["sunrise", [6, 0]], ["morning", [8, 0]], ["noon", [12, 0]], ["midday", [12, 0]],
+    ["afternoon", [16, 0]], ["dusk", [18, 0]], ["sunset", [18, 0]], ["evening", [19, 0]], ["night", [21, 0]],
+  ];
+  const DEFAULT_LOOK = [18, 0]; // "any": same hour the Lab uses for its look (LOOK_HOUR)
+  const p2 = (n) => String(n).padStart(2, "0");
+  function parseBestTime(w) {
+    const t = String(w ?? "").trim().toLowerCase();
+    let m = t.match(/\b([01]?\d|2[0-3]):([0-5]\d)\b/);                       // "18:30"
+    if (m) return [Number(m[1]), Number(m[2])];
+    m = t.match(/\b(1[0-2]|0?[1-9])(?::([0-5]\d))?\s*(am|pm)\b/);            // "6pm", "6:30 am"
+    if (m) return [(Number(m[1]) % 12) + (m[3] === "pm" ? 12 : 0), Number(m[2] || 0)];
+    const hit = BEST_TIME.find(([k]) => t.includes(k));
+    return hit ? hit[1] : DEFAULT_LOOK;
+  }
+  const hasBestTime = (w) => { const t = String(w ?? "").toLowerCase(); return /\d/.test(t) || BEST_TIME.some(([k]) => t.includes(k)); };
+  const BS = String.fromCharCode(92); // a single backslash; RFC 5545 TEXT escapes: \\ \; \, \n
+  const icsEsc = (t) => String(t ?? "").replace(/[\\;,]/g, (c) => BS + c).replace(/\r?\n/g, BS + "n");
+  function icsFold(line) { // RFC 5545: lines are at most 75 octets; continuation lines start with one space
+    const enc = new TextEncoder();
+    if (enc.encode(line).length <= 75) return line;
+    const out = []; let cur = "", bytes = 0;
+    for (const ch of line) {
+      const b = enc.encode(ch).length;
+      if (bytes + b > 75) { out.push(cur); cur = " "; bytes = 1; }
+      cur += ch; bytes += b;
+    }
+    out.push(cur);
+    return out.join("\r\n");
+  }
+  const icsLocal = (d) => `${d.getFullYear()}${p2(d.getMonth() + 1)}${p2(d.getDate())}T${p2(d.getHours())}${p2(d.getMinutes())}00`;
+  const icsUtc = (d) => `${d.getUTCFullYear()}${p2(d.getUTCMonth() + 1)}${p2(d.getUTCDate())}T${p2(d.getUTCHours())}${p2(d.getUTCMinutes())}${p2(d.getUTCSeconds())}Z`;
+
+  function buildICS(f, hour, minute, days = REMIND_DAYS, now = new Date()) {
+    const start = new Date(now); start.setHours(hour, minute, 0, 0);
+    if (start <= now) start.setDate(start.getDate() + 1);                    // today if it's still ahead, else tomorrow
+    const end = new Date(start.getTime() + REMIND_MINUTES * 60000);
+    const sign = f.sign || "the sign in the saying";
+    const desc = [
+      `“${f.proverb}”`, `Look for: ${sign}`, f.how ? `How: ${f.how}` : "", f.place ? `Where: ${f.place}` : "",
+      "Look for a couple of minutes, tap Seen or Not seen, then put the phone away.",
+    ].filter(Boolean).join("\n");
+    const link = `${location.origin}/?skiploader#engine`;
+    return [
+      "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Lore Lab//Field reminder//EN", "CALSCALE:GREGORIAN", "METHOD:PUBLISH",
+      "BEGIN:VEVENT",
+      `UID:lorelab-${f.id}@lorelab`,                                          // stable, so re-adding updates instead of duplicating
+      `DTSTAMP:${icsUtc(now)}`, `DTSTART:${icsLocal(start)}`, `DTEND:${icsLocal(end)}`,
+      `RRULE:FREQ=DAILY;COUNT=${days}`,
+      `SUMMARY:${icsEsc(`Lore Lab: go look (${sign})`)}`,
+      `DESCRIPTION:${icsEsc(desc)}`,
+      `URL:${link}`, "TRANSP:TRANSPARENT",
+      "BEGIN:VALARM", "ACTION:DISPLAY", `DESCRIPTION:${icsEsc(`Time to look: ${sign}`)}`, "TRIGGER:PT0M", "END:VALARM",
+      "END:VEVENT", "END:VCALENDAR",
+    ].map(icsFold).join("\r\n") + "\r\n";
+  }
+  function downloadICS(text, name) {
+    const url = URL.createObjectURL(new Blob([text], { type: "text/calendar;charset=utf-8" }));
+    const a = document.createElement("a");
+    a.href = url; a.download = name; a.style.display = "none";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
+  }
+  const ICON_CAL = '<svg viewBox="0 0 48 48" aria-hidden="true"><rect x="5" y="9" width="38" height="34" rx="5" fill="#fbf6e6" stroke="#10291b" stroke-width="3"/><path d="M5 19h38V14a5 5 0 0 0-5-5H10a5 5 0 0 0-5 5z" fill="#10291b"/><path d="M15 4v10M33 4v10" stroke="#10291b" stroke-width="3.5" stroke-linecap="round"/><g fill="#f26a4f" stroke="#10291b" stroke-width="1.6"><circle cx="16" cy="28" r="3"/><circle cx="24" cy="28" r="3" fill="#f4d88a"/><circle cx="32" cy="28" r="3" fill="#8aa863"/><circle cx="16" cy="36" r="3" fill="#8aa863"/><circle cx="24" cy="36" r="3"/></g></svg>';
+  function calHTML(f) {
+    const [h, m] = parseBestTime(f.when);
+    const val = fr.remindTime || `${p2(h)}:${p2(m)}`;
+    const why = hasBestTime(f.when) ? `Best time for this sign: <b>${esc(f.when)}</b>.` : "This sign has no best time, so pick one that suits you.";
+    return `<div class="lore-cal${fr.calDone ? " is-done" : ""}" id="lore-cal">
+      ${ICON_CAL}
+      <div><p class="lore-cal__t">Don’t forget to look</p>
+        <p class="lore-cal__s">${why} A daily reminder, ${REMIND_DAYS} days, in any calendar app.</p>
+        <label class="lore-cal__time" for="lf-time">Remind me at <input class="lore-field" id="lf-time" type="time" value="${val}"></label></div>
+      <button class="lore-btn lore-btn--butter lore-cal__btn" type="button" data-act="ics">${fr.calDone ? "Save it again" : "Add to calendar"}</button>
+      <img class="lore-cal__stamp" src="assets/cat-stamp.webp" alt="" width="72" height="72">
+      <p class="lore-cal__ok" role="status" aria-live="polite">${fr.calDone ? "Saved. Open the file to add it to your calendar." : ""}</p></div>`;
+  }
+  function onAddToCalendar() {
+    const f = fr.exp; if (!f) return;
+    const input = $("#lf-time", obsEl);
+    const [dh, dm] = parseBestTime(f.when);
+    const mm = /^(\d{1,2}):(\d{2})$/.exec(input?.value || "");
+    const hh = mm ? Math.min(Number(mm[1]), 23) : dh, mn = mm ? Math.min(Number(mm[2]), 59) : dm;
+    fr.remindTime = `${p2(hh)}:${p2(mn)}`;
+    const slug = (f.proverb || "saying").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 40) || "saying";
+    downloadICS(buildICS(f, hh, mn), `lore-lab-${slug}.ics`);
+    fr.calDone = true;
+    const box = $("#lore-cal", obsEl);
+    if (box) {
+      box.classList.add("is-done");
+      $(".lore-cal__ok", box).textContent = "Saved. Open the file to add it to your calendar.";
+      $(".lore-cal__btn", box).textContent = "Save it again";
+    }
+  }
+  window.LoreLab.buildICS = buildICS; // handy for tests
 
   function mountField() {
     panes[3].innerHTML = `<h3>Go outside and look.</h3><p class="lore-intro">Look for a couple of minutes, tap what you saw, then put the phone away. We check the sky for you later.</p>
@@ -634,16 +738,18 @@
   function renderObs() {
     const f = fr.exp; if (!obsEl || !f) return;
     if (fr.phase === "logged") {
-      obsEl.innerHTML = `<div class="lore-logged"><h3>Your look</h3><p class="lore-fieldnote">Logged. We’ll check the sky for you.</p><p>Now put the phone away.</p><p class="lore-pend">The outcome is pending until the window closes and the app next resolves it.</p><div class="lore-actions" style="justify-content:center"><button class="lore-btn lore-btn--ghost" type="button" data-act="another">Log another look</button></div></div>`;
+      obsEl.innerHTML = `<div class="lore-logged"><h3>Your look</h3><p class="lore-fieldnote">Logged. We’ll check the sky for you.</p><p>Now put the phone away.</p><p class="lore-pend">The outcome is pending until the window closes and the app next resolves it.</p>${calHTML(f)}<div class="lore-actions" style="justify-content:center"><button class="lore-btn lore-btn--ghost" type="button" data-act="another">Log another look</button></div></div>`;
       return;
     }
     obsEl.innerHTML = `<h3>Look, then tap.</h3><p class="lore-q">${esc(f.proverb)}</p>
       <dl><div><dt>Look for: </dt><dd>${esc(f.sign || "the sign in the saying")}</dd></div>
       ${f.how ? `<div><dt>How: </dt><dd>${esc(f.how)}</dd></div>` : ""}${f.when ? `<div><dt>When: </dt><dd>${esc(f.when)}</dd></div>` : ""}${f.place ? `<div><dt>Where: </dt><dd>${esc(f.place)}</dd></div>` : ""}</dl>
       <div class="lore-seen" role="group" aria-label="What did you see?"><button class="lore-btn" type="button" data-seen="true">Seen</button><button class="lore-btn" type="button" data-seen="false">Not seen</button></div>
-      <details><summary>Add a note (optional)</summary><textarea class="lore-field" id="lf-note" rows="2" placeholder="Anything worth remembering"></textarea></details>`;
+      <details><summary>Add a note (optional)</summary><textarea class="lore-field" id="lf-note" rows="2" placeholder="Anything worth remembering"></textarea></details>
+      ${calHTML(f)}`;
   }
   async function onObsClick(e) {
+    if (e.target.closest('[data-act="ics"]')) { onAddToCalendar(); return; }
     const another = e.target.closest('[data-act="another"]'); if (another) { fr.phase = "ready"; renderObs(); return; }
     const b = e.target.closest("[data-seen]"); if (!b || fr.busy || !fr.exp) return;
     fr.busy = true; $$(".lore-seen .lore-btn", obsEl).forEach((x) => (x.disabled = true)); busy(b, true);

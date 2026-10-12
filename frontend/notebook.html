@@ -5,16 +5,22 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Logbook · Lore Lab</title>
 <meta name="theme-color" content="#1f5a3d">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Lore Lab">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌼</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Delius&family=Swanky+and+Moo+Moo&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Caveat+Brush&family=Patrick+Hand&display=swap" rel="stylesheet">
 <style>
-  :root { --green:#1f5a3d; --deep:#10291b; --cream:#fbf6e6; --coral:#f26a4f; --butter:#f4d88a; --sage:#8aa863; --sage-l:#d1dfbc; --ink:#10291b; }
+  :root { --font-display:"Caveat Brush","Patrick Hand","Chalkboard SE","Comic Sans MS",cursive; --font-body:"Patrick Hand","Chalkboard SE","Comic Sans MS",cursive; --green:#1f5a3d; --deep:#10291b; --cream:#fbf6e6; --coral:#f26a4f; --butter:#f4d88a; --sage:#8aa863; --sage-l:#d1dfbc; --ink:#10291b; }
   * { box-sizing: border-box; }
   body { margin:0; background:var(--sage-l); color:var(--ink);
-         font:16px/1.5 "Delius","Comic Sans MS","Chalkboard SE","Comic Neue",cursive; }
-  .hand { font-family:"Swanky and Moo Moo","Chalkboard SE","Comic Sans MS","Marker Felt",cursive; }
+         font:17px/1.5 var(--font-body); }
+  .hand { font-family:var(--font-display); font-weight:400; }
   main { max-width:820px; margin:0 auto; padding:20px 14px 72px; }
   .top { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:14px; }
   .back { display:inline-block; padding:.45em 1.1em; background:var(--cream); color:var(--ink); text-decoration:none;

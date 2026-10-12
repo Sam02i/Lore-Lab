@@ -1,5 +1,6 @@
 import datetime as dt
 import json
+import mimetypes
 import os
 import threading
 import uuid
@@ -387,4 +388,6 @@ def api_scorecards():
 
 
 # ---------------------------------------------------------------- static frontend (must stay LAST)
+# Some Python builds don't know .webmanifest; browsers want application/manifest+json for the install prompt.
+mimetypes.add_type("application/manifest+json", ".webmanifest")
 app.mount("/", StaticFiles(directory=str(Path(__file__).parent / "frontend"), html=True), name="frontend")

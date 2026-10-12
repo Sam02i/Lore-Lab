@@ -1,0 +1,47 @@
+{
+  "id": "/",
+  "name": "Lore Lab",
+  "short_name": "Lore Lab",
+  "description": "Test your family's weather sayings against ten years of data, then go outside and look.",
+  "start_url": "/?skiploader#engine",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#1f5a3d",
+  "theme_color": "#1f5a3d",
+  "lang": "en",
+  "icons": [
+    {
+      "src": "assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Open logbook",
+      "short_name": "Logbook",
+      "url": "/notebook.html",
+      "icons": [
+        {
+          "src": "assets/icons/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ]
+}
