@@ -10,7 +10,7 @@
 ![Runs locally with Ollama](https://img.shields.io/badge/runs%20locally-Ollama-black)
 ![Hacktoberfest 2026](https://img.shields.io/badge/Hacktoberfest-2026-ff7518)
 
-[🎬 Demo video](https://www.youtube.com/watch?v=9pPZJqvJlps) · [🌐 Live demo](https://lore-lab.onrender.com/) · [📝 DEV write-up](https://dev.to/sam_26cdae0e6aa9ff7bd5aa6/lore-lab-i-tested-weather-folklore-against-10-years-of-rain-and-let-gemma-propose-but-never-2pe6)
+[🎬 Demo video]([[https://www.youtube.com/watch?v=9pPZJqvJlps](https://www.youtube.com/watch?v=HX7lMTk8tac)](https://www.youtube.com/watch?v=HX7lMTk8tac)) · [🌐 Live demo](https://lore-lab.onrender.com/) · [📝 DEV write-up](https://dev.to/sam_26cdae0e6aa9ff7bd5aa6/lore-lab-i-tested-weather-folklore-against-10-years-of-rain-and-let-gemma-propose-but-never-2pe6)
 
 <img src="docs/lab-scorecard-delhi.png" alt="Lab scorecard for the south-wind saying in Delhi" width="720">
 
