@@ -31,7 +31,7 @@
   ));
   const ENDPOINTS = [
     "proverbs", "extractHypothesis", "confirmHypothesis", "runBacktest", "startFieldTest",
-    "submitObservation", "resolvePending", "listObservations", "scorecards",
+    "submitObservation", "resolvePending", "listObservations", "scorecards", "stats", "exampleResult",
   ];
   ENDPOINTS.forEach((k) => { if (!(k in CONFIG.endpoints)) CONFIG.endpoints[k] = null; });
 
@@ -335,7 +335,7 @@
       h.language && `<li>${esc(h.language)}</li>`,
       h.sign.kind && `<li>Sign: ${esc(h.sign.kind)}</li>`,
       hasProxy && `<li class="${rough ? "is-rough" : "is-good"}">${rough ? "Rough match" : "Good match"}: ${esc(h.proxy.variable)}</li>`,
-      h.testMode && `<li>Code’s call: ${h.testMode === "lab" ? "Lab Test" : "Field Test"}</li>`,
+      h.testMode && `<li>How we’ll test it: ${h.testMode === "lab" ? "past weather" : "look outside"}</li>`,
     ].filter(Boolean).join("");
     const amb = h.ambiguities.map((a, i) => `<div class="lore-ambig"><p>${esc(a.text)}</p>${a.options && a.options.length
       ? `<select class="lore-field" data-amb="${i}" aria-label="Settle: ${esc(a.text)}"><option value="">Choose…</option>${a.options.map((o) => `<option>${esc(o)}</option>`).join("")}</select>`
@@ -356,7 +356,7 @@
         <label class="lore-check"><input type="checkbox" id="lh-rough"><span>Weather data can only roughly measure this sign (a halo around the moon, for example, shows up as thin high cloud). Tick this if you are happy to test it that way.</span></label></fieldset>` : ""}
       ${h.ambiguities.length ? `<fieldset class="lore-fieldset"><legend>Say what you mean</legend><p class="lore-help">Gemma wasn’t sure what these words mean. Answer in your own words so the test is fair.</p>${amb}</fieldset>` : ""}
       ${h.proxy?.rationale ? `<details class="lore-why"><summary>Why this weather variable?</summary><p>${esc(h.proxy.rationale)}</p></details>` : ""}
-      <p class="lore-decides"><b>Gemma proposes. Code decides.</b> Whether this can be backtested is computed by plain code from a whitelist, not guessed by the model.</p>
+      <p class="lore-decides"><b>Gemma proposes. Code decides.</b> Whether this can be checked against past weather is decided by plain code from a fixed list, not guessed by the model.</p>
       <div class="lore-actions"><button class="lore-btn lore-btn--coral" id="lh-confirm" type="button" disabled>Looks right, continue</button>
         <button class="lore-btn lore-btn--ghost" type="button" data-go="1">Change the saying</button></div>`;
     const confirm = $("#lh-confirm", panes[1]);
@@ -435,7 +435,7 @@
         <div class="lore-mode lore-mode--lab">${ICON_LAB}<div><span class="lore-tag">Lab Test</span><h3>This one shows up in the weather data.</h3>
         <p>We use <b>${esc(friendlyVar(h.proxy?.variable) || "a weather measurement")}</b> as a stand-in for this sign (${rough ? "a rough match" : "a good match"}) and check it against about ten years of past weather at your spot.</p></div></div>
         ${locationBlock()}
-        <div class="lore-actions"><button class="lore-btn lore-btn--coral" id="ll-run" type="button">Run the backtest</button><button class="lore-btn lore-btn--ghost" type="button" data-go="2">Back to the hypothesis</button></div>`;
+        <div class="lore-actions"><button class="lore-btn lore-btn--coral" id="ll-run" type="button">Check it against past weather</button><button class="lore-btn lore-btn--ghost" type="button" data-go="2">Back to the saying details</button></div>`;
       wireGeo(); on($('[data-go="2"]', panes[2]), "click", () => go(2));
       on($("#ll-run"), "click", async (e) => {
         if (eng.busy) return; const loc = readLocation(); if (!loc) return;
@@ -452,7 +452,7 @@
         <div class="lore-mode lore-mode--field">${ICON_FIELD}<div><span class="lore-tag">Field Test</span><p class="lore-fieldnote">Tonight, you’re the instrument.</p>
         <p>No weather dataset records <b>${esc(h.sign.text || "this sign")}</b>, so it needs a person looking. ${h.sign.how ? esc(h.sign.how) : ""}</p></div></div>
         ${locationBlock()}
-        <div class="lore-actions"><button class="lore-btn lore-btn--coral" id="ll-start" type="button">Start the field test</button><button class="lore-btn lore-btn--ghost" type="button" data-go="2">Back to the hypothesis</button></div>`;
+        <div class="lore-actions"><button class="lore-btn lore-btn--coral" id="ll-start" type="button">Start the field test</button><button class="lore-btn lore-btn--ghost" type="button" data-go="2">Back to the saying details</button></div>`;
       wireGeo(); on($('[data-go="2"]', panes[2]), "click", () => go(2));
       on($("#ll-start"), "click", async (e) => {
         if (eng.busy) return; const loc = readLocation(); if (!loc) return;
@@ -481,6 +481,15 @@
     const back = $('[data-go="3"]', panes[3]); if (back) on(back, "click", () => go(3));
   }
   go(1, false);
+
+  /* Hooks for quickrun.js (one-tap chips). Same functions the form uses; nothing is re-implemented or faked. */
+  Object.assign(S, {
+    api, isConfigured, normHyp, normConfirm, normCard, cardHTML, thresholdGuide, CITIES, ApiError, describeError,
+    // hand a hypothesis to the normal flow at step 2 (user must still choose/confirm)
+    openReview(h) { eng.hyp = S.hyp = h; renderHyp(h); eng.max = 2; go(2); },
+    // hand an already-confirmed hypothesis to step 3 (place + run/start)
+    openTest(h, c) { eng.hyp = S.hyp = h; renderHyp(h); eng.confirmed = c; S.mode = c.testMode; renderTest(h, c.testMode); eng.max = 3; go(3); },
+  });
 
   /* ---------------------------------------------------------
      5. SYSTEM ARCHITECTURE
@@ -901,4 +910,262 @@
       requestAnimationFrame(step);
     });
   })();
+})();
+
+/* =========================================================
+   Lore Lab · quickrun.js  (loaded after lore.js)
+   1. One tap on a hero chip runs the real pipeline: extract -> confirm -> backtest -> result card.
+   2. Proof strip + example card: shown ONLY when the backend returns real numbers.
+   3. Return hooks: look streak, 7-day reminder (.ics), shareable result image.
+   Nothing here invents data. Presets are disclosed on the result and can be changed.
+   To undo: remove the <script> and <link> for this file (and the #quick-result section).
+   ========================================================= */
+(() => {
+  "use strict";
+  const LL = window.LoreLab;
+  const $ = (s, r = document) => r.querySelector(s);
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const out = $("#qr-out"), proof = $("#qr-proof"), example = $("#qr-example");
+  if (!LL || !LL.api || !out) return;
+
+  const DEFAULT_CITY = "Delhi";
+  const store = {
+    get(k) { try { return localStorage.getItem(k); } catch (_) { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch (_) { /* private mode */ } },
+  };
+  let running = false, last = null; // last = { h, c, preset, loc }
+
+  const place = () => {
+    const name = store.get("loreQuickPlace");
+    const city = LL.CITIES[name] ? name : DEFAULT_CITY;
+    return { label: city, lat: LL.CITIES[city][0], lon: LL.CITIES[city][1] };
+  };
+
+  /* ---------- progress / errors ---------- */
+  function progress(msg) {
+    out.hidden = false;
+    out.innerHTML = `<div class="qr-wait" role="status"><i aria-hidden="true"></i><span>${esc(msg)}</span></div>`;
+  }
+  function fail(err) {
+    const d = LL.describeError(err);
+    out.hidden = false;
+    out.innerHTML = `<div class="qr-box"><h3>${esc(d.title)}</h3><p>${esc(d.msg)}</p>
+      <p><a class="qr-btn" href="#engine" data-scroll>Type it in the lab instead</a></p></div>`;
+  }
+  function scrollTo(el) {
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    el.scrollIntoView({ block: "start", behavior: reduce ? "auto" : "smooth" });
+  }
+
+  /* ---------- the one-tap run ---------- */
+  async function run(text) {
+    if (running) return;
+    running = true;
+    document.querySelectorAll("[data-quick]").forEach((a) => a.setAttribute("aria-disabled", "true"));
+    progress("Reading the saying…");
+    scrollTo($("#quick-result"));
+    try {
+      const h = LL.normHyp(await LL.api("extractHypothesis", { text, source: "Folk saying", language: null }));
+      if (!h.original) h.original = text;
+      if (!h.sign.text) throw new LL.ApiError(502, "The hypothesis service returned something unreadable.");
+
+      // The engine asks the user to settle ambiguities, accept rough matches and pick the number.
+      // A quick run can only skip those when there is nothing to settle and an engine preset exists.
+      const guide = h.testMode === "field" ? null : LL.thresholdGuide(h.proxy);
+      const preset = guide && guide.chips.length ? guide.chips[Math.min(1, guide.chips.length - 1)] : null;
+      const needsYou = h.ambiguities.length > 0 || h.proxy?.fit === "rough" || (h.testMode !== "field" && !preset);
+      if (needsYou) {
+        out.innerHTML = `<div class="qr-box"><h3>This one needs a quick decision from you</h3>
+          <p>Before it can be tested fairly, you have to settle a detail (a word that could mean two things, a rough match, or the number that counts as “the sign”). I’ve opened it in the lab for you.</p></div>`;
+        LL.openReview(h); scrollTo($("#engine")); return;
+      }
+
+      progress("Checking the sign against ten years of weather…");
+      const payload = {
+        hypothesis_id: h.id,
+        edits: { observable_sign: h.sign.text, how_to_observe: h.sign.how, predicted_outcome: h.prediction.outcome, window_hours: h.prediction.windowHours },
+        threshold: preset ? { value: Number(preset[1]), unit: guide.unit || null } : null,
+        ambiguity_resolutions: [], rough_match_accepted: null,
+      };
+      const c = LL.normConfirm(await LL.api("confirmHypothesis", payload, { id: h.id }));
+      if (!c.testMode) throw new LL.ApiError(502, "The server confirmed the hypothesis but didn’t say whether it is a Lab Test or a Field Test.");
+      h.id = c.id ?? h.id;
+      if (c.observeWhen) h.sign.when = c.observeWhen;
+
+      if (c.testMode === "lab") {
+        const loc = place();
+        const card = await backtest(h, loc);
+        last = { h, c, preset: preset ? { label: preset[0], value: preset[1], unit: guide.unit, q: guide.q } : null, loc, card };
+        render();
+      } else {
+        last = { h, c, preset: null, loc: null, card: { mode: "field", proverb: h.original, source: h.source, n: 0, looks: 0, min: null, notes: [] } };
+        render();
+      }
+    } catch (err) { fail(err); }
+    finally { running = false; document.querySelectorAll("[data-quick]").forEach((a) => a.removeAttribute("aria-disabled")); }
+  }
+
+  async function backtest(h, loc) {
+    const c = LL.normCard(await LL.api("runBacktest", { hypothesis_id: h.id, location: loc }, { id: h.id }));
+    c.mode = "lab"; c.place = c.place || loc.label || null; c.proverb = c.proverb || h.original; c.source = c.source ?? h.source;
+    return c;
+  }
+
+  /* ---------- result render ---------- */
+  function render() {
+    const { h, c, preset, loc, card } = last;
+    const lab = c.testMode === "lab";
+    const cities = Object.keys(LL.CITIES).map((n) => `<option${loc && n === loc.label ? " selected" : ""}>${esc(n)}</option>`).join("");
+    const used = lab
+      ? `<p class="qr-used"><b>Quick run used:</b> “${esc(preset.label)}” (${esc(preset.value)}${preset.unit ? " " + esc(preset.unit) : ""}) for the sign, tested for
+          <select id="qr-city" aria-label="Place">${cities}</select>.
+          Those two choices are presets. <a href="#engine" id="qr-tune">Choose your own number</a> if you’d rather.</p>`
+      : `<p class="qr-used">Weather instruments can’t see this sign, so it can’t be checked against past weather. It needs someone looking. That’s you, outside.</p>`;
+    out.hidden = false;
+    out.innerHTML = `<div class="qr-box">
+      <p class="qr-kick">Your result</p>
+      <div id="qr-card">${LL.cardHTML(card)}</div>
+      ${used}
+      <div class="qr-actions">
+        ${lab ? `<button class="qr-btn qr-btn--coral" type="button" id="qr-share">Share this result</button>` : `<button class="qr-btn qr-btn--coral" type="button" id="qr-start">Pick a place and start looking</button>`}
+        <button class="qr-btn" type="button" id="qr-remind">Remind me to look up (7 days)</button>
+        <a class="qr-btn qr-btn--ghost" href="#engine" id="qr-own">Test your own saying</a>
+      </div>
+      <p class="qr-note" id="qr-msg" role="status"></p>
+    </div>`;
+    $("#qr-own").onclick = () => store.set("loreQuickSeen", "1");
+    $("#qr-tune")?.addEventListener("click", (e) => { e.preventDefault(); LL.openReview(h); scrollTo($("#engine")); });
+    $("#qr-start")?.addEventListener("click", () => { LL.openTest(h, c); scrollTo($("#engine")); });
+    $("#qr-share")?.addEventListener("click", share);
+    $("#qr-remind").addEventListener("click", remind);
+    $("#qr-city")?.addEventListener("change", async (e) => {
+      store.set("loreQuickPlace", e.target.value);
+      const loc2 = { label: e.target.value, lat: LL.CITIES[e.target.value][0], lon: LL.CITIES[e.target.value][1] };
+      progress("Re-checking for " + e.target.value + "…");
+      try { last.loc = loc2; last.card = await backtest(last.h, loc2); render(); } catch (err) { fail(err); }
+    });
+    refreshStreak();
+  }
+
+  /* ---------- share: draw the result to a canvas, share the PNG ---------- */
+  function wrap(ctx, text, x, y, maxW, lh, maxLines) {
+    const words = String(text).split(/\s+/); let line = "", n = 0;
+    for (const w of words) {
+      const t = line ? line + " " + w : w;
+      if (ctx.measureText(t).width > maxW && line) { ctx.fillText(line, x, y); y += lh; line = w; if (++n >= maxLines) return y; } else line = t;
+    }
+    ctx.fillText(line, x, y); return y + lh;
+  }
+  function makeImage() {
+    const { card } = last, W = 1080, H = 1350, ink = "#10291b";
+    const cv = document.createElement("canvas"); cv.width = W; cv.height = H;
+    const g = cv.getContext("2d");
+    g.fillStyle = "#1f5a3d"; g.fillRect(0, 0, W, H);
+    g.fillStyle = "#fffaf0"; g.strokeStyle = ink; g.lineWidth = 8;
+    g.beginPath(); g.roundRect(70, 90, W - 140, H - 230, 36); g.fill(); g.stroke();
+    g.fillStyle = ink; g.textBaseline = "alphabetic";
+    g.font = "700 34px Nunito, system-ui, sans-serif"; g.fillText("LORE LAB · LAB TEST", 130, 190);
+    g.font = "56px 'Caveat Brush', 'Chalkboard SE', cursive";
+    let y = wrap(g, "“" + (card.proverb || "").replace(/\s+/g, " ").slice(0, 140) + "”", 130, 290, W - 260, 70, 4);
+    const v = $("#qr-card .lore-verdict span")?.textContent || "";
+    g.fillStyle = "#8aa863"; g.strokeStyle = ink; g.lineWidth = 6; y += 20;
+    g.beginPath(); g.roundRect(130, y, W - 260, 120, 24); g.fill(); g.stroke();
+    g.fillStyle = ink; g.font = "800 60px Nunito, system-ui, sans-serif"; g.fillText(v, 170, y + 80); y += 220;
+    const pct = (x) => (x == null ? "–" : Math.round(x * 100) + "%");
+    const enough = card.hitRate != null;
+    g.font = "800 120px Nunito, system-ui, sans-serif"; g.fillText(enough ? pct(card.hitRate) : String(card.n ?? 0), 130, y);
+    g.font = "600 38px Nunito, system-ui, sans-serif";
+    g.fillText(enough ? "hit rate" : "sign-present days so far", 130, y + 56);
+    if (card.baseRate != null) { g.font = "800 120px Nunito, system-ui, sans-serif"; g.fillText(pct(card.baseRate), 600, y); g.font = "600 38px Nunito, system-ui, sans-serif"; g.fillText("bar to beat", 600, y + 56); }
+    y += 150; g.font = "600 34px Nunito, system-ui, sans-serif";
+    y = wrap(g, `${card.place || "One place"} · about ten years of past weather. One place is a hint, not proof.`, 130, y, W - 260, 46, 3);
+    g.fillStyle = "#fbf6e6"; g.font = "700 40px Nunito, system-ui, sans-serif";
+    g.fillText("Test your family’s saying: " + location.host, 70, H - 60);
+    return cv;
+  }
+  async function share() {
+    const msg = $("#qr-msg");
+    try {
+      const cv = makeImage();
+      const blob = await new Promise((r) => cv.toBlob(r, "image/png"));
+      const file = new File([blob], "lore-lab-result.png", { type: "image/png" });
+      const data = { files: [file], title: "Lore Lab", text: "I tested an old weather saying against ten years of data." };
+      if (navigator.canShare && navigator.canShare(data)) { await navigator.share(data); msg.textContent = "Shared."; return; }
+      const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "lore-lab-result.png"; a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+      msg.textContent = "Saved the result image to your device.";
+    } catch (err) { if (err && err.name !== "AbortError") msg.textContent = "Couldn’t make the share image on this browser."; }
+  }
+
+  /* ---------- reminder: a 7-day calendar event at 18:00 (works with no notifications permission) ---------- */
+  const fold = (l) => { let o = "", b = 0, cur = ""; for (const ch of l) { const n = new TextEncoder().encode(ch).length; if (b + n > 74) { o += cur + "\r\n "; cur = ""; b = 1; } cur += ch; b += n; } return o + cur; };
+  const icsText = (s) => String(s).replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\r?\n/g, "\\n");
+  const stamp = (d, t) => `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}T${t}`;
+  function remind() {
+    const { h } = last, now = new Date(), start = new Date(now);
+    if (now.getHours() >= 18) start.setDate(start.getDate() + 1);
+    const lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Lore Lab//Reminder//EN", "CALSCALE:GREGORIAN", "BEGIN:VEVENT",
+      `UID:lorelab-${Date.now()}@lorelab`, `DTSTAMP:${now.toISOString().replace(/[-:]|\.\d{3}/g, "")}`,
+      `DTSTART:${stamp(start, "180000")}`, "DURATION:PT10M", "RRULE:FREQ=DAILY;COUNT=7",
+      `SUMMARY:${icsText("Look at the sky: " + (h.sign.text || h.original).slice(0, 80))}`,
+      `DESCRIPTION:${icsText("Look up for 5 seconds, then log Seen or Not seen in Lore Lab. Put your phone away.")}`,
+      "BEGIN:VALARM", "ACTION:DISPLAY", "DESCRIPTION:Look up", "TRIGGER:PT0M", "END:VALARM", "END:VEVENT", "END:VCALENDAR"];
+    const blob = new Blob([lines.map(fold).join("\r\n") + "\r\n"], { type: "text/calendar" });
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "lore-lab-look-up.ics"; a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    $("#qr-msg").textContent = "Calendar file saved. Open it to add a daily 6 pm look-up for a week.";
+  }
+
+  /* ---------- streak: consecutive days with at least one logged look ---------- */
+  let streak = 0;
+  const dayKey = (d) => `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+  async function loadStreak() {
+    if (!LL.isConfigured("listObservations")) return;
+    try {
+      const r = await LL.api("listObservations");
+      const list = Array.isArray(r) ? r : r.observations || [];
+      const days = new Set(list.map((o) => { const d = new Date(o.observed_at); return isNaN(d) ? null : dayKey(d); }).filter(Boolean));
+      const d = new Date(); if (!days.has(dayKey(d))) d.setDate(d.getDate() - 1); // today not yet looked: streak still alive until midnight
+      streak = 0; while (days.has(dayKey(d))) { streak++; d.setDate(d.getDate() - 1); }
+    } catch (_) { streak = 0; }
+  }
+  async function refreshStreak() { await loadStreak(); renderProof(window.__qrStats || null); }
+
+  /* ---------- proof strip + example card (only with real backend data) ---------- */
+  function renderProof(st) {
+    const items = [];
+    if (st) {
+      if (st.sayings > 0) items.push([st.sayings.toLocaleString(), st.sayings === 1 ? "saying tested" : "sayings tested"]);
+      if (st.days > 0) items.push([st.days.toLocaleString(), "days of weather checked"]);
+      if (st.looks > 0) items.push([st.looks.toLocaleString(), st.looks === 1 ? "outdoor look logged" : "outdoor looks logged"]);
+    }
+    if (streak > 0) items.push([String(streak), streak === 1 ? "day look streak" : "day look streak"]);
+    proof.hidden = !items.length;
+    proof.innerHTML = items.map(([n, l]) => `<div><b>${esc(n)}</b><span>${esc(l)}</span></div>`).join("");
+  }
+  async function loadProof() {
+    if (LL.isConfigured("stats")) {
+      try {
+        const r = await LL.api("stats"), n = (v) => (Number.isFinite(Number(v)) ? Number(v) : 0);
+        window.__qrStats = { sayings: n(r.sayings_tested ?? r.sayings), days: n(r.days_checked ?? r.days), looks: n(r.looks_logged ?? r.looks) };
+      } catch (_) { /* strip stays hidden */ }
+    }
+    await loadStreak();
+    renderProof(window.__qrStats || null);
+    if (LL.isConfigured("exampleResult")) {
+      try {
+        const card = LL.normCard(await LL.api("exampleResult"));
+        if (card.proverb && card.mode) { example.hidden = false; example.innerHTML = `<p class="qr-kick">A real result from the lab</p>${LL.cardHTML(card)}`; }
+      } catch (_) { /* no example shown */ }
+    }
+  }
+
+  /* ---------- wiring ---------- */
+  document.querySelectorAll("[data-quick]").forEach((a) => a.addEventListener("click", (e) => {
+    e.preventDefault();
+    if (a.getAttribute("aria-disabled") === "true") return;
+    run(a.dataset.quick);
+  }));
+  out.addEventListener("click", (e) => { const l = e.target.closest("[data-scroll]"); if (l) { e.preventDefault(); scrollTo($("#engine")); } });
+  loadProof();
 })();

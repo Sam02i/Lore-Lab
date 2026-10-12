@@ -2,8 +2,8 @@
    Display = chunky brush handwriting for titles, Body = friendly readable handwriting.
    (index.html and notebook.html load both from Google Fonts.) */
 :root{
-  --font-display:"Caveat Brush","Patrick Hand","Chalkboard SE","Comic Sans MS",cursive;
-  --font-body:"Patrick Hand","Chalkboard SE","Comic Sans MS",cursive;
+  --font-display:"Caveat Brush","Chalkboard SE","Comic Sans MS",cursive;
+  --font-body:"Chalkboard SE","Comic Sans MS",cursive;
 }
 /* =========================================================
    Lore Lab · Experiment Engine, Architecture, Field Report

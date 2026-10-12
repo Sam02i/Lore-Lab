@@ -9,7 +9,7 @@
 
 /* ================= ARCHITECTURE ================= */
 .ax{position:relative;overflow-x:clip;color:var(--s-cream);background:#10291b;
-  padding:clamp(5rem,12vh,9rem) 0 clamp(4rem,10vh,8rem);font-family:"Delius","Comic Sans MS","Chalkboard SE","Comic Neue",cursive}
+  padding:clamp(5rem,12vh,9rem) 0 clamp(4rem,10vh,8rem);font-family:"Nunito","Comic Sans MS","Chalkboard SE","Comic Neue",cursive}
 .ax__glow{position:absolute;inset:0;pointer-events:none;
   background:radial-gradient(55vw 38vw at 88% 6%,rgba(244,216,138,.14),transparent 70%),radial-gradient(40vw 30vw at 0% 60%,rgba(242,106,79,.08),transparent 70%)}
 .ax__wrap{position:relative;z-index:1;width:min(1500px,92vw);margin:0 auto}
@@ -57,7 +57,7 @@
 .ax-n{cursor:pointer;outline:none;transition:opacity .35s}
 .ax-n rect{fill:#0f2218;stroke:rgba(246,240,223,.55);stroke-width:1.5;transition:fill .3s,stroke .3s}
 .ax-n .nm{font-family:"Swanky and Moo Moo","Chalkboard SE","Comic Sans MS","Marker Felt",cursive;font-size:19px;fill:#f6f0df;transition:fill .3s}
-.ax-n .sb{font-family:"Delius","Comic Sans MS","Chalkboard SE","Comic Neue",cursive;font-size:12.5px;fill:rgba(246,240,223,.75);transition:fill .3s}
+.ax-n .sb{font-family:"Nunito","Comic Sans MS","Chalkboard SE","Comic Neue",cursive;font-size:12.5px;fill:rgba(246,240,223,.75);transition:fill .3s}
 .ax-n .dot{fill:var(--c,#f4d88a)}
 .ax-n--code{--c:#f26a4f}.ax-n--ext{--c:#f4d88a}.ax-n--store{--c:#9fdc7a}
 .ax-n:hover rect{stroke:#f6f0df}
@@ -89,7 +89,7 @@
 }
 
 /* ================= PROTOCOL ================= */
-.px{position:relative;overflow-x:clip;color:var(--s-ink);background:var(--px-bg);padding:clamp(5rem,12vh,9rem) 0 clamp(4rem,10vh,7rem);font-family:"Delius","Comic Sans MS","Chalkboard SE","Comic Neue",cursive}
+.px{position:relative;overflow-x:clip;color:var(--s-ink);background:var(--px-bg);padding:clamp(5rem,12vh,9rem) 0 clamp(4rem,10vh,7rem);font-family:"Nunito","Comic Sans MS","Chalkboard SE","Comic Neue",cursive}
 .px__top{width:min(1500px,92vw);margin:0 auto clamp(2.5rem,6vh,4rem)}
 .px__pill{display:inline-block;padding:.65em 1.3em;font:500 clamp(12px,.9vw,14px)/1 var(--s-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--s-cream);background:var(--s-ink);border-radius:99px}
 .px__pill i{font-style:normal;color:var(--s-coral);margin:0 .5em}
@@ -135,7 +135,7 @@
 
 .px-input{padding:clamp(1.2rem,2vw,2rem);background:var(--s-cream);border:2px solid var(--s-ink);border-radius:20px;box-shadow:7px 7px 0 var(--s-ink)}
 .px-input__label{margin:0 0 .35rem;font:500 clamp(11px,.85vw,13px)/1 var(--s-mono);letter-spacing:.12em;text-transform:uppercase;color:#4c5b50}
-.px-input__field{margin:0 0 1.2rem;padding:.9rem 1rem;font-family:"Delicious Handrawn","Segoe Print","Bradley Hand","Comic Sans MS",cursive;font-size:clamp(1.7rem,2.6vw,3rem);line-height:1.1;background:#fff;border:2px solid var(--s-ink);border-radius:12px}
+.px-input__field{margin:0 0 1.2rem;padding:.9rem 1rem;font-family:"Swanky and Moo Moo","Segoe Print","Bradley Hand","Comic Sans MS",cursive;font-size:clamp(1.7rem,2.6vw,3rem);line-height:1.1;background:#fff;border:2px solid var(--s-ink);border-radius:12px}
 .px-caret{display:inline-block;width:.09em;height:1em;margin-left:.08em;vertical-align:-.12em;background:var(--s-coral);animation:px-blink 1s steps(1) infinite}
 @keyframes px-blink{50%{opacity:0}}
 .px-input__row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.2rem}
@@ -246,7 +246,7 @@
 .px__title{white-space:normal;line-height:1.05}
 .px-sec-h h3{line-height:1.15;margin-bottom:1rem}
 .px-stamp{rotate:0deg}
-.px-card__saying{max-width:22em;margin:0;font-family:"Delicious Handrawn","Segoe Print","Bradley Hand","Comic Sans MS",cursive;font-size:clamp(1.6rem,2.4vw,2.8rem);line-height:1.2}
+.px-card__saying{max-width:22em;margin:0;font-family:"Swanky and Moo Moo","Segoe Print","Bradley Hand","Comic Sans MS",cursive;font-size:clamp(1.6rem,2.4vw,2.8rem);line-height:1.2}
 .px-ex{padding:clamp(1.2rem,2vw,2rem);background:var(--s-cream);border:2px solid var(--s-ink);border-radius:20px;box-shadow:7px 7px 0 var(--s-ink)}
 .px-ex::before{left:calc(clamp(1.2rem,2vw,2rem) + 1.05rem);top:calc(clamp(1.2rem,2vw,2rem) + 1.6rem);bottom:calc(clamp(1.2rem,2vw,2rem) + 1.6rem)}
 
@@ -298,9 +298,9 @@
 .px-q button[aria-expanded="true"] i{background:#f26a4f}
 .px-caret{background:#f26a4f}
 /* ===== theme patch: bring Architecture + Protocol into the green-paper world ===== */
-.ax{--s-mono:"Delius","Comic Sans MS","Chalkboard SE","Comic Neue",cursive;
+.ax{--s-mono:"Nunito","Comic Sans MS","Chalkboard SE","Comic Neue",cursive;
   background:linear-gradient(rgba(16,41,27,.62),rgba(16,41,27,.62)),url("assets/grid.jpg") top left/36.8vw auto repeat,#10291b}
-.px{--s-mono:"Delius","Comic Sans MS","Chalkboard SE","Comic Neue",cursive}
+.px{--s-mono:"Nunito","Comic Sans MS","Chalkboard SE","Comic Neue",cursive}
 .ax__kicker,.ax-row__tag,.ax-row__io dt,.ax__cap b,.ax__cap,.ax-stepn,
 .px__pill,.px__track span,.px-card__tag,.px-input__label,.px-score__cap,.px-sec-tag{text-transform:none;letter-spacing:.03em}
 .ax__chips button{letter-spacing:.02em}
@@ -416,7 +416,7 @@
 }
 
 /* ===================== One run strip ===================== */
-.run{position:relative;overflow-x:clip;background:#efe8d6;color:#10291b;padding:clamp(4.5rem,11vh,8rem) 0 clamp(4rem,9vh,6rem);font-family:"Delius","Comic Sans MS","Chalkboard SE",cursive}
+.run{position:relative;overflow-x:clip;background:#efe8d6;color:#10291b;padding:clamp(4.5rem,11vh,8rem) 0 clamp(4rem,9vh,6rem);font-family:"Nunito","Comic Sans MS","Chalkboard SE",cursive}
 .run__wrap{width:min(1500px,92vw);margin:0 auto}
 .run__pill{display:inline-block;padding:.6em 1.2em;font:500 clamp(12px,.9vw,14px)/1 var(--s-mono);letter-spacing:.1em;text-transform:uppercase;color:#f6f0df;background:#10291b;border-radius:99px}
 .run__title{margin:.3em 0 .2em;font-family:"Swanky and Moo Moo","Chalkboard SE","Comic Sans MS",cursive;font-weight:400;font-size:clamp(2.8rem,8vw,9rem);line-height:.95;color:#10291b}

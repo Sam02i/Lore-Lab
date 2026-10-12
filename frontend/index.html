@@ -19,9 +19,9 @@
   <meta name="description" content="Lore Lab tests family weather sayings as honest experiments with open-weight Gemma.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Caveat+Brush&family=Patrick+Hand&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Caveat+Brush&display=swap" rel="stylesheet">
   <!-- TEMPORARY: style.css and sections.css still name the old fonts. Delete this line after running swap-fonts.sh on them. -->
-  <link href="https://fonts.googleapis.com/css2?family=Delicious+Handrawn&family=Delius&family=Swanky+and+Moo+Moo&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Swanky+and+Moo+Moo&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="preload" as="image" href="assets/granny-body.webp" fetchpriority="high">
   <link rel="preload" as="image" href="assets/granny-broom.webp" fetchpriority="high">
@@ -30,7 +30,7 @@
   <link rel="stylesheet" href="lore.css">
   <link rel="stylesheet" href="sections.css">
   <link rel="stylesheet" href="readability.css">
-  <script>(function(){var r=document.documentElement,seen=false,EVERY_VISIT=true;try{seen=(!EVERY_VISIT&&!!localStorage.getItem("loreLoaderSeen")&&!/[?&]loader/.test(location.search))||/[?&]skiploader/.test(location.search)}catch(e){}r.classList.add("js");r.classList.add(seen?"ld-skip":"is-loading")})();</script>
+  <script>(function(){var r=document.documentElement,seen=false,EVERY_VISIT=false;try{seen=(!EVERY_VISIT&&!!sessionStorage.getItem("loreLoaderSeen")&&!/[?&]loader/.test(location.search))||/[?&]skiploader/.test(location.search)}catch(e){}r.classList.add("js");r.classList.add(seen?"ld-skip":"is-loading")})();</script>
 </head>
 <body id="top">
   <script>(function(){var n=0;window.ldImg=function(){if(++n===2){window.ldReadyAt=Date.now();var l=document.getElementById("loader");l&&l.classList.add("is-ready")}}})();</script>
@@ -89,7 +89,7 @@
       <p class="hero__text">Test your family&rsquo;s weather sayings against ten years of real data. Then step outside, watch the swifts and the sky, and put your phone away.</p>
       <div class="hero__try">
         <span>Or try a saying:</span>
-        <a href="#engine">Red sky at night</a><a href="#engine">Cows lying down</a><a href="#engine">Swallows flying low</a>
+        <a href="#quick-result" data-quick="Red sky at night, shepherd&rsquo;s delight. Red sky in the morning, shepherd&rsquo;s warning.">Red sky at night</a><a href="#quick-result" data-quick="When cows lie down in the field, rain is coming.">Cows lying down</a><a href="#quick-result" data-quick="When swallows fly low, rain is on its way.">Swallows flying low</a>
       </div>
     </div>
 
@@ -97,6 +97,13 @@
     <img class="hero__girl" src="assets/girl.webp" alt="" width="1100" height="1100" decoding="async">
     <a class="hero__scroll" href="#engine"><span>scroll down</span><i aria-hidden="true">&darr;</i></a>
   </main>
+
+  <!-- ===================== QUICK RESULT + PROOF (quickrun.js) ===================== -->
+  <section class="qr lore" id="quick-result" aria-label="Quick result" tabindex="-1">
+    <div class="qr-proof" id="qr-proof" hidden></div>
+    <div class="qr-out" id="qr-out" aria-live="polite" hidden></div>
+    <div class="qr-example" id="qr-example" hidden></div>
+  </section>
 
   <!-- ===================== LORE LAB · EXPERIMENT ENGINE ===================== -->
   <section class="lore lore-engine" id="engine" aria-labelledby="lore-engine-title">
@@ -141,7 +148,7 @@
                   <select class="lore-field" id="lore-starter"><option value="">Choose one&hellip;</option></select>
                 </div>
                 <div class="lore-actions">
-                  <button class="lore-btn lore-btn--coral" id="lore-extract" type="submit">Extract the hypothesis</button>
+                  <button class="lore-btn lore-btn--coral" id="lore-extract" type="submit">Check this saying</button>
                 </div>
               </form>
             </div>
@@ -256,7 +263,7 @@
     var cycle = setInterval(function () { n = (n + 1) % lines.length; msg.textContent = lines[n]; }, 900);
     function finish() {
       if (done) return; done = true; clearInterval(cycle);
-      try { localStorage.setItem("loreLoaderSeen", "1"); } catch (e) {}
+      try { sessionStorage.setItem("loreLoaderSeen", "1"); } catch (e) {}
       var w = getComputedStyle(fill).width; fill.style.animation = "ld-crawl 1s linear infinite"; fill.style.width = w; void fill.offsetWidth; fill.style.width = "100%";
       msg.textContent = "Sky\u2019s clear. Go touch grass.";
       el.classList.add("is-clear");                       // clouds part, shards sweep out

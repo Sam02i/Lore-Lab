@@ -33,7 +33,7 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 0 12.5vw 0 12vw;
-  font-family: "Delius","Comic Sans MS","Chalkboard SE","Comic Neue",cursive;
+  font-family: "Nunito","Comic Sans MS","Chalkboard SE","Comic Neue",cursive;
   font-size:clamp(15px,1.75vw,42px);
   color: #ffffff;
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
@@ -125,7 +125,7 @@ body {
   max-width: 100%;
   padding: 0.45vw 1.5vw;
   text-align: center;
-  font-family: "Delius","Comic Sans MS","Chalkboard SE","Comic Neue",cursive;
+  font-family: "Nunito","Comic Sans MS","Chalkboard SE","Comic Neue",cursive;
   font-size:clamp(12px,1.05vw,25px);
   letter-spacing: 0.16vw;
   text-transform: uppercase;
@@ -176,7 +176,7 @@ body {
 .hero__text {
   width: 100%;
   text-align: center;
-  font-family: "Delius","Comic Sans MS","Chalkboard SE","Comic Neue",cursive;
+  font-family: "Nunito","Comic Sans MS","Chalkboard SE","Comic Neue",cursive;
   font-size:clamp(15px,1.72vw,41px);
   line-height: 1.34;
   color: #eef6ec;
@@ -251,7 +251,7 @@ body {
   flex: 1;
   min-width: 0;
   padding: 1.05vw 1.6vw;
-  font-family: "Delius","Comic Sans MS","Chalkboard SE","Comic Neue",cursive;
+  font-family: "Nunito","Comic Sans MS","Chalkboard SE","Comic Neue",cursive;
   font-size:clamp(12px,1.3vw,31px);
   color: #10291b;
   background: #fbf6e6; /* cream construction paper */
@@ -309,7 +309,7 @@ body {
   left: 0;
   width: 100%;
   text-align: center;
-  font-family: "Delius","Comic Sans MS","Chalkboard SE","Comic Neue",cursive;
+  font-family: "Nunito","Comic Sans MS","Chalkboard SE","Comic Neue",cursive;
   font-size:clamp(12px,1.2vw,29px);
   color: #fbf6e6;
   min-height: 1.5vw;
@@ -327,7 +327,7 @@ body {
   width: 100vw;
   min-height: 53vw;
   overflow: hidden;
-  font-family: "Delicious Handrawn","Segoe Print","Bradley Hand","Comic Sans MS",cursive;
+  font-family: "Swanky and Moo Moo","Segoe Print","Bradley Hand","Comic Sans MS",cursive;
   color: #ffffff;
   background: url("assets/grid.jpg") top left / 36.8vw auto repeat;
 }
@@ -553,7 +553,7 @@ html { scroll-behavior: smooth; scroll-padding-top: 7vh; }
 .hero__scroll {
   position: absolute; left: 50%; bottom: 3.5vh; z-index: 6; transform: translateX(-50%);
   display: flex; flex-direction: column; align-items: center; gap: 0.2vw;
-  font-family: "Delius","Comic Sans MS","Chalkboard SE","Comic Neue",cursive; font-size:clamp(12px,1.2vw,29px); color: #eef6ec; text-decoration: none;
+  font-family: "Nunito","Comic Sans MS","Chalkboard SE","Comic Neue",cursive; font-size:clamp(12px,1.2vw,29px); color: #eef6ec; text-decoration: none;
   text-shadow: 0 1px 4px rgba(0,0,0,.5); animation: bob 2.2s ease-in-out infinite;
 }
 .hero__scroll i { font-style: normal; font-size:clamp(17px,2vw,48px); color: #f26a4f; }
@@ -682,7 +682,7 @@ html{scroll-padding-top:12vh}
 }
 
 /* ===== a11y: skip link (visible only on keyboard focus) ===== */
-.skip-link{position:fixed;left:1rem;top:-4rem;z-index:100;padding:.6em 1.1em;font-family:"Delius","Comic Sans MS","Chalkboard SE","Comic Neue",cursive;font-size:1rem;color:var(--deep);background:var(--cream);border:2px solid var(--deep);border-radius:.6em;box-shadow:.2em .2em 0 var(--deep);text-decoration:none;transition:top .2s}
+.skip-link{position:fixed;left:1rem;top:-4rem;z-index:100;padding:.6em 1.1em;font-family:"Nunito","Comic Sans MS","Chalkboard SE","Comic Neue",cursive;font-size:1rem;color:var(--deep);background:var(--cream);border:2px solid var(--deep);border-radius:.6em;box-shadow:.2em .2em 0 var(--deep);text-decoration:none;transition:top .2s}
 .skip-link:focus{top:1rem}
 
 
@@ -754,7 +754,7 @@ html{scroll-padding-top:12vh}
   filter:drop-shadow(0 .45rem .4rem rgba(8,40,70,.3))}
 .ld-tag::before{content:"";position:absolute;inset:.35rem;border:.13rem dashed rgba(16,41,27,.35);border-radius:inherit;pointer-events:none}
 .loader__title{font-family:"Swanky and Moo Moo","Chalkboard SE","Comic Sans MS","Marker Felt",cursive;font-size:clamp(2.8rem,10vw,4.8rem);line-height:1;margin:0 0 .35rem}
-.loader__msg{min-height:1.5em;margin:0 0 .8rem;font-family:"Delius","Comic Sans MS","Chalkboard SE","Comic Neue",cursive;font-size:clamp(.95rem,2.4vw,1.15rem)}
+.loader__msg{min-height:1.5em;margin:0 0 .8rem;font-family:"Nunito","Comic Sans MS","Chalkboard SE","Comic Neue",cursive;font-size:clamp(.95rem,2.4vw,1.15rem)}
 .loader__bar{width:min(17rem,60vw);height:1rem;overflow:hidden;background:#e7dcc0;border-radius:99px;box-shadow:inset 0 .12rem .2rem rgba(60,40,10,.3)}
 .loader__bar i{display:block;height:100%;width:8%;border-radius:99px;
   background:repeating-linear-gradient(135deg,var(--coral) 0 .6rem,#f58a73 .6rem 1.2rem);background-size:200% 100%;
@@ -838,7 +838,7 @@ html.is-loading,html.is-loading body{overflow:hidden}
 
 /* ===== 9+ pass ===== */
 /* hero: "try a saying" chips fill the lower third and point to the engine */
-.hero__try{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:.6em .7em;margin-top:1.4vw;font-family:"Delius","Comic Sans MS","Chalkboard SE",cursive;font-size:clamp(14px,1.2vw,26px);color:#eef6ec;animation:text-in .9s .4s cubic-bezier(.2,.8,.2,1) both;position:relative;z-index:12}
+.hero__try{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:.6em .7em;margin-top:1.4vw;font-family:"Nunito","Comic Sans MS","Chalkboard SE",cursive;font-size:clamp(14px,1.2vw,26px);color:#eef6ec;animation:text-in .9s .4s cubic-bezier(.2,.8,.2,1) both;position:relative;z-index:12}
 .hero__try a{padding:.3em .95em;color:#10291b;text-decoration:none;background:#f4d88a;border:.12em solid #10291b;border-radius:999px;box-shadow:.14em .14em 0 #10291b;transition:translate .15s ease,box-shadow .15s ease,background .15s ease}
 .hero__try a:nth-of-type(2){background:#f2b8a8}.hero__try a:nth-of-type(3){background:#cfe3b8}
 .hero__try a:hover,.hero__try a:focus-visible{translate:-.05em -.1em;box-shadow:.2em .25em 0 #10291b}
