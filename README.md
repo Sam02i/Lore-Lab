@@ -138,10 +138,15 @@ Then open **http://127.0.0.1:8000** in your browser. Keep Ollama running in the 
 | `server.py` | FastAPI server and API routes; serves the frontend |
 | `extract.py`, `prompt.py` | Ask Gemma to turn a saying into a hypothesis |
 | `schema.py` | The hypothesis schema and the rules for what can be backtested |
-| `adapter.py` | Shapes hypotheses for the frontend |
-| `weather.py` | Fetches ten years of history from Open-Meteo |
+| `config.py` | The pre-committed constants (rain threshold, window, minimum sample sizes) |
+| `weather.py` | Fetches and caches ten years of history from Open-Meteo |
 | `backtest.py`, `lab.py`, `scorecard.py` | Plain-Python scoring and verdicts. **No model in the loop.** |
-| `run_test.py` | Test runner for the extraction test set |
+| `field.py`, `resolve.py` | Field Test logging and lazy outcome resolution |
+| `pregenerate.py`, `pregen.py` | Save and serve Gemma's hypotheses for the hosted demo |
+| `adapter.py` | Shapes hypotheses for the frontend |
+| `run_test.py`, `results/` | Extraction test runner and its saved results |
+| `tests/` | Unit tests (`pip install -r requirements-dev.txt`, then `pytest`) |
+| `render.yaml` | Render deployment config |
 | `frontend/` | The web app |
 
 ## Hosted demo
