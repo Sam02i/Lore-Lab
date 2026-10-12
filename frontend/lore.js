@@ -36,19 +36,29 @@
   ENDPOINTS.forEach((k) => { if (!(k in CONFIG.endpoints)) CONFIG.endpoints[k] = null; });
 
   class NotConfigured extends Error { constructor(name) { super(`Endpoint "${name}" is not configured`); this.name = "NotConfigured"; this.endpoint = name; } }
+  class TimeoutErr extends Error { constructor(ms) { super(`No answer after ${Math.round(ms / 1000)}s`); this.name = "TimeoutErr"; } }
   class ApiError extends Error { constructor(status, detail) { super(detail || `HTTP ${status}`); this.name = "ApiError"; this.status = status; } }
   const isConfigured = (name) => CONFIG.apiBase !== null && !!CONFIG.endpoints[name];
 
+  const API_TIMEOUT_MS = 45000; // each call; raise if your backend is slow
   async function api(name, payload, params) {
     const ep = CONFIG.endpoints[name];
     if (CONFIG.apiBase === null || !ep) throw new NotConfigured(name);
     const method = (ep.method || "POST").toUpperCase();
     const path = ep.path.replace(/:(\w+)/g, (_, k) => encodeURIComponent((params || {})[k] ?? ""));
-    const res = await fetch(String(CONFIG.apiBase).replace(/\/$/, "") + path, {
+    const ctl = new AbortController(), timer = setTimeout(() => ctl.abort(), API_TIMEOUT_MS);
+    let res;
+    try {
+      res = await fetch(String(CONFIG.apiBase).replace(/\/$/, "") + path, {
+      signal: ctl.signal,
       method,
       headers: { Accept: "application/json", ...(method === "GET" ? {} : { "Content-Type": "application/json" }) },
       body: method === "GET" ? undefined : JSON.stringify(payload ?? {}),
-    });
+      });
+    } catch (e) {
+      if (e && e.name === "AbortError") throw new TimeoutErr(API_TIMEOUT_MS);
+      throw e;
+    } finally { clearTimeout(timer); }
     if (!res.ok) {
       let detail = "";
       try { const j = await res.json(); detail = typeof j.detail === "string" ? j.detail : j.message || ""; } catch (_) { /* no body */ }
@@ -107,6 +117,7 @@
      --------------------------------------------------------- */
   function describeError(err) {
     if (err instanceof NotConfigured) return { title: "The lab isn’t connected yet", msg: "This page has no backend address for that action, so nothing was sent and nothing was invented. Configure LORE_CONFIG (see INTEGRATION.md)." };
+    if (err instanceof TimeoutErr) return { title: "That took too long", msg: "The lab didn’t answer in time. Nothing was lost. Try again, it often works the second time." };
     if (err instanceof ApiError) return { title: `The lab said no (${err.status})`, msg: err.message && !/^HTTP/.test(err.message) ? err.message : "The server rejected that request. Check the details and try again." };
     return { title: "Couldn’t reach the lab", msg: "The request didn’t go through. Check your connection and try again." };
   }
@@ -314,6 +325,15 @@
     return { q: `How high must ${friendlyVar(v) || "the value"} be?`, unit: p?.unit || "", ph: "Type a number", chips: [],
       help: "Type the number at which you would say “the sign is there”." };
   }
+  function checkPhrase(h, th) {
+    const v = h.proxy?.variable, f = h.proxy?.feature, g = thresholdGuide(h.proxy);
+    if (!v || th === "" || !Number.isFinite(Number(th))) return null;
+    const name = friendlyVar(v), u = g.unit === "%" ? "%" : g.unit ? " " + g.unit : "";
+    if (v === "pressure_msl" && f === "level") return `${name} at or below ${th}${u}`;
+    if (v === "pressure_msl") return `${name} falling by ${th}${u} or more`;
+    if (v === "wind_direction_10m") return `wind from near ${th}°`;
+    return `${name} over ${th}${u}`;
+  }
   function thresholdHTML(h) {
     const g = thresholdGuide(h.proxy);
     return `<fieldset class="lore-fieldset"><legend>Your number</legend>
@@ -340,11 +360,17 @@
     const amb = h.ambiguities.map((a, i) => `<div class="lore-ambig"><p>${esc(a.text)}</p>${a.options && a.options.length
       ? `<select class="lore-field" data-amb="${i}" aria-label="Settle: ${esc(a.text)}"><option value="">Choose…</option>${a.options.map((o) => `<option>${esc(o)}</option>`).join("")}</select>`
       : `<input class="lore-field" data-amb="${i}" type="text" aria-label="Settle: ${esc(a.text)}" placeholder="Say what you mean">`}</div>`).join("");
+    const g0 = lab ? thresholdGuide(h.proxy) : null;
+    const preset = g0 && g0.chips.length ? g0.chips[Math.min(1, g0.chips.length - 1)][1] : null;
+    const editOpen = lab && preset === null ? " open" : "";
     panes[1].innerHTML = `
       <h3>Does this say what you meant?</h3>
       <p class="lore-intro">Check that this matches what they meant. Fix anything that is off. Nothing is tested until you say it looks right.</p>
       <blockquote class="lore-orig">${esc(h.original)}<small>${h.translation ? `In English: ${esc(h.translation)}` : ""}${h.source ? ` · Said by ${esc(h.source)}` : ""}</small></blockquote>
       ${h.testMode ? `<p class="lore-modeline">${h.testMode === "lab" ? "We can check this one against ten years of past weather." : "Weather instruments can’t see this sign, so you’ll check it by going outside and looking."}</p>` : ""}
+      <p class="lore-sum" id="lh-sum" role="status"></p>
+      ${preset !== null ? `<p class="lore-help">I picked a starting number. Open Edit details to change it.</p>` : ""}
+      <details class="lore-edit"${editOpen}><summary>Edit details</summary>
       <div class="lore-grid2">
         <div><label for="lh-sign">The sign to look for</label><textarea class="lore-field" id="lh-sign" rows="3">${esc(h.sign.text)}</textarea></div>
         <div><label for="lh-how">How to check it</label><textarea class="lore-field" id="lh-how" rows="3">${esc(h.sign.how)}</textarea></div>
@@ -352,6 +378,7 @@
         <div><label for="lh-window">How many hours later do we check?</label><input class="lore-field" id="lh-window" type="number" min="1" step="1" inputmode="numeric" value="${h.prediction.windowHours ?? ""}"></div>
       </div>
       ${lab ? thresholdHTML(h) : ""}
+      </details>
       ${rough ? `<fieldset class="lore-fieldset lore-fieldset--warn"><legend>Only a rough match</legend>
         <label class="lore-check"><input type="checkbox" id="lh-rough"><span>Weather data can only roughly measure this sign (a halo around the moon, for example, shows up as thin high cloud). Tick this if you are happy to test it that way.</span></label></fieldset>` : ""}
       ${h.ambiguities.length ? `<fieldset class="lore-fieldset"><legend>Say what you mean</legend><p class="lore-help">Gemma wasn’t sure what these words mean. Answer in your own words so the test is fair.</p>${amb}</fieldset>` : ""}
@@ -367,7 +394,15 @@
       const okSign = $("#lh-sign", panes[1]).value.trim() && $("#lh-how", panes[1]).value.trim();
       confirm.disabled = eng.busy || !(okAmb && okRough && okTh && okSign);
     };
-    eng.valid = valid; valid();
+    const sum = () => {
+      const th = lab ? $("#lh-th", panes[1]).value : "";
+      const ph = lab ? checkPhrase(h, th) : null;
+      const sign = ($("#lh-sign", panes[1]).value || "").trim();
+      const short = sign.length > 110 ? sign.slice(0, 107) + "…" : sign;
+      $("#lh-sum", panes[1]).textContent = "We’ll check: " + (ph || short || "…") + (lab && !ph && h.proxy?.variable ? ". Pick a number under Edit details." : ".");
+    };
+    if (preset !== null) $("#lh-th", panes[1]).value = preset;
+    eng.valid = () => { valid(); sum(); }; valid(); sum();
     on($('[data-go="1"]', panes[1]), "click", () => go(1));
     on(confirm, "click", async () => {
       if (eng.busy) return; eng.busy = true; busy(confirm, true); clearAlert();
@@ -394,7 +429,7 @@
   /* Step 3: Lab vs Field */
   const ICON_LAB = '<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M18 6h12M21 6v14L9 40a3 3 0 0 0 3 4h24a3 3 0 0 0 3-4L27 20V6" fill="#fbf6e6" stroke="#10291b" stroke-width="3" stroke-linejoin="round"/><path d="M14 33h20" stroke="#10291b" stroke-width="3"/></svg>';
   const ICON_FIELD = '<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="9" fill="#f4d88a" stroke="#10291b" stroke-width="3"/><path d="M24 4v7M24 37v7M4 24h7M37 24h7M10 10l5 5M33 33l5 5M38 10l-5 5M15 33l-5 5" stroke="#10291b" stroke-width="3" stroke-linecap="round"/></svg>';
-  const CITIES = { "Delhi": [28.6139, 77.2090], "Mumbai": [19.0760, 72.8777], "Pune": [18.5204, 73.8567], "Bengaluru": [12.9716, 77.5946], "Kolkata": [22.5726, 88.3639], "Chennai": [13.0827, 80.2707], "Hyderabad": [17.3850, 78.4867], "London": [51.5074, -0.1278], "New York": [40.7128, -74.0060] };
+  const CITIES = { "Delhi": [28.6139, 77.2090], "Mumbai": [19.0760, 72.8777], "Pune": [18.5204, 73.8567], "Bengaluru": [12.9716, 77.5946], "Kolkata": [22.5726, 88.3639], "Chennai": [13.0827, 80.2707], "Hyderabad": [17.3850, 78.4867], "London": [51.5074, -0.1278], "New York": [40.7128, -74.0060], "Los Angeles": [34.0522, -118.2437], "Chicago": [41.8781, -87.6298], "Toronto": [43.6532, -79.3832], "Mexico City": [19.4326, -99.1332], "São Paulo": [-23.5505, -46.6333], "Paris": [48.8566, 2.3522], "Berlin": [52.5200, 13.4050], "Lagos": [6.5244, 3.3792], "Nairobi": [-1.2921, 36.8219], "Dubai": [25.2048, 55.2708], "Singapore": [1.3521, 103.8198], "Tokyo": [35.6762, 139.6503], "Sydney": [-33.8688, 151.2093] };
   function locationBlock() {
     return `<fieldset class="lore-fieldset"><legend>Where are you?</legend>
       <label for="ll-city">City</label>
@@ -928,29 +963,87 @@
   const out = $("#qr-out"), proof = $("#qr-proof"), example = $("#qr-example");
   if (!LL || !LL.api || !out) return;
 
-  const DEFAULT_CITY = "Delhi";
   const store = {
     get(k) { try { return localStorage.getItem(k); } catch (_) { return null; } },
     set(k, v) { try { localStorage.setItem(k, v); } catch (_) { /* private mode */ } },
   };
   let running = false, last = null; // last = { h, c, preset, loc }
 
+  const cityLoc = (n) => ({ label: n, lat: LL.CITIES[n][0], lon: LL.CITIES[n][1] });
   const place = () => {
-    const name = store.get("loreQuickPlace");
-    const city = LL.CITIES[name] ? name : DEFAULT_CITY;
-    return { label: city, lat: LL.CITIES[city][0], lon: LL.CITIES[city][1] };
+    try {
+      const o = JSON.parse(store.get("loreQuickLoc"));
+      if (o && o.label && Number.isFinite(o.lat) && Number.isFinite(o.lon)) return o;
+    } catch (_) { /* none saved */ }
+    const old = store.get("loreQuickPlace"); // earlier versions saved just a city name
+    return LL.CITIES[old] ? cityLoc(old) : null;
   };
-
-  /* ---------- progress / errors ---------- */
-  function progress(msg) {
+  const savePlace = (loc) => store.set("loreQuickLoc", JSON.stringify(loc));
+  // One-time question: device location, or a city picker. The answer is remembered in this browser only.
+  function askPlace() {
+    return new Promise((resolve) => {
+      clearInterval(tick);
+      const opts = Object.keys(LL.CITIES).map((n) => `<option>${esc(n)}</option>`).join("");
+      out.hidden = false;
+      out.innerHTML = `<div class="qr-box"><p class="qr-kick">One quick thing</p><h3>Where should we check the weather?</h3>
+        <p>We look up ten years of weather for one spot. Your location stays in this browser and is only used to choose that spot.</p>
+        <div class="qr-actions"><button class="qr-btn qr-btn--coral" type="button" id="qr-geo">Use my location</button></div>
+        <p class="qr-used"><label>Or pick a city: <select id="qr-pickcity"><option value="">Choose…</option>${opts}</select></label></p>
+        <p class="qr-note" id="qr-geonote" role="status"></p></div>`;
+      const note = (t) => { $("#qr-geonote").textContent = t; };
+      const done = (loc) => { savePlace(loc); resolve(loc); };
+      $("#qr-pickcity").addEventListener("change", (e) => { if (LL.CITIES[e.target.value]) done(cityLoc(e.target.value)); });
+      $("#qr-geo").addEventListener("click", () => {
+        if (!navigator.geolocation) return note("This browser can’t share a location. Pick a city instead.");
+        note("Asking your device…");
+        navigator.geolocation.getCurrentPosition(
+          (p) => done({ label: "Your location", lat: +p.coords.latitude.toFixed(2), lon: +p.coords.longitude.toFixed(2) }),
+          () => { note("Location wasn’t shared. Pick a city instead."); $("#qr-pickcity").focus(); },
+          { timeout: 10000 });
+      });
+    });
+  }
+  function waitMsg(msg) {
+    clearInterval(tick);
     out.hidden = false;
     out.innerHTML = `<div class="qr-wait" role="status"><i aria-hidden="true"></i><span>${esc(msg)}</span></div>`;
   }
-  function fail(err) {
+
+  /* ---------- progress / errors ---------- */
+  const STEPS = ["Reading the saying", "Setting up the test", "Pulling ten years of weather"];
+  const DEFAULT_SECS = [4, 3, 8]; // first-run guesses; replaced by what this device actually saw
+  const learned = () => { try { const a = JSON.parse(store.get("loreStepSecs")); if (Array.isArray(a) && a.length === 3) return a; } catch (_) {} return DEFAULT_SECS; };
+  let tick = null, stepAt = [], stepStart = 0;
+  function progress(step) { // step: 0, 1 or 2
+    const now = Date.now();
+    if (step === 0) { stepAt = []; clearInterval(tick); }
+    stepAt[step] = now; stepStart = stepAt[0];
+    const est = learned(), total = est.reduce((a, b) => a + b, 0);
+    out.hidden = false;
+    out.innerHTML = `<div class="qr-wait qr-steps" role="status" aria-live="polite">
+      <ol>${STEPS.map((s, i) => `<li class="${i < step ? "is-done" : i === step ? "is-now" : ""}"><i aria-hidden="true"></i>${esc(s)}${i === step ? "…" : ""}</li>`).join("")}</ol>
+      <p class="qr-eta" id="qr-eta"></p></div>`;
+    const eta = $("#qr-eta");
+    const paint = () => {
+      const el = Math.round((Date.now() - stepStart) / 1000), left = Math.max(0, total - el);
+      eta.textContent = left > 0 ? `Step ${step + 1} of 3 · about ${left} second${left === 1 ? "" : "s"} left` : `Step ${step + 1} of 3 · taking a bit longer than usual (${el}s)`;
+    };
+    paint(); clearInterval(tick); tick = setInterval(paint, 1000);
+  }
+  function stopProgress(ok) {
+    clearInterval(tick);
+    if (!ok || stepAt.length < 3) return;
+    const t = Date.now(), s = [stepAt[1] - stepAt[0], stepAt[2] - stepAt[1], t - stepAt[2]].map((x) => Math.max(1, Math.round(x / 1000)));
+    const old = learned(); store.set("loreStepSecs", JSON.stringify(s.map((x, i) => Math.round((x + old[i]) / 2))));
+  }
+  function fail(err, retry) {
+    stopProgress(false);
     const d = LL.describeError(err);
     out.hidden = false;
     out.innerHTML = `<div class="qr-box"><h3>${esc(d.title)}</h3><p>${esc(d.msg)}</p>
-      <p><a class="qr-btn" href="#engine" data-scroll>Type it in the lab instead</a></p></div>`;
+      <div class="qr-actions">${retry ? `<button class="qr-btn qr-btn--coral" type="button" id="qr-retry">Try again</button>` : ""}
+      <a class="qr-btn qr-btn--ghost" href="#engine" data-scroll>Type it in the lab instead</a></div></div>`;
+    const b = $("#qr-retry"); if (b) b.addEventListener("click", retry, { once: true });
   }
   function scrollTo(el) {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -962,7 +1055,7 @@
     if (running) return;
     running = true;
     document.querySelectorAll("[data-quick]").forEach((a) => a.setAttribute("aria-disabled", "true"));
-    progress("Reading the saying…");
+    progress(0);
     scrollTo($("#quick-result"));
     try {
       const h = LL.normHyp(await LL.api("extractHypothesis", { text, source: "Folk saying", language: null }));
@@ -980,7 +1073,7 @@
         LL.openReview(h); scrollTo($("#engine")); return;
       }
 
-      progress("Checking the sign against ten years of weather…");
+      progress(1);
       const payload = {
         hypothesis_id: h.id,
         edits: { observable_sign: h.sign.text, how_to_observe: h.sign.how, predicted_outcome: h.prediction.outcome, window_hours: h.prediction.windowHours },
@@ -993,15 +1086,18 @@
       if (c.observeWhen) h.sign.when = c.observeWhen;
 
       if (c.testMode === "lab") {
-        const loc = place();
+        let loc = place();
+        if (!loc) { const t0 = Date.now(); loc = await askPlace(); const d = Date.now() - t0; stepAt[0] += d; stepAt[1] += d; }
+        progress(2);
         const card = await backtest(h, loc);
+        stopProgress(true);
         last = { h, c, preset: preset ? { label: preset[0], value: preset[1], unit: guide.unit, q: guide.q } : null, loc, card };
         render();
       } else {
         last = { h, c, preset: null, loc: null, card: { mode: "field", proverb: h.original, source: h.source, n: 0, looks: 0, min: null, notes: [] } };
         render();
       }
-    } catch (err) { fail(err); }
+    } catch (err) { fail(err, () => run(text)); }
     finally { running = false; document.querySelectorAll("[data-quick]").forEach((a) => a.removeAttribute("aria-disabled")); }
   }
 
@@ -1015,7 +1111,8 @@
   function render() {
     const { h, c, preset, loc, card } = last;
     const lab = c.testMode === "lab";
-    const cities = Object.keys(LL.CITIES).map((n) => `<option${loc && n === loc.label ? " selected" : ""}>${esc(n)}</option>`).join("");
+    const cities = (loc && !LL.CITIES[loc.label] ? `<option value="__cur" selected>${esc(loc.label)}</option>` : "")
+      + Object.keys(LL.CITIES).map((n) => `<option${loc && n === loc.label ? " selected" : ""}>${esc(n)}</option>`).join("");
     const used = lab
       ? `<p class="qr-used"><b>Quick run used:</b> “${esc(preset.label)}” (${esc(preset.value)}${preset.unit ? " " + esc(preset.unit) : ""}) for the sign, tested for
           <select id="qr-city" aria-label="Place">${cities}</select>.
@@ -1039,9 +1136,9 @@
     $("#qr-share")?.addEventListener("click", share);
     $("#qr-remind").addEventListener("click", remind);
     $("#qr-city")?.addEventListener("change", async (e) => {
-      store.set("loreQuickPlace", e.target.value);
-      const loc2 = { label: e.target.value, lat: LL.CITIES[e.target.value][0], lon: LL.CITIES[e.target.value][1] };
-      progress("Re-checking for " + e.target.value + "…");
+      if (!LL.CITIES[e.target.value]) return;
+      const loc2 = cityLoc(e.target.value); savePlace(loc2);
+      waitMsg("Re-checking for " + e.target.value + "…");
       try { last.loc = loc2; last.card = await backtest(last.h, loc2); render(); } catch (err) { fail(err); }
     });
     refreshStreak();

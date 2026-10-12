@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Offline · Lore Lab</title>
+<meta name="theme-color" content="#1f5a3d">
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌼</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Caveat+Brush&family=Nunito:wght@600;800&display=swap" rel="stylesheet">
+<style>
+  :root { --green:#1f5a3d; --ink:#10291b; --cream:#fbf6e6; --paper:#fffaf0; --coral:#f26a4f; --butter:#f4d88a;
+          --font-display:"Caveat Brush","Chalkboard SE","Comic Sans MS",cursive; --font-body:"Nunito","Segoe UI",system-ui,sans-serif; }
+  * { box-sizing:border-box; }
+  html,body { height:100%; }
+  body { margin:0; display:grid; place-items:center; padding:20px 14px calc(20px + env(safe-area-inset-bottom,0px));
+         background:var(--green); color:var(--ink); font:17px/1.55 var(--font-body); }
+  .sheet { position:relative; width:100%; max-width:560px; padding:1.6em 1.5em 1.5em 3.6em;
+    background:
+      linear-gradient(90deg,transparent 2.6em,rgba(242,106,79,.55) 2.6em calc(2.6em + 2px),transparent calc(2.6em + 2px)),
+      repeating-linear-gradient(180deg,transparent 0 1.7em,rgba(31,90,61,.16) 1.7em calc(1.7em + 1px)),var(--paper);
+    border:.12em solid var(--ink); border-radius:.4em .9em .9em .4em; box-shadow:.4em .4em 0 rgba(16,41,27,.7); }
+  .sheet::before { content:""; position:absolute; left:.7em; top:1.2em; bottom:1.2em; width:.9em;
+    background:radial-gradient(circle,var(--ink) 38%,transparent 42%) 0 0/100% 2.6em repeat-y; opacity:.75; }
+  h1 { margin:0 0 .25em; font:400 2.3rem/1.1 var(--font-display); }
+  p { margin:0 0 .9em; }
+  .status { display:inline-block; margin:0 0 .8em; padding:.1em .9em; font-weight:800; font-size:.9rem;
+            background:var(--butter); border:.12em solid var(--ink); border-radius:999px; }
+  .actions { display:flex; flex-wrap:wrap; gap:.7em; margin-top:1.2em; }
+  .btn { display:inline-flex; align-items:center; justify-content:center; min-height:44px; padding:.5em 1.3em;
+         font:800 1rem/1.2 var(--font-body); color:var(--ink); text-decoration:none; cursor:pointer;
+         background:var(--butter); border:.12em solid var(--ink); border-radius:999px; box-shadow:.16em .16em 0 var(--ink);
+         transition:translate .15s ease,box-shadow .15s ease; }
+  .btn--ghost { background:var(--cream); }
+  .btn:hover,.btn:focus-visible { translate:-.05em -.1em; box-shadow:.22em .26em 0 var(--ink); }
+  .btn:focus-visible { outline:3px solid var(--coral); outline-offset:3px; }
+  .note { margin:1.2em 0 0; padding-top:.6em; border-top:.1em dashed var(--ink); font-size:.88rem; opacity:.85; }
+  @media (max-width:520px) { .sheet { padding-left:3.1em; } .btn { flex:1 1 100%; } }
+  @media (prefers-reduced-motion:reduce) { .btn { transition:none; } }
+</style>
+</head>
+<body>
+  <main class="sheet">
+    <span class="status" id="status" role="status">Offline</span>
+    <h1>No signal. The sky still works.</h1>
+    <p>Lore Lab needs a connection to test a saying against ten years of past weather, so that part will have to wait.</p>
+    <p>You can still go outside and look. Note what you see, then come back and save your look when you&rsquo;re online.</p>
+    <div class="actions">
+      <button class="btn" type="button" id="retry">Try again</button>
+      <a class="btn btn--ghost" href="/?skiploader#engine">Back to Lore Lab</a>
+    </div>
+    <p class="note">This page reloads on its own when your connection returns. Nothing you saved earlier was changed.</p>
+  </main>
+<script>
+  var status = document.getElementById("status");
+  function goBack() { location.replace("/?skiploader#engine"); }
+  document.getElementById("retry").addEventListener("click", function () {
+    status.textContent = "Checking…";
+    fetch("/manifest.webmanifest", { cache: "no-store" })
+      .then(function (r) { if (r.ok) goBack(); else throw 0; })
+      .catch(function () { status.textContent = "Still offline"; });
+  });
+  window.addEventListener("online", goBack);
+</script>
+</body>
+</html>

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Lore Lab</title>
   <meta name="theme-color" content="#1f5a3d">
   <link rel="manifest" href="manifest.webmanifest">
@@ -13,9 +13,20 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌼</text></svg>">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Lore Lab">
-  <meta property="og:description" content="Lore Lab tests family weather sayings as honest experiments with open-weight Gemma. Then you go touch grass.">
+  <meta property="og:site_name" content="Lore Lab">
+  <meta property="og:url" content="https://YOUR-DOMAIN/">
+  <meta property="og:title" content="Lore Lab: test your family's weather sayings">
+  <meta property="og:description" content="Type a saying like &ldquo;red sky at night&rdquo;. Lore Lab checks it against ten years of real weather, then sends you outside to look.">
+  <meta property="og:image" content="https://YOUR-DOMAIN/assets/og-image.png">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Lore Lab on a green notebook page, with the sayings Red sky at night, Cows lying down and Swallows flying low.">
   <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Lore Lab: test your family's weather sayings">
+  <meta name="twitter:description" content="Check an old weather saying against ten years of real weather, then go outside and look.">
+  <meta name="twitter:image" content="https://YOUR-DOMAIN/assets/og-image.png">
+  <meta name="twitter:image:alt" content="Lore Lab on a green notebook page, with the sayings Red sky at night, Cows lying down and Swallows flying low.">
   <meta name="description" content="Lore Lab tests family weather sayings as honest experiments with open-weight Gemma.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,13 +34,12 @@
   <!-- TEMPORARY: style.css and sections.css still name the old fonts. Delete this line after running swap-fonts.sh on them. -->
   <link href="https://fonts.googleapis.com/css2?family=Swanky+and+Moo+Moo&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="preload" as="image" href="assets/granny-body.webp" fetchpriority="high">
-  <link rel="preload" as="image" href="assets/granny-broom.webp" fetchpriority="high">
-  <link rel="preload" as="image" href="assets/sky-paper.jpg">
+  <script>try{if(!/[?&]skiploader/.test(location.search)&&(/[?&]loader/.test(location.search)||!sessionStorage.getItem("loreLoaderSeen")))["body","broom"].forEach(function(n){var l=document.createElement("link");l.rel="preload";l.as="image";l.href="assets/granny-"+n+".webp";l.fetchPriority="high";document.head.appendChild(l)})}catch(e){}</script>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="lore.css">
   <link rel="stylesheet" href="sections.css">
   <link rel="stylesheet" href="readability.css">
+  <link rel="stylesheet" href="mobile-nav.css">
   <script>(function(){var r=document.documentElement,seen=false,EVERY_VISIT=false;try{seen=(!EVERY_VISIT&&!!sessionStorage.getItem("loreLoaderSeen")&&!/[?&]loader/.test(location.search))||/[?&]skiploader/.test(location.search)}catch(e){}r.classList.add("js");r.classList.add(seen?"ld-skip":"is-loading")})();</script>
 </head>
 <body id="top">
@@ -93,8 +103,8 @@
       </div>
     </div>
 
-    <img class="hero__apple" src="assets/apple.webp" alt="" width="900" height="900" decoding="async">
-    <img class="hero__girl" src="assets/girl.webp" alt="" width="1100" height="1100" decoding="async">
+    <img class="hero__apple" src="assets/apple.webp" alt="" loading="lazy" width="900" height="900" decoding="async">
+    <img class="hero__girl" src="assets/girl.webp" alt="" loading="lazy" width="1100" height="1100" decoding="async">
     <a class="hero__scroll" href="#engine"><span>scroll down</span><i aria-hidden="true">&darr;</i></a>
   </main>
 
@@ -317,8 +327,8 @@
     }
   };
   </script>
-  <script src="script.js"></script>
-  <script src="lore.js"></script>
-  <script src="sections.js"></script>
+  <script defer src="script.js"></script>
+  <script defer src="lore.js"></script>
+  <script defer src="sections.js"></script>
 </body>
 </html>

@@ -1,0 +1,40 @@
+/* Lore Lab · mobile-nav.css
+   Phones: the capsule nav becomes a fixed bottom tab bar (thumb reach).
+   Loaded LAST, after readability.css. To undo: delete the <link> to this file. */
+
+@media (max-width: 800px) {
+  /* the old Menu button has nothing left to open */
+  .header .header__menu { display: none; }
+
+  .header .header__nav {
+    position: fixed; left: 0; right: 0; bottom: 0; top: auto; z-index: 12;
+    display: flex; flex-direction: row; align-items: stretch; justify-content: space-between;
+    gap: .3rem; width: auto; margin: 0;
+    padding: .45rem .5rem calc(.45rem + env(safe-area-inset-bottom, 0px));
+    font-size: 13px; line-height: 1.15;
+    background: #fbf6e6; border: 0; border-top: .14rem solid #10291b; border-radius: 0;
+    box-shadow: 0 -.2rem 0 rgba(16,41,27,.18);
+  }
+  .header .header__nav a {
+    flex: 1 1 0; min-width: 0; min-height: 48px; margin: 0; padding: .35rem .25rem;
+    display: flex; align-items: center; justify-content: center; text-align: center;
+    font-weight: 800; white-space: normal; border-radius: .8rem;
+  }
+  .header .header__nav a span { display: block; }
+  .header .header__nav a.is-active { background: #f26a4f; box-shadow: .1rem .1rem 0 #10291b; }
+  /* "Touch grass" keeps its dark call-to-action look */
+  .header .header__nav a:last-child { margin: 0; background: #10291b; color: #fbf6e6; }
+  .header .header__nav a:last-child.is-active { background: #f4d88a; color: #10291b; }
+
+  /* keep the last content and the hero arrow clear of the bar */
+  body { padding-bottom: calc(66px + env(safe-area-inset-bottom, 0px)); }
+  .hero__scroll { bottom: calc(3.5vh + 66px); }
+  html { scroll-padding-bottom: calc(66px + env(safe-area-inset-bottom, 0px)); }
+
+  /* on-screen keyboard: don't let the bar sit on top of the text box */
+  body:has(input:focus, textarea:focus, select:focus) .header .header__nav { display: none; }
+}
+
+@media (max-width: 340px) {
+  .header .header__nav { font-size: 12px; gap: .15rem; }
+}
