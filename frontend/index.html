@@ -119,7 +119,6 @@
   <section class="lore lore-engine" id="engine" aria-labelledby="lore-engine-title">
     <div class="lore-wrap">
       <header class="lore-head lore-in">
-        <span class="lore-pill">Gemma proposes <i>&bull;</i> Code decides</span>
         <h2 class="lore-title" id="lore-engine-title">LET&rsquo;S PUT AN OLD SAYING TO THE TEST.</h2>
         <p class="lore-lede">Type a saying. We turn it into a small test, then check it against past weather or send you outside to look.</p>
       </header>
@@ -127,7 +126,7 @@
       <div class="lore-desk lore-in" id="lore-desk">
         <div class="lore-tabs" role="tablist" aria-label="Experiment steps">
           <button class="lore-tab is-active" role="tab" id="lore-tab-1" aria-controls="lore-p1" aria-selected="true" data-go="1"><b>1</b>Saying</button>
-          <button class="lore-tab" role="tab" id="lore-tab-2" aria-controls="lore-p2" aria-selected="false" data-go="2" disabled><b>2</b>Check</button>
+          <button class="lore-tab" role="tab" id="lore-tab-2" aria-controls="lore-p2" aria-selected="false" data-go="2" disabled><b>2</b>Confirm</button>
           <button class="lore-tab" role="tab" id="lore-tab-3" aria-controls="lore-p3" aria-selected="false" data-go="3" disabled><b>3</b>Place</button>
           <button class="lore-tab" role="tab" id="lore-tab-4" aria-controls="lore-p4" aria-selected="false" data-go="4" disabled><b>4</b>Result</button>
         </div>
@@ -139,6 +138,7 @@
               <form id="lore-form" novalidate>
                 <label for="lore-text">The saying</label>
                 <textarea class="lore-field" id="lore-text" rows="4" required placeholder="Write the proverb in any language"></textarea>
+                <div class="lore-chips lore-examples" id="lore-examples" aria-label="Example sayings" hidden></div>
                 <div class="lore-row">
                   <div>
                     <label for="lore-source">Who said it?</label>

@@ -236,6 +236,38 @@
   }
 
   /* ---------------------------------------------------------
+     3a. PROGRESSIVE EXPLAINING
+     Nothing is required reading. Terms are tap-to-define at the moment they appear,
+     and each step carries a collapsed "why" that explains the method only when it matters.
+     --------------------------------------------------------- */
+  const GLOSS = {
+    bar: "The bar to beat is how often the predicted weather happens on any ordinary day anyway. A saying only counts as working if it does clearly better than that.",
+    range: "With only this many days, the true hit rate could sit a bit higher or lower than what we measured. This is where it probably is. A narrower range means a firmer result.",
+    days: "Days when the sign was actually there. Days without it aren’t counted, because the saying says nothing about them.",
+  };
+  const LEARN = {
+    confirm: ["Why confirm before testing?", "Once you’ve seen a result, it’s tempting to tweak the question until it flatters the saying. So we agree exactly what counts first: the sign, the prediction and the number. Then the test is fair."],
+    who: ["Who decided this?", "Gemma, an AI model, read the saying and suggested this test. Plain code decides whether it can be checked against past weather (from a fixed list, not a guess) and does all the maths. You choose every number."],
+    number: ["Why do I choose this number?", "“The sign is there” needs a cut-off, like how humid counts as muggy. You set it before you see any result. If it were set afterwards, a number could always be found that makes the saying look good."],
+    place: ["Why one place?", "Weather is local. We use the exact spot you pick, so the answer is about where you actually live."],
+  };
+  const term = (k, label) => `<button type="button" class="lore-term" data-term="${k}" aria-expanded="false">${label}</button>`;
+  const LEARN_LINK = { confirm: "#protocol", who: "#protocol" }; // where the How it works page tells the longer story
+  const learnHTML = (k) => `<details class="lore-learn"><summary>${LEARN[k][0]}</summary><p>${LEARN[k][1]}</p>${LEARN_LINK[k] ? `<a class="lore-learn__more" href="how-it-works.html${LEARN_LINK[k]}">More on the How it works page</a>` : ""}</details>`;
+  // tap a term to open its definition just below the sentence it sits in; tap again to close
+  on(document, "click", (e) => {
+    const t = e.target.closest(".lore-term"); if (!t) return;
+    const block = t.closest("p, li, dd, .dv-row") || t.parentElement, open = t.getAttribute("aria-expanded") === "true";
+    const next = block.nextElementSibling;
+    if (next && next.classList.contains("lore-def") && next.dataset.for === t.dataset.term) next.remove();
+    if (open) { t.setAttribute("aria-expanded", "false"); return; }
+    $$(".lore-term[aria-expanded=\"true\"]").forEach((x) => x.setAttribute("aria-expanded", "false")); // one open definition at a time, anywhere on the page
+    $$(".lore-def").forEach((x) => x.remove());
+    const d = document.createElement("p"); d.className = "lore-def"; d.setAttribute("role", "note"); d.dataset.for = t.dataset.term; d.textContent = GLOSS[t.dataset.term] || "";
+    block.after(d); t.setAttribute("aria-expanded", "true");
+  });
+
+  /* ---------------------------------------------------------
      3b. THE DISCOVERY: one result story used by Lab results, quick-run and the field report.
      Hero (the verdict), then four beats: what was tested, what the evidence showed,
      how reliable it is, what to try next. Every line is built from the card or the
@@ -270,7 +302,7 @@
     const win = c.window ?? h?.prediction.windowHours ?? f?.windowHours ?? null;
 
     let take;
-    if (sc.enough && c.hitRate !== null) take = `When the sign showed up, ${outPhrase} followed <b>${pct(c.hitRate)}</b> of the time${c.hits !== null ? ` (${c.hits} of ${sc.n} ${word})` : ""}.${c.baseRate !== null ? ` It happens about <b>${pct(c.baseRate)}</b> of the time anyway.` : ""}`;
+    if (sc.enough && c.hitRate !== null) take = `When the sign showed up, ${outPhrase} followed <b>${pct(c.hitRate)}</b> of the time${c.hits !== null ? ` (${c.hits} of ${sc.n} ${lab ? term("days", word) : word})` : ""}.${c.baseRate !== null ? ` It happens about <b>${pct(c.baseRate)}</b> of the time anyway.` : ""}`;
     else if (!sc.enough) take = `Only <b>${sc.n}</b> of the <b>${sc.min}</b> ${word} needed so far. That’s too few to say anything yet.`;
     else take = "The numbers are in, but the scoring service didn’t return a hit rate.";
 
@@ -306,7 +338,7 @@
     if (sc.enough && c.hitRate !== null) {
       evidence = `<div class="dv-cmp">
           <div class="dv-row"><span>When the sign showed up</span><div class="dv-track"><i class="dv-fill dv-fill--hit" style="width:${Math.max(c.hitRate * 100, 1)}%"></i></div><b>${pct(c.hitRate)}</b></div>
-          ${c.baseRate !== null ? `<div class="dv-row"><span>On any day, anyway</span><div class="dv-track"><i class="dv-fill dv-fill--base" style="width:${Math.max(c.baseRate * 100, 1)}%"></i></div><b>${pct(c.baseRate)}</b></div>` : ""}</div>
+          ${c.baseRate !== null ? `<div class="dv-row"><span>On any day, anyway (${term("bar", "the bar to beat")})</span><div class="dv-track"><i class="dv-fill dv-fill--base" style="width:${Math.max(c.baseRate * 100, 1)}%"></i></div><b>${pct(c.baseRate)}</b></div>` : ""}</div>
         ${c.lift !== null ? `<p class="dv-lift"><b>×${c.lift.toFixed(2)}</b> lift: how many times as often as chance it came true.</p>` : ""}
         ${ev ? `<p>You saw <b>${esc(sign || "the sign")}</b> <b>${plural(sc.n, "time", "times")}</b>${ev.days ? ` over <b>${plural(ev.days, "day", "days")}</b>` : ""}${ev.notSeen ? `, and logged <b>${plural(ev.notSeen, "look", "looks")}</b> where nothing showed` : ""}.</p>` : ""}`;
     } else {
@@ -321,7 +353,7 @@
     const reliable = `<div class="dv-rel" data-l="${rel.level}"><span class="dv-pips" aria-hidden="true"><i></i><i></i><i></i></span><b>${rel.label}</b></div>
       <p>${esc(rel.why)}</p>
       ${sc.enough && c.lo !== null && c.hi !== null ? `<div class="lore-bar" role="img" aria-label="Likely range ${pct(c.lo)} to ${pct(c.hi)}${c.baseRate !== null ? `, bar to beat ${pct(c.baseRate)}` : ""}"><span class="ci" style="left:${c.lo * 100}%;width:${Math.max((c.hi - c.lo) * 100, 1)}%"></span>${c.baseRate !== null ? `<span class="base" style="left:${c.baseRate * 100}%"></span>` : ""}</div>
-        <p class="lore-pend">The true hit rate is probably somewhere in ${pct(c.lo)}–${pct(c.hi)} · coral line = bar to beat. ${esc(margin)}</p>` : ""}
+        <p class="lore-pend">${term("range", "Likely range")} for the true hit rate: ${pct(c.lo)}–${pct(c.hi)} · coral line = ${term("bar", "bar to beat")}. ${esc(margin)}</p>` : ""}
       <p class="dv-limits">${lab ? "One place and about ten years of modelled weather (Open-Meteo reanalysis, not weather-station readings). A hint, not proof." : "One place and a short history is a hint, not proof. Looks recorded by people; outcomes checked against hourly weather for the window."}</p>
       ${(c.notes || []).map((t) => `<p class="lore-pend">${esc(t)}</p>`).join("")}
       <details class="dv-ruled"><summary>How is “${rel.label}” decided?</summary><p>${esc(REL_RULE)}</p></details>`;
@@ -450,8 +482,18 @@
       <input type="hidden" id="lh-unit" value="${esc(g.unit)}">
       <p class="lore-help">${esc(g.help)}</p>
       ${g.chips.length ? `<div class="lore-chips" aria-label="Quick picks">${g.chips.map(([t, n]) => `<button type="button" class="lore-chip" data-fill="${n}">${esc(t)} (${n})</button>`).join("")}</div>` : ""}
-      <p class="lore-help"><b>You</b> choose this number. Pick it now, before you see any result, so the test stays fair.</p></fieldset>`;
+      <p class="lore-help"><b>You</b> choose this number, before you see any result.</p>${learnHTML("number")}</fieldset>`;
   }
+
+  /* Step 1: example sayings (same ones as the hero) so there is never a blank box to stare at */
+  (function examples() {
+    const box = $("#lore-examples"), ta = $("#lore-text"); if (!box || !ta) return;
+    const items = $$("[data-quick]").map((a) => [a.textContent.trim(), a.dataset.quick]).filter(([l, t]) => l && t);
+    if (!items.length) return;
+    box.innerHTML = `<span class="lore-examples__l">Not sure? Try one:</span>` + items.map(([l, t], i) => `<button type="button" class="lore-chip" data-example="${i}">${esc(l)}</button>`).join("") + `<span class="lore-examples__see">Want to watch one go start to finish first? <a href="how-it-works.html#run">See an example</a>.</span>`;
+    box.hidden = false;
+    on(box, "click", (e) => { const b = e.target.closest("[data-example]"); if (!b) return; ta.value = items[Number(b.dataset.example)][1]; ta.dispatchEvent(new Event("input", { bubbles: true })); ta.focus(); });
+  })();
 
   /* Step 2: review + edit */
   on(panes[1], "input", () => eng.valid && eng.valid()); on(panes[1], "change", () => eng.valid && eng.valid());
@@ -473,7 +515,7 @@
     const editOpen = lab && preset === null ? " open" : "";
     panes[1].innerHTML = `
       <h3>Does this say what you meant?</h3>
-      <p class="lore-intro">Check that this matches what they meant. Fix anything that is off. Nothing is tested until you say it looks right.</p>
+      <p class="lore-intro">First, we agree exactly what is being tested. Check this matches what they meant, and fix anything that is off. Nothing is tested until you say it looks right.</p>
       <blockquote class="lore-orig">${esc(h.original)}<small>${h.translation ? `In English: ${esc(h.translation)}` : ""}${h.source ? ` · Said by ${esc(h.source)}` : ""}</small></blockquote>
       ${h.testMode ? `<p class="lore-modeline">${h.testMode === "lab" ? "We can check this one against ten years of past weather." : "Weather instruments can’t see this sign, so you’ll check it by going outside and looking."}</p>` : ""}
       <p class="lore-sum" id="lh-sum" role="status"></p>
@@ -491,7 +533,7 @@
         <label class="lore-check"><input type="checkbox" id="lh-rough"><span>Weather data can only roughly measure this sign (a halo around the moon, for example, shows up as thin high cloud). Tick this if you are happy to test it that way.</span></label></fieldset>` : ""}
       ${h.ambiguities.length ? `<fieldset class="lore-fieldset"><legend>Say what you mean</legend><p class="lore-help">Gemma wasn’t sure what these words mean. Answer in your own words so the test is fair.</p>${amb}</fieldset>` : ""}
       ${h.proxy?.rationale ? `<details class="lore-why"><summary>Why this weather variable?</summary><p>${esc(h.proxy.rationale)}</p></details>` : ""}
-      <p class="lore-decides"><b>Gemma proposes. Code decides.</b> Whether this can be checked against past weather is decided by plain code from a fixed list, not guessed by the model.</p>
+      ${learnHTML("confirm")}${learnHTML("who")}
       <div class="lore-actions"><button class="lore-btn lore-btn--coral" id="lh-confirm" type="button" disabled>Looks right, continue</button>
         <button class="lore-btn lore-btn--ghost" type="button" data-go="1">Change the saying</button></div>`;
     const confirm = $("#lh-confirm", panes[1]);
@@ -578,7 +620,7 @@
       panes[2].innerHTML = `
         <div class="lore-mode lore-mode--lab">${ICON_LAB}<div><span class="lore-tag">Lab Test</span><h3>This one shows up in the weather data.</h3>
         <p>We use <b>${esc(friendlyVar(h.proxy?.variable) || "a weather measurement")}</b> as a stand-in for this sign (${rough ? "a rough match" : "a good match"}) and check it against about ten years of past weather at your spot.</p></div></div>
-        ${locationBlock()}
+        ${locationBlock()}${learnHTML("place")}
         <div class="lore-actions"><button class="lore-btn lore-btn--coral" id="ll-run" type="button">Check it against past weather</button><button class="lore-btn lore-btn--ghost" type="button" data-go="2">Back to the saying details</button></div>`;
       wireGeo(); on($('[data-go="2"]', panes[2]), "click", () => go(2));
       on($("#ll-run"), "click", async (e) => {
@@ -600,7 +642,7 @@
           <li><b>Tap</b><span>Seen or Not seen. That’s the whole entry.</span></li>
           <li><b>Report</b><span>After ${MIN_N.field} sightings, we check the sky for each and write up your result.</span></li>
         </ol>
-        ${locationBlock()}
+        ${locationBlock()}${learnHTML("place")}
         <div class="lore-actions"><button class="lore-btn lore-btn--coral" id="ll-start" type="button">Start my field test</button><button class="lore-btn lore-btn--ghost" type="button" data-go="2">Back to the saying details</button></div>`;
       wireGeo(); on($('[data-go="2"]', panes[2]), "click", () => go(2));
       on($("#ll-start"), "click", async (e) => {

@@ -736,3 +736,30 @@ section.lore.lore-close{padding-bottom:0}
   .dv-dl div{grid-template-columns:1fr;gap:.1em}
   .dv-next .lore-btn{width:100%;justify-self:stretch}
 }
+
+/* =========================================================
+   Progressive explaining, in context. The full story lives on the
+   "How it works" page; here a concept is explained only where it appears.
+   ========================================================= */
+.lore-learn>summary:focus-visible,.lore-term:focus-visible{outline:.18em solid var(--coral);outline-offset:.18em}
+
+/* ---- the "why" tucked inside each step ---- */
+.lore-learn{margin-top:.9em;font-family:var(--font-body);font-size:.85em}
+.lore-learn>summary{cursor:pointer;display:inline-block;color:inherit;text-decoration:underline wavy;text-underline-offset:.2em}
+.lore-learn>p{margin:.5em 0 0;padding:.1em 0 .1em .8em;border-left:.15em solid var(--ink);line-height:1.45;max-width:36em}
+
+/* ---- tap-to-define terms ---- */
+.lore-term{display:inline;margin:0;padding:0;font:inherit;color:inherit;background:none;border:0;border-bottom:.12em dotted currentColor;cursor:help;text-align:inherit}
+.lore-term::after{content:"?";display:inline-grid;place-items:center;width:1.15em;height:1.15em;margin-left:.25em;font-size:.72em;font-weight:800;vertical-align:.12em;background:var(--butter);color:var(--ink);border:.1em solid var(--ink);border-radius:50%}
+.lore-term[aria-expanded="true"]::after{content:"×";background:var(--ink);color:var(--butter)}
+.lore-def{margin:.5em 0 .3em!important;padding:.6em .9em;font-family:var(--font-body);font-size:.88em!important;line-height:1.45;color:var(--ink);background:#fffaf0;border:.1em dashed var(--ink);border-radius:.6em;animation:lore-defin .25s ease both}
+
+@keyframes lore-defin{from{opacity:0;translate:0 -.4em}to{opacity:1;translate:0 0}}
+
+/* ---- step 1 example chips ---- */
+.lore-examples{align-items:center;margin:.3em 0 .6em}
+.lore-examples__l{font-family:var(--font-body);font-size:.85em;opacity:.85}
+
+.lore-learn__more{display:inline-block;margin-top:.5em;margin-left:.8em;font-weight:700;color:inherit}
+.lore-examples__see{flex-basis:100%;margin-top:.1em;font-family:var(--font-body);font-size:.82em}
+.lore-examples__see a{color:inherit;font-weight:700}

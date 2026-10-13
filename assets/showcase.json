@@ -1,0 +1,103 @@
+{
+ "saying": "A falling glass brings rain.",
+ "source": "Traditional",
+ "setup": {
+  "place": "London",
+  "years": [
+   2016,
+   2025
+  ],
+  "days_total": 3653,
+  "sign": "Pressure at 8am at least 2 hPa below 5am",
+  "outcome": "1 mm or more of rain in the next 12 hours"
+ },
+ "scorecard": {
+  "mode": "lab",
+  "proverb": "A falling glass brings rain.",
+  "source": "Traditional",
+  "location_label": "London",
+  "n_sign_present": 204,
+  "hits": 161,
+  "base_rate": 0.2584177388447851,
+  "hit_rate": 0.7892156862745098,
+  "ci_low": 0.7281622743840798,
+  "ci_high": 0.8395777738064653,
+  "lift": 3.0540306164838817,
+  "verdict": "promising",
+  "min_n": 30,
+  "window_hours": 12,
+  "rain_mm": 1.0,
+  "look_hour": 8,
+  "notes": [
+   "Threshold preset: a 2 hPa fall over 3 hours, fixed before any data was fetched.",
+   "Modelled reanalysis (ERA5 via Open-Meteo), not weather-station readings."
+  ]
+ },
+ "years": [
+  {
+   "year": 2016,
+   "n": 18,
+   "base_rate": 0.226775956284153,
+   "hit_rate": 0.6666666666666666
+  },
+  {
+   "year": 2017,
+   "n": 15,
+   "base_rate": 0.23835616438356164,
+   "hit_rate": 0.8666666666666667
+  },
+  {
+   "year": 2018,
+   "n": 20,
+   "base_rate": 0.2465753424657534,
+   "hit_rate": 0.75
+  },
+  {
+   "year": 2019,
+   "n": 27,
+   "base_rate": 0.2684931506849315,
+   "hit_rate": 0.7407407407407407
+  },
+  {
+   "year": 2020,
+   "n": 27,
+   "base_rate": 0.27049180327868855,
+   "hit_rate": 0.7777777777777778
+  },
+  {
+   "year": 2021,
+   "n": 18,
+   "base_rate": 0.3041095890410959,
+   "hit_rate": 0.9444444444444444
+  },
+  {
+   "year": 2022,
+   "n": 24,
+   "base_rate": 0.2273972602739726,
+   "hit_rate": 0.6666666666666666
+  },
+  {
+   "year": 2023,
+   "n": 19,
+   "base_rate": 0.2958904109589041,
+   "hit_rate": 0.8947368421052632
+  },
+  {
+   "year": 2024,
+   "n": 19,
+   "base_rate": 0.30601092896174864,
+   "hit_rate": 0.8947368421052632
+  },
+  {
+   "year": 2025,
+   "n": 17,
+   "base_rate": 0.2,
+   "hit_rate": 0.7647058823529411
+  }
+ ],
+ "provenance": {
+  "source": "Open-Meteo Historical Weather API (ERA5 reanalysis)",
+  "url": "https://open-meteo.com/en/docs/historical-weather-api",
+  "generated": "2026-10-13"
+ }
+}
