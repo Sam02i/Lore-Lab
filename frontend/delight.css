@@ -1,0 +1,107 @@
+  /* =========================================================
+    Lore Lab · delight.css
+    Load AFTER notebook-design.css and BEFORE mobile-nav.css.
+    Adds feel: motion, tactile buttons, hover/focus rewards, calmer reading.
+    Nothing here changes content. To undo: delete the <link> to this file.
+    ========================================================= */
+
+  :root{
+    --dl-ink:#10291b; --dl-butter:#f4d88a; --dl-coral:#f26a4f; --dl-cream:#fbf6e6; --dl-sage:#cfe3b8;
+    --dl-ease:cubic-bezier(.34,1.56,.64,1);   /* small overshoot = "springy" */
+  }
+  html{scroll-behavior:smooth}
+  ::selection{background:var(--dl-butter);color:var(--dl-ink)}
+
+  /* ---------- 1. Header: brand wiggles, nav links get a hand-drawn underline ---------- */
+  .header__brand{transition:rotate .25s var(--dl-ease),translate .25s var(--dl-ease)}
+  .header__nav a{position:relative;transition:translate .2s var(--dl-ease)}
+  .header__nav a:not(:last-child)::after{
+    content:"";position:absolute;left:12%;right:12%;bottom:.15em;height:.28em;border-radius:99px;
+    background:var(--dl-coral);scale:0 1;transform-origin:left;transition:scale .25s ease;
+  }
+  @media (hover:hover){
+    .header a:hover .header__brand{rotate:-3deg;translate:0 -.1em}
+    .header__nav a:hover{translate:0 -.08em}
+    .header__nav a:not(:last-child):hover::after{scale:1 1}
+    .header__nav a:last-child:hover{background:var(--dl-coral);color:var(--dl-ink)}
+  }
+
+  /* ---------- 2. Hero: alive, not static ---------- */
+  .hero__title{letter-spacing:.02em;text-shadow:0 .05em .25em rgba(0,0,0,.45),0 0 .6em rgba(244,216,138,.18)}
+  .hero__pill{box-shadow:.2em .2em 0 rgba(16,41,27,.35)}
+  .hero__apple{animation:dl-sway 7s ease-in-out infinite;transform-origin:50% 0}
+  .hero__girl{animation:dl-bob 6s ease-in-out infinite}
+  @keyframes dl-sway{50%{rotate:3deg}}
+  @keyframes dl-bob{50%{translate:0 -.6rem}}
+  .hero__scroll i{display:inline-block;animation:dl-nudge 1.6s ease-in-out infinite}
+  @keyframes dl-nudge{50%{translate:0 .35em}}
+
+  /* saying chips: tilted stickers that react to touch */
+  .hero__try a{
+    box-shadow:.14em .16em 0 var(--dl-ink);border:.1em solid var(--dl-ink);
+    transition:translate .2s var(--dl-ease),rotate .2s var(--dl-ease),box-shadow .2s ease;
+  }
+  .hero__try a:nth-of-type(odd){rotate:-1.5deg}
+  .hero__try a:nth-of-type(even){rotate:1.5deg}
+  @media (hover:hover){
+    .hero__try a:hover{translate:0 -.18em;rotate:0deg;box-shadow:.2em .32em 0 var(--dl-ink)}
+  }
+  .hero__try a:active{translate:.1em .12em;box-shadow:.04em .04em 0 var(--dl-ink)}
+
+  /* ---------- 3. Buttons: chunky, pressable, one clear primary ---------- */
+  .lore-btn,.qr-btn,.way__more a,.how-intro__links a{
+    transition:translate .18s var(--dl-ease),box-shadow .18s ease,background .2s ease;
+  }
+  .lore-btn:active,.qr-btn:active,.way__more a:active{translate:.12em .14em;box-shadow:.03em .03em 0 var(--dl-ink)}
+  .lore-btn--coral{
+    font-size:max(1.05em,17px);padding-inline:1.6em;position:relative;overflow:hidden;
+  }
+  .lore-btn--coral::after{               /* a slow glint tells people "this is the one to press" */
+    content:"";position:absolute;inset:0;translate:-120% 0;
+    background:linear-gradient(100deg,transparent 35%,rgba(255,255,255,.45) 50%,transparent 65%);
+    animation:dl-glint 4.5s ease-in-out 1.5s infinite;pointer-events:none;
+  }
+  @keyframes dl-glint{0%,60%{translate:-120% 0}100%{translate:120% 0}}
+  .lore-btn:disabled::after{display:none}
+
+  /* ---------- 4. Typing: the text box says "write here" ---------- */
+  .lore-engine .lore-field{
+    background:#fffdf6;border-radius:.6em;
+    transition:box-shadow .2s ease,translate .2s var(--dl-ease),background .2s ease;
+  }
+  .lore-engine .lore-field:focus{
+    background:#fff;box-shadow:0 0 0 .22em var(--dl-butter),.25em .3em 0 var(--dl-ink);translate:-.05em -.08em;outline:0;
+  }
+  .lore-engine .lore-tab{transition:translate .2s var(--dl-ease),background .2s ease}
+  .lore-engine .lore-pane{animation:dl-page-in .35s ease both}
+  @keyframes dl-page-in{from{opacity:0;translate:0 .6rem}}
+
+  /* ---------- 5. "Old way / Lore Lab way": two moods, easier to scan ---------- */
+  .way__item{
+    padding:.2em 0 .2em 1.1em;border-left:.28em solid transparent;border-radius:.1em;
+    transition:translate .25s var(--dl-ease),border-color .25s ease,background .25s ease;
+  }
+  .way__col--old .way__item{border-left-color:rgba(242,106,79,.75)}
+  .way__col--new .way__item{border-left-color:var(--dl-butter)}
+  @media (hover:hover){
+    .way__item:hover{translate:.35em 0;background:rgba(251,246,230,.07)}
+  }
+  .way__more a::after{content:" \2192";display:inline-block;transition:translate .2s var(--dl-ease)}
+  .way__more a:hover::after{translate:.25em 0}
+
+  /* ---------- 6. Closing call to action ---------- */
+  .lore-close .lore-btn{font-size:max(1.1em,18px);padding:.6em 1.6em}
+  .lore-foot a{text-underline-offset:.2em;text-decoration-thickness:.08em}
+  .lore-foot a:hover{text-decoration-color:var(--dl-coral)}
+
+  /* ---------- 7. how-it-works page ---------- */
+  .how-intro__links a{transition:translate .18s var(--dl-ease),box-shadow .18s ease}
+  .ax-row{transition:opacity .3s ease,translate .3s var(--dl-ease)}
+  @media (hover:hover){.ax-row:hover{translate:.4rem 0;opacity:1}}
+
+  /* ---------- 8. Respect people who turn motion off ---------- */
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    .hero__apple,.hero__girl,.hero__scroll i,.lore-btn--coral::after,.lore-engine .lore-pane{animation:none!important}
+    .hero__try a,.way__item,.header__nav a,.header__brand{transition:none!important}
+  }

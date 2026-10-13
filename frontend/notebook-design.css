@@ -1,0 +1,251 @@
+  /* =========================================================
+    Lore Lab · notebook-design.css
+    Load AFTER readability.css and BEFORE mobile-nav.css (index.html + how-it-works.html).
+    To undo everything: delete the <link> to this file.
+
+    One idea per section, so the page stops reading as "the same card, 30 times":
+      Engine        = a ruled notebook page on the desk, with folder tabs and a taped sticky note
+      Architecture  = a chalk-grid blueprint pinned to the wall
+      Field Report  = a stamped lab page, with the walkthrough as ink-ruled columns (no boxes)
+    ========================================================= */
+
+  :root{
+    --ll-hand:"Swanky and Moo Moo","Caveat Brush","Chalkboard SE","Comic Sans MS",cursive;
+    --ll-body:"Nunito","Segoe UI",system-ui,-apple-system,sans-serif;
+    --ll-ink:#10291b; --ll-paper:#fffaf0; --ll-cream:#fbf6e6; --ll-butter:#f4d88a; --ll-coral:#f26a4f;
+    --ll-stamp:#b53e28;                       /* coral darkened to 5:1 on paper */
+    --ll-rule:rgba(31,90,61,.16);
+    /* fluid type: one display size per section, steps below it */
+    --ll-h-xl:clamp(2.4rem,1.2rem + 5.6vw,5.6rem);
+    --ll-h-lg:clamp(1.9rem,1.2rem + 2.6vw,3.4rem);
+    --ll-h-md:clamp(1.35rem,1.1rem + 1vw,2rem);
+    --ll-small:clamp(13px,.8rem + .15vw,15px);
+  }
+
+  /* ---------- 0. Shared: swap mono "dashboard" labels for friendly sentence-case labels ---------- */
+  .ax__kicker,.ax__kicker b,.ax__kicker span,
+  .ax-row__tag,.ax-row__io dt,.ax-row__talks,
+  .ax__chips button,.ax__cap b,.ax-stepn,
+  .run-st__who,.px__pill,.px-card__tag,.px-score__cap,.px-input__label{
+    font-family:var(--ll-body);font-weight:800;text-transform:none;letter-spacing:.03em;
+    font-size:var(--ll-small);
+  }
+
+  /* =========================================================
+    1. ENGINE: the notebook page on the desk
+    ========================================================= */
+  .lore-engine .lore-title{font-size:var(--ll-h-xl);max-width:12em;line-height:1}
+  .lore-engine .lore-lede{font-size:clamp(17px,1rem + .35vw,21px);line-height:1.5;max-width:34em;margin-inline:auto}
+
+  /* the sheet itself stops being a box-in-a-box: tabs + paper + sticky note */
+  .lore-engine .lore-sheet{
+    grid-template-columns:minmax(0,1fr);gap:1.4rem;align-items:start;
+    background:none;border:0;border-radius:0;box-shadow:none;
+  }
+  @media (min-width:861px){
+    .lore-engine .lore-sheet{grid-template-columns:minmax(0,1fr) 15em;gap:clamp(1.4rem,3vw,2.6rem)}
+  }
+
+  /* folder tabs: inactive tabs sit lower and are sage, the active one IS the page */
+  .lore-engine .lore-tabs{gap:.3em;padding:0 0 0 1.6em}
+  .lore-engine .lore-tab{
+    min-height:44px;padding:.45em 1.2em;font-weight:800;
+    background:var(--sage-l,#cfe0b8);border-radius:.55em .55em 0 0;opacity:1;translate:0 .22em;
+  }
+  .lore-engine .lore-tab:disabled{opacity:.7}
+  .lore-engine .lore-tab:not(:disabled):hover{translate:0 .05em}
+  .lore-engine .lore-tab.is-active{background:var(--ll-paper);translate:0 0;box-shadow:none}
+
+  /* the page: ruled lines, red margin, binder holes */
+  .lore-engine .lore-main{
+    margin:0;padding:clamp(1.4rem,3vw,2.2rem) clamp(1.2rem,3vw,2.4rem) clamp(1.6rem,3vw,2.4rem) clamp(3.2rem,5vw,4.2rem);
+    background:
+      linear-gradient(90deg,transparent 2.6rem,rgba(242,106,79,.5) 2.6rem calc(2.6rem + 2px),transparent calc(2.6rem + 2px)),
+      repeating-linear-gradient(180deg,transparent 0 1.7rem,var(--ll-rule) 1.7rem calc(1.7rem + 1px)),
+      var(--ll-paper);
+    border:.12em solid var(--ll-ink);border-radius:.4em .9em .9em .4em;
+    box-shadow:.45em .45em 0 rgba(0,0,0,.35);
+  }
+  .lore-engine .lore-main::after{
+    content:"";position:absolute;left:.7rem;top:1.2rem;bottom:1.2rem;width:.9rem;pointer-events:none;opacity:.75;
+    background:radial-gradient(circle,var(--ll-ink) 38%,transparent 42%) 0 0/100% 2.6rem repeat-y;
+  }
+  .lore-engine .lore-main::before{display:none}   /* old tape collided with the folder tabs */
+  .lore-engine .lore-pane h3{font-family:var(--ll-hand);font-size:var(--ll-h-lg);line-height:1.05}
+  .lore-engine .lore-field::placeholder{color:#58675a}   /* was #6f7d70, ~4:1 */
+
+  /* fewer dashed boxes: a fieldset is just a ruled-off section now */
+  .lore-engine .lore-fieldset{
+    margin-top:1.3em;padding:.9em 0 0;background:none;border:0;border-top:.12em dashed var(--ll-ink);border-radius:0;
+  }
+  .lore-engine .lore-fieldset--warn{
+    padding:.8em 1em;background:rgba(242,106,79,.12);border-top:0;border-left:.35em solid var(--ll-coral);border-radius:0 .5em .5em 0;
+  }
+
+  /* results inside the page are already on notebook paper, so no second notebook sheet */
+  .lore-engine .lore-card{
+    padding:.2em 0 0;background:none;border:0;border-radius:0;box-shadow:none;
+  }
+  .lore-engine .lore-card::before{display:none}
+
+  /* side notes: a butter sticky note, taped on */
+  .lore-engine .lore-side{
+    position:relative;padding:1.4em 1.2em 1.2em;font-size:max(.95em,15px);
+    background:var(--ll-butter);color:var(--ll-ink);
+    border:.12em solid var(--ll-ink);border-radius:.2em .2em .2em 1.6em / .2em .2em .2em 1.6em;
+    box-shadow:.3em .35em 0 rgba(0,0,0,.35);
+  }
+  .lore-engine .lore-side::before{
+    content:"";position:absolute;top:-.7em;left:50%;width:4.8em;height:1.3em;translate:-50% 0;rotate:3deg;
+    background:rgba(251,246,230,.75);box-shadow:0 .1em .25em rgba(0,0,0,.25);
+  }
+  @media (min-width:861px){
+    .lore-engine .lore-side{position:sticky;top:5.5rem;rotate:1.2deg}
+  }
+  .lore-engine .lore-side section{border-bottom-color:rgba(16,41,27,.4)}
+  .lore-engine .lore-side section:has(+ section[hidden]:last-child){border:0;margin:0;padding:0}
+  .lore-engine .lore-side .lore-btn--butter{background:var(--ll-paper)}
+
+  /* =========================================================
+    2. ARCHITECTURE: a chalk-grid blueprint on the wall
+    ========================================================= */
+  .ax{
+    background:
+      linear-gradient(rgba(244,216,138,.07) 1px,transparent 1px) 0 0/2.4rem 2.4rem,
+      linear-gradient(90deg,rgba(244,216,138,.07) 1px,transparent 1px) 0 0/2.4rem 2.4rem,
+      #10291b;
+  }
+  .ax__title{font-size:clamp(2.6rem,1rem + 6.6vw,6.2rem);line-height:.95}
+  .ax__hl{text-decoration:underline wavy rgba(244,216,138,.7);text-decoration-thickness:.05em;text-underline-offset:.14em}
+  .ax__lede{font-size:clamp(17px,1rem + .35vw,21px)}
+
+  /* rows: shorter, chalk-dashed, and never dimmed below readable */
+  .ax-row{
+    min-height:clamp(15rem,32vh,24rem);padding:clamp(1.6rem,4vh,3rem) 0;
+    border-top:.12rem dashed rgba(246,240,223,.3);opacity:.74;
+  }
+  .ax-row:last-child{border-bottom:.12rem dashed rgba(246,240,223,.3)}
+  .ax-row.is-active{opacity:1}
+  .ax-row__n{font-family:var(--ll-hand);font-size:1.7rem;font-weight:400;padding-top:.3rem}
+  .ax-row__name{font-size:clamp(1.9rem,1rem + 3vw,3.4rem);line-height:1}
+  .ax-row__what{font-size:clamp(17px,1rem + .3vw,21px)}
+  .ax-row__io dd{font-size:clamp(15px,.95rem + .15vw,17px)}
+  .ax-row__talks{color:rgba(246,240,223,.82);line-height:1.5}
+  /* tag = a strip of masking tape */
+  .ax-row__tag{padding:.35em .9em;border-radius:.2em;rotate:-1.5deg;box-shadow:0 .1em .2em rgba(0,0,0,.3)}
+
+  /* diagram: dashed chalk frame, taped at the top */
+  .ax__dgm{position:relative;border:.14rem dashed rgba(246,240,223,.5);border-radius:.6rem;background:rgba(246,240,223,.05);backdrop-filter:none}
+  .ax__dgm::before{
+    content:"";position:absolute;top:-.8rem;left:50%;width:6rem;height:1.5rem;translate:-50% 0;rotate:-2deg;
+    background:rgba(244,216,138,.85);box-shadow:0 .1em .3em rgba(0,0,0,.35);
+  }
+  .ax-n rect{rx:6px;ry:6px}
+  .ax-l{font-family:var(--ll-body);font-weight:700;font-size:12.5px;fill:rgba(246,240,223,.9)}
+  .ax-l.is-hot{fill:#f4d88a}
+
+  /* trace buttons: paper tags, 44px tall */
+  .ax__chips button{
+    min-height:44px;padding:.5em 1.1em;border-radius:.5em;background:rgba(246,240,223,.08);
+    border:.1rem solid rgba(246,240,223,.55);
+  }
+  .ax__chips button[aria-pressed="true"]{color:var(--ll-ink);background:var(--ll-butter);border-color:var(--ll-ink);box-shadow:.15em .15em 0 rgba(0,0,0,.55)}
+  .ax__cap{font-size:clamp(16px,1rem + .15vw,18px)}
+
+  /* =========================================================
+    3. FIELD REPORT: a stamped lab page, then ink-ruled columns
+    ========================================================= */
+  .run__title{font-size:clamp(2.3rem,1rem + 5vw,5rem);line-height:1}
+  .run__lede{font-size:clamp(17px,1rem + .35vw,21px)}
+  /* the pill becomes a rubber stamp */
+  .run__pill{
+    padding:.2em .9em;font:400 clamp(1.05rem,1rem + .3vw,1.35rem)/1.4 var(--ll-hand);letter-spacing:.06em;text-transform:none;
+    color:var(--ll-stamp);background:transparent;border:.14em solid var(--ll-stamp);border-radius:.3em;rotate:-2deg;
+  }
+
+  /* the real result page: aligned with the heading, with a FIELD REPORT stamp */
+  .sc-in-run{margin:0 0 clamp(2rem,5vh,3.5rem)}
+  .sc-in-run .rn-page{margin-left:0}
+  .rn-nums div{padding:.55em .2em 0;background:none;border:0;border-top:.14em solid var(--ll-ink);border-radius:0}
+  .rn-nums b{font-size:clamp(1.8rem,1.4rem + 1vw,2.3rem)}
+  .rn-nums small{font-size:max(.85rem,13px)}
+  @media (min-width:760px){
+    .rn-said{padding-right:9.5rem}
+    .rn-page::after{
+      content:"FIELD REPORT";content:"FIELD REPORT" / "";
+      position:absolute;top:1.1rem;right:1.2rem;padding:.1em .7em;pointer-events:none;
+      font:400 1.2rem/1.4 var(--ll-hand);letter-spacing:.08em;color:var(--ll-stamp);
+      border:.14em solid var(--ll-stamp);border-radius:.3em;rotate:5deg;opacity:.92;
+    }
+  }
+
+  /* the five-step walkthrough: no more five coloured boxes, just columns divided by dashed ink,
+    each topped with a highlighter bar in its old colour */
+  .run__strip{gap:0}
+  .run .run-st{
+    background:transparent;border:0;border-radius:0;box-shadow:none;
+    padding:.4rem clamp(.8rem,1.4vw,1.5rem) 1rem;border-left:.12em dashed rgba(16,41,27,.45);
+  }
+  .run .run-st:first-child{border-left:0;padding-left:0}
+  .run .run-st::before{
+    content:"";display:block;height:.7rem;margin-bottom:.4rem;border-radius:.4rem;
+    background:var(--m,#f4d88a);box-shadow:inset 0 0 0 .1em rgba(16,41,27,.55);
+  }
+  .run-st--saying{--m:#f4d88a}.run-st--model{--m:#b8e08a}.run-st--code{--m:#f26a4f}.run-st--data{--m:#cfe6f0}.run-st--score{--m:#fbf6e6}
+  .run-st__h{font-size:clamp(1.4rem,1.1rem + .9vw,2rem)}
+  .run-q{font-size:clamp(16px,.95rem + .3vw,19px)}
+  .run-meta{font-size:var(--ll-small)}
+  .run-code,.run-checks code{font-size:max(.78rem,12px)}
+  @media (max-width:1100px){
+    .run__strip{grid-template-columns:1fr 1fr}
+    .run .run-st{border-left:0;border-top:.12em dashed rgba(16,41,27,.45);padding-inline:0}
+    .run .run-st:first-child{border-top:0}
+  }
+  @media (max-width:640px){
+    .run__strip{grid-template-columns:1fr}
+  }
+
+  /* =========================================================
+    4. Protocol: just enough to match (bigger type cap, calmer title)
+    ========================================================= */
+  .px__title{font-size:clamp(2.6rem,1rem + 8vw,9rem)}
+  .px-card__h{font-size:clamp(2.1rem,1rem + 3.4vw,4.2rem)}
+  .px-card__num{font-size:clamp(4rem,2rem + 8vw,9rem)}
+
+  /* =========================================================
+    5. Accessibility: contrast, focus, reduced motion
+    ========================================================= */
+  .ax :where(a,button,summary,[tabindex]):focus-visible,
+  .ax-n:focus-visible{outline:3px solid var(--ll-butter);outline-offset:3px}
+  .run :where(a,button,summary):focus-visible,
+  .px :where(a,button):focus-visible{outline:3px solid var(--ll-ink);outline-offset:3px;box-shadow:0 0 0 6px var(--ll-butter)}
+
+  @media (prefers-contrast:more){
+    .ax{background:#10291b}
+    .ax-row{opacity:1}
+    .ax-row__talks,.ax__cap{color:#fff}
+    .lore-engine .lore-main,.rn-page{background:var(--ll-paper)}
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    /* everything that slides, spins, scrolls or pops in is shown at rest instead */
+    .js .reveal,.js .lore-in,.js .px-card:not(.is-in) .px-card__in,
+    .js .px__top:not(.is-in) .px__pill,.js .px__top:not(.is-in) .px__lede{opacity:1!important;translate:none!important;rotate:0deg!important;scale:1!important;transform:none!important}
+    .px__track,.px__badge svg,.px-caret,.lore-pane,.rn-in .rn-obs,
+    .lore-engine.is-entered .lore-tab,.ax.is-entered .ax-n,.ax.is-entered .ax-e,.ax-e.is-hot,
+    .qr-wait i,.hero__scroll,.way__stamp{animation:none!important}
+    .ax-e.is-hot{stroke-dasharray:none}
+    .lore-btn,.qr-btn,.lore-tab,.ax-row,.ax-row__name,.ax-n,.ax-n rect{transition:none!important}
+    .lore-btn:hover,.lore-btn:active{transform:none}
+    .ax-pkt{display:none}
+    .ax__dgm,.lore-engine .lore-side{scroll-behavior:auto}
+  }
+
+  /* phones */
+  @media (max-width:860px){
+    .lore-engine .lore-side{rotate:0deg}
+    .lore-engine .lore-main{padding-left:3.1rem}
+    .ax-row{min-height:0;opacity:1}
+    .ax-row__name{color:var(--c)}
+  }

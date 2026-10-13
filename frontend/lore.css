@@ -752,9 +752,9 @@ section.lore.lore-close{padding-bottom:0}
 .lore-term{display:inline;margin:0;padding:0;font:inherit;color:inherit;background:none;border:0;border-bottom:.12em dotted currentColor;cursor:help;text-align:inherit}
 .lore-term::after{content:"?";display:inline-grid;place-items:center;width:1.15em;height:1.15em;margin-left:.25em;font-size:.72em;font-weight:800;vertical-align:.12em;background:var(--butter);color:var(--ink);border:.1em solid var(--ink);border-radius:50%}
 .lore-term[aria-expanded="true"]::after{content:"×";background:var(--ink);color:var(--butter)}
-.lore-def{margin:.5em 0 .3em!important;padding:.6em .9em;font-family:var(--font-body);font-size:.88em!important;line-height:1.45;color:var(--ink);background:#fffaf0;border:.1em dashed var(--ink);border-radius:.6em;animation:lore-defin .25s ease both}
+.lore-def{margin:.5em 0 .3em!important;padding:.6em .9em;font-family:var(--font-body);font-size:.88em!important;line-height:1.45;color:var(--ink);background:#fffaf0;border:.1em dashed var(--ink);border-radius:.6em;animation:lore-define .25s ease both}
 
-@keyframes lore-defin{from{opacity:0;translate:0 -.4em}to{opacity:1;translate:0 0}}
+@keyframes lore-define{from{opacity:0;translate:0 -.4em}to{opacity:1;translate:0 0}}
 
 /* ---- step 1 example chips ---- */
 .lore-examples{align-items:center;margin:.3em 0 .6em}
