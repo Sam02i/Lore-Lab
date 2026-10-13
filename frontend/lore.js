@@ -102,13 +102,14 @@
       baseRate: num(c.base_rate), hitRate: num(c.hit_rate), lo: num(c.ci_low), hi: num(c.ci_high), lift: num(c.lift),
       verdict: VERDICTS[String(c.verdict || "").toLowerCase()] || null, next: c.next_action ?? null, min: num(c.min_n),
       window: num(c.window_hours), rainMm: num(c.rain_mm), lookHour: num(c.look_hour),
-      notes: Array.isArray(c.notes) ? c.notes.map(String) : [], failed: num(c.n_failed), notSeen: num(c.n_not_seen),
+      notes: Array.isArray(c.notes) ? c.notes.map(String) : [], failed: num(c.n_failed), notSeen: num(c.n_not_seen), expId: c.experiment_id ?? null,
     };
   }
   function normField(r, hyp, loc) {
     return {
       id: r?.experiment_id ?? r?.id ?? null, proverb: hyp?.original || "", sign: hyp?.sign.text || "", how: hyp?.sign.how || "",
       when: r?.observe_when ?? hyp?.sign.when ?? "", place: loc?.label || r?.location_label || "",
+      outcome: hyp?.prediction.outcome || "", windowHours: hyp?.prediction.windowHours ?? null,
     };
   }
 
@@ -173,18 +174,33 @@
   }
   function verdictBadge(v) { return `<span class="lore-verdict" data-v="${v}">${GLYPH[v]}<span>${VERDICT_TEXT[v].label}</span></span>`; }
 
-  function cardHTML(c) {
-    const mode = c.mode === "lab" || c.mode === "field" ? c.mode : null;
-    const min = c.min ?? (mode ? MIN_N[mode] : null);
-    const unit = mode === "lab" ? "days" : "looks";
-    const n = c.n ?? 0;
+  // the single source of the "enough looks?" and verdict rules
+  function scoreOf(c, mode) {
+    const min = c.min ?? (mode ? MIN_N[mode] : null), n = c.n ?? 0;
     const enough = min !== null && c.n !== null && n >= min;
-    const empty = !enough && n === 0 && !(c.looks > 0);
     let verdict = null;
     if (!enough) verdict = "trail"; // below the minimum the only honest label is "On the trail"
     else if (c.verdict) verdict = c.verdict;
     else if (c.lo !== null && c.hi !== null && c.baseRate !== null) verdict = c.lo > c.baseRate ? "promising" : c.hi < c.baseRate ? "backfires" : "chance";
-
+    return { min, n, enough, verdict };
+  }
+  function enoughBlock(c, n, unit) {
+    let body = `<div class="lore-nums">
+        <div><b>${c.hitRate !== null ? pct(c.hitRate) : "–"}</b><small>hit rate · ${c.hits !== null ? `${c.hits} of ${n}` : `n = ${n}`} ${unit}</small></div>
+        <div><b>${c.baseRate !== null ? pct(c.baseRate) : "–"}</b><small>bar to beat</small></div>
+        ${c.lift !== null ? `<div><b>×${c.lift.toFixed(2)}</b><small>lift</small></div>` : ""}</div>`;
+    if (c.lo !== null && c.hi !== null) {
+      body += `<div class="lore-bar" role="img" aria-label="Interval ${pct(c.lo)} to ${pct(c.hi)}${c.baseRate !== null ? `, bar to beat ${pct(c.baseRate)}` : ""}">
+          <span class="ci" style="left:${c.lo * 100}%;width:${Math.max((c.hi - c.lo) * 100, 1)}%"></span>${c.baseRate !== null ? `<span class="base" style="left:${c.baseRate * 100}%"></span>` : ""}</div>
+          <p class="lore-pend">Interval ${pct(c.lo)}–${pct(c.hi)} · n = ${n} · coral line = bar to beat</p>`;
+    }
+    return body;
+  }
+  function cardHTML(c) {
+    const mode = c.mode === "lab" || c.mode === "field" ? c.mode : null;
+    const unit = mode === "lab" ? "days" : "looks";
+    const { min, n, enough, verdict } = scoreOf(c, mode);
+    const empty = !enough && n === 0 && !(c.looks > 0);
     let body = "";
     if (!enough) {
       const need = min !== null ? Math.max(min - n, 0) : null;
@@ -196,15 +212,7 @@
       if (need !== null) body += `<p class="lore-next">${need} more ${unit} with the sign before a hit rate or verdict can be shown.</p>`;
       if (c.baseRate !== null) body += `<div class="lore-nums"><div><b>${pct(c.baseRate)}</b><small>bar to beat (how often it happens anyway)</small></div></div>`;
     } else {
-      body += `<div class="lore-nums">
-        <div><b>${c.hitRate !== null ? pct(c.hitRate) : "–"}</b><small>hit rate · ${c.hits !== null ? `${c.hits} of ${n}` : `n = ${n}`} ${unit}</small></div>
-        <div><b>${c.baseRate !== null ? pct(c.baseRate) : "–"}</b><small>bar to beat</small></div>
-        ${c.lift !== null ? `<div><b>×${c.lift.toFixed(2)}</b><small>lift</small></div>` : ""}</div>`;
-      if (c.lo !== null && c.hi !== null) {
-        body += `<div class="lore-bar" role="img" aria-label="Interval ${pct(c.lo)} to ${pct(c.hi)}${c.baseRate !== null ? `, bar to beat ${pct(c.baseRate)}` : ""}">
-          <span class="ci" style="left:${c.lo * 100}%;width:${Math.max((c.hi - c.lo) * 100, 1)}%"></span>${c.baseRate !== null ? `<span class="base" style="left:${c.baseRate * 100}%"></span>` : ""}</div>
-          <p class="lore-pend">Interval ${pct(c.lo)}–${pct(c.hi)} · n = ${n} · coral line = bar to beat</p>`;
-      }
+      body += enoughBlock(c, n, unit);
     }
     // the exact rule behind "rain followed", so every Lab result states its own window
     const rule = mode === "lab" && c.window
@@ -228,21 +236,121 @@
   }
 
   /* ---------------------------------------------------------
+     3b. THE DISCOVERY: one result story used by Lab results, quick-run and the field report.
+     Hero (the verdict), then four beats: what was tested, what the evidence showed,
+     how reliable it is, what to try next. Every line is built from the card or the
+     hypothesis; a row with no data is left out rather than guessed.
+     --------------------------------------------------------- */
+  const VERDICT_HEAD = { trail: "Still on the trail.", promising: "Promising. It beat chance.", chance: "Same as chance. That’s a real finding.", backfires: "Backwards. It did worse than chance." };
+  // Lore Lab's own rule of thumb for "how much to trust this", shown to the reader next to the label.
+  const REL_RULE = "Firm = at least 3× the minimum sample and a range no wider than 20 points. Fair = range up to 35 points. Rough = wider than that. This label is a rule of thumb; the range itself is the statistic.";
+  function reliabilityOf(c, sc, word) {
+    if (!sc.enough) return { level: 0, label: "Too early", why: `Only ${sc.n} of the ${sc.min} ${word} needed so far, so there is nothing to rate yet.` };
+    if (c.lo === null || c.hi === null) return { level: 0, label: "Can’t rate", why: "The scoring service didn’t return a range, so reliability can’t be rated." };
+    const w = c.hi - c.lo, pts = Math.round(w * 100);
+    if (sc.n >= 3 * sc.min && w <= 0.2) return { level: 3, label: "Firm", why: `${sc.n} ${word} and a range only ${pts} points wide.` };
+    if (w <= 0.35) return { level: 2, label: "Fair", why: `${sc.n} ${word}, with a range ${pts} points wide. More ${word} would narrow it.` };
+    return { level: 1, label: "Rough", why: `${sc.n} ${word} leaves a range ${pts} points wide. Treat it as a first look.` };
+  }
+  function nextSteps(v, mode) {
+    if (mode === "field") return [{ title: "Keep looking", why: "More sightings make the result firmer, and a verdict can change as they come in.", btn: "Log another look", act: "keep" }];
+    const place = { title: "See if it travels", why: "If the saying is real, it should hold in other places too.", btn: "Try another place", go: 3, hint: "Pick another city under the result." };
+    const fair = " Pick the new number before you see its result, so the test stays fair.";
+    if (v === "promising") return [place, { title: "Raise the bar", why: "Does it still work when the sign is stronger?" + fair, btn: "Try a stricter number", go: 2, hint: "Use “Choose your own number” under the result." }];
+    if (v === "chance") return [{ title: "Try a different sign strength", why: "Maybe the saying means a stronger or weaker sign." + fair, btn: "Change my number", go: 2, hint: "Use “Choose your own number” under the result." }, { ...place, title: "Check another place", why: "One location can be unlucky for a saying." }];
+    if (v === "backfires") return [{ ...place, title: "Check another place", why: "A result this far below chance deserves a second place before you trust it." }, { title: "Re-read the details", why: "Worth checking that the sign was measured the way the saying means it.", btn: "Review the details", go: 2, hint: "Use “Choose your own number” under the result." }];
+    return [{ ...place, title: "Find more days with the sign", why: "A place or number that shows the sign more often gives the test more to work with." }, { title: "Change the number", why: "A lower bar for “the sign is there” gives more days to count." + fair, btn: "Change my number", go: 2, hint: "Use “Choose your own number” under the result." }];
+  }
+  function discoveryHTML(c, ctx = {}) {
+    const mode = c.mode === "lab" || c.mode === "field" ? c.mode : null, lab = mode === "lab";
+    const sc = scoreOf(c, mode), v = sc.verdict, h = ctx.h || null, f = ctx.f || null;
+    const word = lab ? "sign-present days" : "sightings", unit = lab ? "days" : "looks";
+    const outcome = String(h?.prediction.outcome || f?.outcome || "").trim(), outPhrase = outcome ? `“${esc(outcome)}”` : "the predicted weather";
+    const place = c.place || f?.place || "", saying = c.proverb || h?.original || f?.proverb || "";
+    const win = c.window ?? h?.prediction.windowHours ?? f?.windowHours ?? null;
+
+    let take;
+    if (sc.enough && c.hitRate !== null) take = `When the sign showed up, ${outPhrase} followed <b>${pct(c.hitRate)}</b> of the time${c.hits !== null ? ` (${c.hits} of ${sc.n} ${word})` : ""}.${c.baseRate !== null ? ` It happens about <b>${pct(c.baseRate)}</b> of the time anyway.` : ""}`;
+    else if (!sc.enough) take = `Only <b>${sc.n}</b> of the <b>${sc.min}</b> ${word} needed so far. That’s too few to say anything yet.`;
+    else take = "The numbers are in, but the scoring service didn’t return a hit rate.";
+
+    const hero = `<header class="dv-hero" data-v="${v || ""}">
+      <p class="dv-kick">${lab ? "Lab test" : mode === "field" ? "Field report" : "Result"}${place ? ` · ${esc(place)}` : ""}${lab ? " · about ten years of weather" : ""}</p>
+      <p class="dv-q">“${esc(saying)}”${c.source ? ` <small>Said by ${esc(c.source)}</small>` : ""}</p>
+      ${v ? verdictBadge(v) : ""}
+      <h4 class="dv-head">${esc(v ? VERDICT_HEAD[v] : "Your numbers are in.")}</h4>
+      <p class="dv-take">${take}</p></header>`;
+
+    // 1 · what was tested
+    const rows = [];
+    const sign = h?.sign.text || f?.sign;
+    if (sign) {
+      let m = "";
+      if (lab && h?.proxy && ctx.th && Number.isFinite(Number(ctx.th.value))) {
+        const ph = checkPhrase(h, String(ctx.th.value));
+        if (ph) m = `<small>Measured as ${esc(ph)} (${ctx.th.preset ? "a quick-run preset" : "the number you chose"}${h.proxy.fit === "rough" ? ", a rough match" : ""}).</small>`;
+      }
+      rows.push(["The sign", `${esc(sign)}${m}`]);
+    }
+    if (!lab && (f?.how || h?.sign.how)) rows.push(["How to look", esc(f?.how || h.sign.how)]);
+    if (outcome || win) rows.push(["The prediction", `${esc(outcome || "The predicted weather")}${win ? ` within ${win} hours` : ""}`]);
+    const ev = ctx.evidence;
+    if (place || lab || ev) rows.push(["Where and when", [place ? esc(place) : "", lab ? "about ten years of past weather" : "", ev?.days ? `${plural(ev.days, "day", "days")} of looking${ev.when ? ` (${esc(ev.when)})` : ""}` : ""].filter(Boolean).join(" · ")]);
+    rows.push(["How it was scored", lab
+      ? (c.window ? `Counted as rain followed when ${c.rainMm !== null ? `at least ${c.rainMm} mm` : "rain"} fell in the ${c.window} hours after a look at ${c.lookHour !== null ? `${String(c.lookHour).padStart(2, "0")}:00` : "dusk"}.` : "Checked against past weather at your spot.")
+      : "Each sighting is checked against the hourly weather for its window."]);
+    const tested = `<dl class="dv-dl">${rows.map(([k, val]) => `<div><dt>${k}</dt><dd>${val}</dd></div>`).join("")}</dl>`;
+
+    // 2 · what the evidence showed
+    let evidence;
+    if (sc.enough && c.hitRate !== null) {
+      evidence = `<div class="dv-cmp">
+          <div class="dv-row"><span>When the sign showed up</span><div class="dv-track"><i class="dv-fill dv-fill--hit" style="width:${Math.max(c.hitRate * 100, 1)}%"></i></div><b>${pct(c.hitRate)}</b></div>
+          ${c.baseRate !== null ? `<div class="dv-row"><span>On any day, anyway</span><div class="dv-track"><i class="dv-fill dv-fill--base" style="width:${Math.max(c.baseRate * 100, 1)}%"></i></div><b>${pct(c.baseRate)}</b></div>` : ""}</div>
+        ${c.lift !== null ? `<p class="dv-lift"><b>×${c.lift.toFixed(2)}</b> lift: how many times as often as chance it came true.</p>` : ""}
+        ${ev ? `<p>You saw <b>${esc(sign || "the sign")}</b> <b>${plural(sc.n, "time", "times")}</b>${ev.days ? ` over <b>${plural(ev.days, "day", "days")}</b>` : ""}${ev.notSeen ? `, and logged <b>${plural(ev.notSeen, "look", "looks")}</b> where nothing showed` : ""}.</p>` : ""}`;
+    } else {
+      evidence = `${sc.min !== null ? tallySVG(sc.n, sc.min) : ""}${c.pending ? `<p class="lore-pend">${c.pending} still pending: logged, and waiting for the sky data.</p>` : ""}${c.baseRate !== null ? `<p class="dv-lift"><b>${pct(c.baseRate)}</b> is the bar to beat: how often it happens anyway.</p>` : ""}`;
+    }
+    evidence += `<p class="dv-plain">${esc(v ? VERDICT_TEXT[v].plain : "The scoring service didn’t return a verdict for this card.")}</p>`;
+
+    // 3 · how reliable
+    const rel = reliabilityOf(c, sc, word);
+    let margin = "";
+    if (sc.enough && c.lo !== null && c.hi !== null && c.baseRate !== null) margin = c.lo > c.baseRate ? "The whole range sits above the bar to beat." : c.hi < c.baseRate ? "The whole range sits below the bar to beat." : "The range straddles the bar to beat, so luck can’t be ruled out.";
+    const reliable = `<div class="dv-rel" data-l="${rel.level}"><span class="dv-pips" aria-hidden="true"><i></i><i></i><i></i></span><b>${rel.label}</b></div>
+      <p>${esc(rel.why)}</p>
+      ${sc.enough && c.lo !== null && c.hi !== null ? `<div class="lore-bar" role="img" aria-label="Likely range ${pct(c.lo)} to ${pct(c.hi)}${c.baseRate !== null ? `, bar to beat ${pct(c.baseRate)}` : ""}"><span class="ci" style="left:${c.lo * 100}%;width:${Math.max((c.hi - c.lo) * 100, 1)}%"></span>${c.baseRate !== null ? `<span class="base" style="left:${c.baseRate * 100}%"></span>` : ""}</div>
+        <p class="lore-pend">The true hit rate is probably somewhere in ${pct(c.lo)}–${pct(c.hi)} · coral line = bar to beat. ${esc(margin)}</p>` : ""}
+      <p class="dv-limits">${lab ? "One place and about ten years of modelled weather (Open-Meteo reanalysis, not weather-station readings). A hint, not proof." : "One place and a short history is a hint, not proof. Looks recorded by people; outcomes checked against hourly weather for the window."}</p>
+      ${(c.notes || []).map((t) => `<p class="lore-pend">${esc(t)}</p>`).join("")}
+      <details class="dv-ruled"><summary>How is “${rel.label}” decided?</summary><p>${esc(REL_RULE)}</p></details>`;
+
+    // 4 · what to try next
+    const steps = nextSteps(v, mode), acts = ctx.actions !== false;
+    const next = `${c.next ? `<p class="dv-srvnext">${esc(c.next)}</p>` : ""}<ul class="dv-next">${steps.map((s) => `<li><b>${esc(s.title)}</b><span>${esc(s.why)}${!acts && s.hint ? " " + esc(s.hint) : ""}</span>${acts ? `<button class="lore-btn lore-btn--butter" type="button" ${s.go ? `data-go="${s.go}"` : `data-act="${s.act}"`}>${esc(s.btn)}</button>` : ""}</li>`).join("")}</ul>`;
+
+    const sec = (n, t, body, d) => `<section class="dv-sec" style="--d:${d}s" aria-labelledby="dv-h${n}"><h5 id="dv-h${n}"><i>${n}</i>${t}</h5>${body}</section>`;
+    return `<article class="dv" data-v="${v || ""}">${hero}${sec(1, "What we tested", tested, 0.55)}${sec(2, "What the evidence showed", evidence, 0.8)}${sec(3, "How reliable is this?", reliable, 1.05)}${sec(4, "What to try next", next, 1.3)}</article>`;
+  }
+
+  /* ---------------------------------------------------------
      4. EXPERIMENT ENGINE
      --------------------------------------------------------- */
   const S = (window.LoreLab = { config: CONFIG, hyp: null, mode: null, field: null, location: null });
-  const eng = { step: 1, max: 1, busy: false, hyp: null, confirmed: null };
+  const eng = { step: 1, max: 1, busy: false, hyp: null, confirmed: null, locked: [] }; // locked: tabs with nothing to show (a resumed field test has no steps 2-3)
   const panes = [1, 2, 3, 4].map((n) => $(`#lore-p${n}`));
   const tabs = [1, 2, 3, 4].map((n) => $(`#lore-tab-${n}`));
   const STEP_NAMES = ["Saying", "Hypothesis", "Test", "Result"];
 
   function go(n, focus = true) {
     eng.step = n; eng.max = Math.max(eng.max, n);
+    if (n === 2 || n === 3) eng.locked = [];
     panes.forEach((p, i) => { p.hidden = i + 1 !== n; });
     tabs.forEach((t, i) => {
-      t.disabled = i + 1 > eng.max;
+      t.disabled = i + 1 > eng.max || eng.locked.includes(i + 1);
       t.classList.toggle("is-active", i + 1 === n);
-      t.classList.toggle("is-done", i + 1 < eng.max && i + 1 !== n);
+      t.classList.toggle("is-done", i + 1 < eng.max && i + 1 !== n && !eng.locked.includes(i + 1));
       t.setAttribute("aria-selected", String(i + 1 === n));
       t.tabIndex = i + 1 === n ? 0 : -1;
     });
@@ -420,6 +528,7 @@
         // keep the user's edits locally so step 3/4 show what was actually confirmed
         h.sign.text = payload.edits.observable_sign; h.sign.how = payload.edits.how_to_observe; h.prediction.outcome = payload.edits.predicted_outcome; h.prediction.windowHours = payload.edits.window_hours;
         if (c.observeWhen) h.sign.when = c.observeWhen;
+        h.threshold = payload.threshold; h.thresholdPreset = false; // kept so the result can say what was measured
         h.id = c.id ?? h.id; eng.confirmed = c; S.mode = c.testMode; renderTest(h, c.testMode); go(3);
       } catch (err) { showAlert(err); }
       finally { eng.busy = false; busy(confirm, false); valid(); }
@@ -478,7 +587,7 @@
         try {
           const c = normCard(await api("runBacktest", { hypothesis_id: h.id, location: loc }, { id: h.id }));
           c.mode = "lab"; c.place = c.place || loc.label || null; c.proverb = c.proverb || h.original; c.source = c.source ?? h.source;
-          renderLabResult(c); go(4);
+          renderLabResult(c, h); go(4);
         } catch (err) { showAlert(err); }
         finally { eng.busy = false; busy(btn, false); }
       });
@@ -486,8 +595,13 @@
       panes[2].innerHTML = `
         <div class="lore-mode lore-mode--field">${ICON_FIELD}<div><span class="lore-tag">Field Test</span><p class="lore-fieldnote">Tonight, you’re the instrument.</p>
         <p>No weather dataset records <b>${esc(h.sign.text || "this sign")}</b>, so it needs a person looking. ${h.sign.how ? esc(h.sign.how) : ""}</p></div></div>
+        <ol class="ft-how" aria-label="How a field test works">
+          <li><b>Look</b><span>A couple of minutes, outside. Phone down.</span></li>
+          <li><b>Tap</b><span>Seen or Not seen. That’s the whole entry.</span></li>
+          <li><b>Report</b><span>After ${MIN_N.field} sightings, we check the sky for each and write up your result.</span></li>
+        </ol>
         ${locationBlock()}
-        <div class="lore-actions"><button class="lore-btn lore-btn--coral" id="ll-start" type="button">Start the field test</button><button class="lore-btn lore-btn--ghost" type="button" data-go="2">Back to the saying details</button></div>`;
+        <div class="lore-actions"><button class="lore-btn lore-btn--coral" id="ll-start" type="button">Start my field test</button><button class="lore-btn lore-btn--ghost" type="button" data-go="2">Back to the saying details</button></div>`;
       wireGeo(); on($('[data-go="2"]', panes[2]), "click", () => go(2));
       on($("#ll-start"), "click", async (e) => {
         if (eng.busy) return; const loc = readLocation(); if (!loc) return;
@@ -495,7 +609,7 @@
         try {
           const f = normField(await api("startFieldTest", { hypothesis_id: h.id, location: loc }, { id: h.id }), h, loc);
           if (!f.id) throw new ApiError(502, "The server started the field test but didn’t return an experiment to log looks against.");
-          S.field = f; fr.exp = f; fr.phase = "ready"; fr.entries = []; fr.cards = []; fr.calDone = false; fr.remindTime = null; mountField(); go(4);
+          beginField(f); go(4);
         } catch (err) { showAlert(err); }
         finally { eng.busy = false; busy(btn, false); }
       });
@@ -503,23 +617,27 @@
   }
 
   /* Step 4 */
-  function renderLabResult(c) {
-    panes[3].innerHTML = `<h3>Here’s what the weather history says.</h3><p class="lore-intro">Lab Test results stay on their own page. They’re never mixed with outdoor looks.</p>${cardHTML(c)}
-      <div class="lore-actions"><button class="lore-btn lore-btn--sage" type="button" data-act="again">Test another saying</button><button class="lore-btn lore-btn--ghost" type="button" data-go="3">Change the place</button></div>`;
+  function renderLabResult(c, h) {
+    panes[3].innerHTML = `<h3>Here’s what the weather history says.</h3><p class="lore-intro">Lab Test results stay on their own page. They’re never mixed with outdoor looks.</p>${discoveryHTML(c, { h, th: h?.threshold ? { ...h.threshold, preset: !!h.thresholdPreset } : null, actions: true })}
+      <div class="lore-actions"><button class="lore-btn lore-btn--sage" type="button" data-act="again">Test another saying</button></div>`;
     wireResultActions();
   }
-  function wireResultActions() {
-    on($('[data-act="again"]', panes[3]), "click", () => {
-      eng.hyp = eng.confirmed = null; S.hyp = S.mode = null; fr.exp = null; fr.phase = "none"; eng.max = 1; form.reset(); $("#lore-side-mode").hidden = true; panes[1].innerHTML = panes[2].innerHTML = panes[3].innerHTML = ""; go(1);
-      $("#lore-text").focus();
+  let resultWired = false;
+  function wireResultActions() { // one delegated handler: "Test another saying" and every data-go button on step 4
+    if (resultWired) return; resultWired = true;
+    on(panes[3], "click", (e) => {
+      if (e.target.closest('[data-act="again"]')) {
+        eng.hyp = eng.confirmed = null; S.hyp = S.mode = null; fr.exp = null; fr.phase = "none"; eng.max = 1; eng.locked = []; form.reset(); $("#lore-side-mode").hidden = true; panes[1].innerHTML = panes[2].innerHTML = panes[3].innerHTML = ""; go(1);
+        renderResume(); $("#lore-text").focus(); return;
+      }
+      const g = e.target.closest("[data-go]"); if (g) go(Number(g.dataset.go));
     });
-    const back = $('[data-go="3"]', panes[3]); if (back) on(back, "click", () => go(3));
   }
   go(1, false);
 
   /* Hooks for quickrun.js (one-tap chips). Same functions the form uses; nothing is re-implemented or faked. */
   Object.assign(S, {
-    api, isConfigured, normHyp, normConfirm, normCard, cardHTML, thresholdGuide, CITIES, ApiError, describeError,
+    api, isConfigured, normHyp, normConfirm, normCard, cardHTML, resultHTML: discoveryHTML, thresholdGuide, CITIES, ApiError, describeError,
     // hand a hypothesis to the normal flow at step 2 (user must still choose/confirm)
     openReview(h) { eng.hyp = S.hyp = h; renderHyp(h); eng.max = 2; go(2); },
     // hand an already-confirmed hypothesis to step 3 (place + run/start)
@@ -657,11 +775,11 @@
   }
 
   /* ---------------------------------------------------------
-     6. FIELD LOOKS: Seen / Not seen, pending outcomes and the field scorecard,
+     6. FIELD TEST: trail, look card, observation log and field report,
         shown inline in step 4 of a Field Test
      --------------------------------------------------------- */
-  const fr = { exp: null, phase: "none", busy: false, entries: [], cards: [], remindTime: null, calDone: false };
-  let obsEl = null, cardsEl = null, listEl = null;
+  const fr = { exp: null, phase: "none", busy: false, server: [], local: [], seq: 0, syncSeq: 0, cardSeq: 0, cards: [], remindTime: null, calDone: false, startedAt: null, pop: null, just: null, reportSeen: false, moreOpen: false };
+  let obsEl = null, ftRoot = null, trailEl = null, lookEl = null, repEl = null, logEl = null, actEl = null, liveEl = null;
   const ST = { logged: "Logged", pending: "Pending", resolved: "Resolved", failed: "Couldn’t resolve" };
 
   /* ---------------------------------------------------------
@@ -714,7 +832,7 @@
       `“${f.proverb}”`, `Look for: ${sign}`, f.how ? `How: ${f.how}` : "", f.place ? `Where: ${f.place}` : "",
       "Look for a couple of minutes, tap Seen or Not seen, then put the phone away.",
     ].filter(Boolean).join("\n");
-    const link = `${location.origin}/?skiploader#engine`;
+    const link = `${location.origin}/?skiploader&look=${encodeURIComponent(f.id)}#engine`; // reopens this exact test on the device that started it
     return [
       "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Lore Lab//Field reminder//EN", "CALSCALE:GREGORIAN", "METHOD:PUBLISH",
       "BEGIN:VEVENT",
@@ -768,79 +886,349 @@
   }
   window.LoreLab.buildICS = buildICS; // handy for tests
 
-  function mountField() {
-    panes[3].innerHTML = `<h3>Go outside and look.</h3><p class="lore-intro">Look for a couple of minutes, tap what you saw, then put the phone away. We check the sky for you later.</p>
-      <div class="lore-fr-inline"><div><div class="lore-obs" id="lore-obs"></div>
-        <ul class="lore-states" aria-label="How a look travels"><li data-s="logged"><strong>Logged</strong>Your look was saved.</li><li data-s="pending"><strong>Pending</strong>The window hasn’t been checked yet.</li><li data-s="resolved"><strong>Resolved</strong>We know what the sky did.</li><li data-s="failed"><strong>Couldn’t resolve</strong>Weather data wasn’t available.</li></ul>
-        <ul class="lore-obslist" id="lore-obslist" aria-label="Your looks"></ul></div>
-        <div id="lore-cards"></div></div>
-      <div class="lore-actions"><button class="lore-btn lore-btn--sage" type="button" data-act="again">Test another saying</button></div>`;
-    obsEl = $("#lore-obs"); cardsEl = $("#lore-cards"); listEl = $("#lore-obslist");
-    on(obsEl, "click", onObsClick); wireResultActions();
-    renderObs(); renderList(); renderCards(); refreshServerData();
+  /* ---------------------------------------------------------
+     6c. FIELD TEST EXPERIENCE
+     Four parts, all fed by real data only (nothing is invented):
+       trail   : one daisy per sighting the report needs (checked / waiting / empty) + pebbles for "Not seen"
+       look    : what to look for, Seen / Not seen, then a plain "what happens next"
+       log     : every look for THIS saying, with its status and outcome
+       report  : a draft that fills in, then the real field report once the scorecard has enough sightings
+     Active tests are remembered in localStorage so a multi-day test survives closing the tab,
+     and the calendar reminder (?look=<id>) reopens exactly the right one.
+     --------------------------------------------------------- */
+  const FT_KEY = "loreFieldTests", FT_SAVED_MAX = 8;
+  const normTxt = (s) => String(s ?? "").toLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim();
+  const dayKey = (d) => `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+  const fmtDay = (d) => d.toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" });
+  const fmtTime = (d) => d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+  const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+
+  /* ---- remembered tests ---- */
+  function ftStore() {
+    try { const v = JSON.parse(localStorage.getItem(FT_KEY) || "[]"); return Array.isArray(v) ? v.filter((t) => t && t.exp && t.exp.id != null && t.exp.proverb) : []; } catch (_) { return []; }
   }
-  function renderObs() {
-    const f = fr.exp; if (!obsEl || !f) return;
-    if (fr.phase === "logged") {
-      obsEl.innerHTML = `<div class="lore-logged"><h3>Your look</h3><p class="lore-fieldnote">Logged. We’ll check the sky for you.</p><p>Now put the phone away.</p><p class="lore-pend">The outcome is pending until the window closes and the app next resolves it.</p>${calHTML(f)}<div class="lore-actions" style="justify-content:center"><button class="lore-btn lore-btn--ghost" type="button" data-act="another">Log another look</button></div></div>`;
+  function ftSave(list) { try { localStorage.setItem(FT_KEY, JSON.stringify(list.slice(0, FT_SAVED_MAX))); } catch (_) { /* private mode: the test still works this session */ } }
+  function ftRemember() {
+    const f = fr.exp; if (!f) return;
+    const s = ftStats();
+    const rest = ftStore().filter((t) => String(t.exp.id) !== String(f.id));
+    ftSave([{ v: 1, exp: f, startedAt: fr.startedAt, remindTime: fr.remindTime, calDone: fr.calDone, snap: { looks: s.looks.length, sightings: s.sightings, min: s.min }, savedAt: new Date().toISOString() }, ...rest]);
+  }
+  const ftForget = (id) => ftSave(ftStore().filter((t) => String(t.exp.id) !== String(id)));
+
+  /* ---- data: looks for this saying, and its scorecard ---- */
+  function normLook(o) {
+    const t = Date.parse(o.observed_at);
+    const st = String(o.status || "pending").toLowerCase().replace("resolve_failed", "failed");
+    return {
+      exp: o.experiment_id ?? null, proverb: o.proverb ?? o.original_text ?? "", seen: !!o.seen, status: st in ST ? st : "pending",
+      outcome: typeof o.outcome === "string" ? o.outcome : null,
+      hit: typeof o.hit === "boolean" ? o.hit : typeof o.outcome === "boolean" ? o.outcome : null, // only if the server says so
+      note: o.note ?? null, at: o.observed_at ?? null, t: Number.isFinite(t) ? t : 0,
+    };
+  }
+  const isMine = (l) => { const f = fr.exp; return !!f && ((l.exp != null && String(l.exp) === String(f.id)) || normTxt(l.proverb) === normTxt(f.proverb)); };
+  function myLooks() {
+    const srv = fr.server.filter(isMine);
+    const extra = fr.local.filter((l) => l.seq > fr.syncSeq); // logged here, not yet in the server's list
+    return [...extra, ...srv].sort((a, b) => (b.t || 0) - (a.t || 0));
+  }
+  function pickCard() {
+    const f = fr.exp; if (!f) return null;
+    const field = fr.cards.filter((c) => c.mode === "field"), same = (c) => normTxt(c.proverb) === normTxt(f.proverb);
+    return field.find((c) => c.expId != null && String(c.expId) === String(f.id))
+      || field.find((c) => same(c) && (!c.place || !f.place || normTxt(c.place) === normTxt(f.place)))
+      || field.find(same) || null;
+  }
+  function ftStats() {
+    const looks = myLooks(), seen = looks.filter((l) => l.seen), card = pickCard();
+    const min = card?.min ?? MIN_N.field;
+    const lc = seen.filter((l) => l.status === "resolved").length;
+    const lp = seen.filter((l) => l.status === "logged" || l.status === "pending").length;
+    const unscored = fr.local.filter((l) => l.seen && l.seq > fr.cardSeq).length; // logged since the scorecard was fetched
+    const counted = card && card.n !== null ? card.n : lc;
+    const pending = card && card.pending !== null ? card.pending + unscored : lp;
+    const times = looks.map((l) => l.t).filter(Boolean).sort((a, b) => a - b);
+    const days = new Set(times.map((t) => dayKey(new Date(t)))).size;
+    return { looks, seen, sightings: seen.length, notSeen: looks.length - seen.length, counted, pending, min, card, days, first: times[0] ?? null, last: times[times.length - 1] ?? null };
+  }
+
+  /* ---- parts ---- */
+  const PETALS = [0, 1, 2, 3, 4, 5, 6, 7].map((i) => `<ellipse class="p" cx="20" cy="9.5" rx="4.1" ry="7.2" transform="rotate(${i * 45} 20 20)"/>`).join("");
+  const daisy = (st, pop) => `<svg class="ft-fl ft-fl--${st}${pop ? " ft-fl--pop" : ""}" viewBox="0 0 40 40" aria-hidden="true" focusable="false">${PETALS}<circle class="c" cx="20" cy="20" r="5.4"/></svg>`;
+
+  function renderTrail() {
+    const f = fr.exp; if (!trailEl || !f) return;
+    const s = ftStats(), slots = Math.max(1, Math.min(s.min, 20));
+    let fl = ""; for (let i = 0; i < slots; i++) fl += daisy(i < s.counted ? "on" : i < s.counted + s.pending ? "wait" : "off", fr.pop === i);
+    const over = Math.max(s.counted + s.pending - slots, 0), peb = Math.min(s.notSeen, 14);
+    const logged = s.counted + s.pending;
+    const label = `${logged} of ${s.min} sightings logged, ${s.counted} checked${s.pending ? `, ${s.pending} waiting for the sky` : ""}${s.notSeen ? `, ${plural(s.notSeen, "look", "looks")} with nothing seen` : ""}.`;
+    trailEl.innerHTML = `<p class="ft-kick">${esc(f.place || "Field test")}</p>
+      <p class="ft-q">“${esc(f.proverb)}”</p>
+      <div class="ft-flowers" role="img" aria-label="${esc(label)}">${fl}${over ? `<span class="ft-extra">+${over}</span>` : ""}</div>
+      <p class="ft-count"><b>${logged}</b> of ${s.min} sightings logged${logged ? `<span> · ${s.counted} checked${s.pending ? `, ${s.pending} waiting for the sky` : ""}</span>` : ""}</p>
+      ${s.notSeen ? `<p class="ft-pebs"><span class="ft-pebs__row" aria-hidden="true">${"<i></i>".repeat(peb)}${s.notSeen > 14 ? `<em>+${s.notSeen - 14}</em>` : ""}</span><span>${plural(s.notSeen, "look", "looks")} with nothing seen</span></p>` : ""}
+      <p class="ft-rule">Only sightings count toward the report. A “Not seen” look stays in your log as a pebble.</p>`;
+    fr.pop = null;
+  }
+
+  function readyHTML() {
+    const f = fr.exp, no = ftStats().looks.length + 1;
+    const facts = [["How", f.how], ["Best time", f.when], ["Where", f.place]].filter(([, v]) => v);
+    return `<p class="ft-kick ft-lookno">${no === 1 ? "Your first look" : `Look #${no}`}</p>
+      <p class="ft-ask"><span>Look for</span> ${esc(f.sign || "the sign in the saying")}</p>
+      ${facts.length ? `<dl class="ft-facts">${facts.map(([k, v]) => `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl>` : ""}
+      <p class="ft-step">Give it a couple of minutes. Phone down, eyes up. Then tap what you saw.</p>
+      <div class="lore-seen" role="group" aria-label="What did you see?"><button class="lore-btn" type="button" data-seen="true">Seen<small>I can see it</small></button><button class="lore-btn" type="button" data-seen="false">Not seen<small>Not this time</small></button></div>
+      <details class="ft-d"><summary>Add a note (optional)</summary><textarea class="lore-field" id="lf-note" rows="2" placeholder="Anything worth remembering"></textarea></details>
+      <details class="ft-d"><summary>Remind me to come back</summary>${calHTML(f)}</details>`;
+  }
+  function milestone(seen, s) {
+    const m = s.min, n = s.sightings;
+    if (!seen) return `Nothing showed this time. That’s a proper entry: it stays in your log, though only sightings count toward the ${m}.`;
+    if (s.card && s.counted >= m) return "Another sighting for the report. More sightings make the result firmer.";
+    if (n === 1) return "Your first sighting. The report has its first page.";
+    if (n >= m) return `That’s ${n} sightings logged. Once the sky has been checked for each, your report opens.`;
+    if (n === m - 1) return `${n} sightings logged. One more and the report can open.`;
+    if (n === Math.ceil(m / 2)) return `Halfway: ${n} of ${m} sightings logged.`;
+    return `Sighting ${n} of ${m}. ${m - n} to go.`;
+  }
+  function loggedHTML() {
+    const f = fr.exp, j = fr.just, at = j.at;
+    const closes = f.windowHours ? new Date(at.getTime() + f.windowHours * 3600000) : null;
+    const next = j.seen
+      ? `<ol class="ft-next" aria-label="What happens next"><li class="is-done"><b>Logged</b><span>${esc(fmtTime(at))}</span></li>
+          <li><b>Window closes</b><span>${closes ? esc(`${fmtDay(closes)}, ${fmtTime(closes)}`) : "when the window ends"}</span></li>
+          <li><b>Sky checked</b><span>Open Lore Lab after that${f.outcome ? ` and we check for “${esc(f.outcome)}”` : ""}.</span></li></ol>`
+      : (f.when ? `<p class="ft-watch">Try again at the best time: <b>${esc(f.when)}</b>.</p>` : "");
+    return `<div class="ft-stamp" aria-hidden="true">Logged</div>
+      <p class="ft-kick">${j.seen ? "Seen" : "Not seen"} · ${esc(fmtDay(at))}, ${esc(fmtTime(at))}</p>
+      <h4 class="ft-done__t" tabindex="-1">${j.no === 1 ? "Your first look is in the book." : `Look #${j.no} is in the book.`}</h4>
+      <p class="ft-done__msg">${esc(j.msg)}</p>
+      ${next}
+      <p class="ft-phone">Now put the phone away.</p>
+      ${calHTML(f)}
+      <div class="lore-actions" style="justify-content:center"><button class="lore-btn lore-btn--ghost" type="button" data-act="another">Log another look</button></div>`;
+  }
+  function renderLook() {
+    if (!lookEl || !fr.exp) return;
+    const logged = fr.phase === "logged" && fr.just;
+    lookEl.classList.toggle("is-logged", !!logged);
+    lookEl.innerHTML = logged ? loggedHTML() : readyHTML();
+    if (logged) { const h = $(".ft-done__t", lookEl); if (h) h.focus({ preventScroll: true }); lookEl.scrollIntoView({ block: "nearest", behavior: reduce ? "auto" : "smooth" }); }
+  }
+
+  function entryHTML(l) {
+    const st = l.status in ST ? l.status : "pending", d = l.t ? new Date(l.t) : null;
+    let out = "";
+    if (st === "failed") out = "No weather data for that window, so it can’t be scored.";
+    else if (l.seen && st === "resolved") out = l.hit === true ? `<b class="ft-hit">It came true</b>` : l.hit === false ? `<b class="ft-miss">It didn’t happen</b>` : l.outcome ? esc(l.outcome) : "";
+    return `<li class="ft-ent" data-seen="${l.seen}">
+      <span class="ft-ent__d">${d ? `<time datetime="${esc(d.toISOString())}"><b>${esc(fmtDay(d))}</b><small>${esc(fmtTime(d))}</small></time>` : "<b>Date unknown</b>"}</span>
+      <span class="ft-ent__m"><span class="ft-seenpill" data-seen="${l.seen}">${l.seen ? "Seen" : "Not seen"}</span>${out ? ` <span class="ft-ent__o">${out}</span>` : ""}${l.note ? `<span class="ft-ent__n">“${esc(l.note)}”</span>` : ""}</span>
+      <span class="lore-st" data-s="${st}">${ST[st]}</span></li>`;
+  }
+  function renderLog() {
+    if (!logEl || !fr.exp) return;
+    const { looks } = ftStats(), head = looks.slice(0, 6), rest = looks.slice(6);
+    const anyPending = looks.some((l) => l.seen && (l.status === "logged" || l.status === "pending"));
+    logEl.innerHTML = `<div class="ft-sec__top"><h4 id="ft-log-h">Observation log</h4><span class="ft-sec__n">${plural(looks.length, "look", "looks")}</span></div>
+      ${looks.length
+        ? `<ol class="ft-log" aria-labelledby="ft-log-h">${head.map(entryHTML).join("")}</ol>${rest.length ? `<details class="ft-more"${fr.moreOpen ? " open" : ""}><summary>Show ${plural(rest.length, "earlier look", "earlier looks")}</summary><ol class="ft-log">${rest.map(entryHTML).join("")}</ol></details>` : ""}`
+        : `<div class="ft-log ft-log--empty"><p>Your first look goes here.</p><i></i><i></i></div>`}
+      ${anyPending ? `<p class="ft-rule">Pending means the window hasn’t closed yet, or hasn’t been checked. Open Lore Lab after it closes and it checks for you.</p>` : ""}`;
+  }
+
+  function renderReport() {
+    if (!repEl || !fr.exp || !ftRoot) return;
+    const f = fr.exp, s = ftStats(), c = s.card, sc = c ? scoreOf(c, "field") : null;
+    const final = !!(sc && sc.enough && sc.verdict !== "trail"), v = final ? sc.verdict : null;
+    const want = final ? lookEl : actEl;
+    if (repEl.nextElementSibling !== want) ftRoot.insertBefore(repEl, want); // report rises above the look card once it exists
+    if (final) {
+      const isNew = !fr.reportSeen; fr.reportSeen = true;
+      const when = s.first ? `${fmtDay(new Date(s.first))}${s.last && dayKey(new Date(s.last)) !== dayKey(new Date(s.first)) ? ` to ${fmtDay(new Date(s.last))}` : ""}` : "";
+      repEl.innerHTML = `<div class="ft-rep ft-rep--final${isNew ? " is-new" : ""}">${discoveryHTML({ ...c, place: c.place || f.place }, { f, actions: true, evidence: { days: s.days, notSeen: s.notSeen, when } })}
+        <div class="dv-foot"><button class="lore-btn lore-btn--coral" type="button" data-act="share">Save report image</button></div>
+        <p class="ft-sharemsg" id="ft-share-msg" role="status" aria-live="polite"></p></div>`;
       return;
     }
-    obsEl.innerHTML = `<h3>Look, then tap.</h3><p class="lore-q">${esc(f.proverb)}</p>
-      <dl><div><dt>Look for: </dt><dd>${esc(f.sign || "the sign in the saying")}</dd></div>
-      ${f.how ? `<div><dt>How: </dt><dd>${esc(f.how)}</dd></div>` : ""}${f.when ? `<div><dt>When: </dt><dd>${esc(f.when)}</dd></div>` : ""}${f.place ? `<div><dt>Where: </dt><dd>${esc(f.place)}</dd></div>` : ""}</dl>
-      <div class="lore-seen" role="group" aria-label="What did you see?"><button class="lore-btn" type="button" data-seen="true">Seen</button><button class="lore-btn" type="button" data-seen="false">Not seen</button></div>
-      <details><summary>Add a note (optional)</summary><textarea class="lore-field" id="lf-note" rows="2" placeholder="Anything worth remembering"></textarea></details>
-      ${calHTML(f)}`;
+    const logged = s.counted + s.pending, left = Math.max(s.min - logged, 0);
+    const need = left > 0 ? `${plural(left, "more sighting", "more sightings")} to spot.`
+      : s.counted < s.min ? `All the sightings you need are logged. ${s.min - s.counted} still waiting for the sky: open Lore Lab after their windows close.`
+      : "Counting is done. Waiting for the scoring service to write the verdict.";
+    repEl.innerHTML = `<article class="lore-card lore-card--empty ft-rep ft-rep--draft" aria-labelledby="ft-rep-h">
+      <p class="ft-kick">Field report · draft</p>
+      <h4 class="ft-rep__h" id="ft-rep-h">${s.looks.length ? "Taking shape." : "A blank page, waiting for your first look."}</h4>
+      <dl class="ft-facts ft-facts--rep">
+        <div><dt>Saying</dt><dd>“${esc(f.proverb)}”</dd></div>
+        ${f.place ? `<div><dt>Place</dt><dd>${esc(f.place)}</dd></div>` : ""}
+        ${fr.startedAt ? `<div><dt>Started</dt><dd>${esc(fmtDay(new Date(fr.startedAt)))}</dd></div>` : ""}
+        <div><dt>Looks</dt><dd>${s.looks.length}${s.days ? ` on ${plural(s.days, "day", "days")}` : ""}</dd></div>
+        <div><dt>Sightings</dt><dd>${s.sightings} · Not seen: ${s.notSeen}</dd></div></dl>
+      <div class="ft-slot"><span class="ft-slot__l">Verdict</span><span>Unlocks after ${s.min} checked sightings. ${esc(need)}</span></div>
+      ${c && c.hits !== null && s.counted > 0 ? `<p class="lore-pend">So far the predicted weather followed ${c.hits} of ${s.counted} checked sightings. Far too few to read anything into yet.</p>` : ""}
+      <p class="ft-willh">What the finished report will show</p>
+      <ul class="ft-will"><li><b>Hit rate</b> how often it came true after you saw the sign</li><li><b>Bar to beat</b> how often it happens anyway</li><li><b>Verdict</b> promising, same as chance, or backfires</li></ul></article>`;
   }
-  async function onObsClick(e) {
-    if (e.target.closest('[data-act="ics"]')) { onAddToCalendar(); return; }
-    const another = e.target.closest('[data-act="another"]'); if (another) { fr.phase = "ready"; renderObs(); return; }
-    const b = e.target.closest("[data-seen]"); if (!b || fr.busy || !fr.exp) return;
-    fr.busy = true; $$(".lore-seen .lore-btn", obsEl).forEach((x) => (x.disabled = true)); busy(b, true);
-    try {
-      const note = ($("#lf-note", obsEl)?.value || "").trim();
-      const r = await api("submitObservation", { experiment_id: fr.exp.id, seen: b.dataset.seen === "true", note: note || null }, { id: fr.exp.id });
-      fr.phase = "logged"; // only after the server accepted it
-      fr.entries.unshift({ proverb: fr.exp.proverb, seen: b.dataset.seen === "true", status: "logged", at: r?.observed_at || null });
-      renderObs(); renderList(); refreshServerData();
-    } catch (err) {
-      const d = describeError(err);
-      obsEl.insertAdjacentHTML("beforeend", `<div class="lore-alert" role="alert"><strong>${esc(d.title)}</strong>${esc(d.msg)} Your look was <b>not</b> saved.</div>`);
-      $$(".lore-seen .lore-btn", obsEl).forEach((x) => (x.disabled = false)); busy(b, false);
-      setTimeout(() => $$(".lore-alert", obsEl).forEach((a) => a.remove()), 9000);
-    } finally { fr.busy = false; }
+
+  function renderAll() {
+    if (!ftRoot || !ftRoot.isConnected || !fr.exp) return;
+    renderTrail(); renderReport(); renderLog();
+    if (fr.phase === "ready") { const k = $(".ft-lookno", lookEl); if (k) k.textContent = ftStats().looks.length === 0 ? "Your first look" : `Look #${ftStats().looks.length + 1}`; }
+    ftRemember();
   }
-  function renderList() {
-    if (!listEl) return;
-    listEl.innerHTML = fr.entries.map((en) => {
-      const st = en.status in ST ? en.status : "pending";
-      const out = en.status === "resolved" && en.outcome ? ` · ${esc(en.outcome)}` : "";
-      return `<li><span>${esc(en.proverb)} · <b>${en.seen ? "Seen" : "Not seen"}</b>${out}</span><span class="lore-st" data-s="${st}">${ST[st]}</span></li>`;
-    }).join("");
-  }
-  function renderCards() {
-    if (!cardsEl) return;
-    const field = fr.cards.filter((c) => c.mode === "field");
-    cardsEl.innerHTML = field.length ? field.map(cardHTML).join("")
-      : cardHTML({ mode: "field", proverb: fr.exp?.proverb || "", source: null, place: fr.exp?.place || null, looks: null, n: 0, pending: null, hits: null, baseRate: null, hitRate: null, lo: null, hi: null, lift: null, verdict: null, next: null, min: null });
-  }
+
   async function refreshServerData() {
+    const seq0 = fr.seq;
     if (isConfigured("listObservations")) {
-      try {
-        const r = await api("listObservations"); const list = Array.isArray(r) ? r : r.observations || [];
-        const fromServer = list.map((o) => ({ proverb: o.proverb ?? o.original_text ?? "", seen: !!o.seen, status: String(o.status || "pending").toLowerCase().replace("resolve_failed", "failed"), outcome: o.outcome ?? null, at: o.observed_at ?? null }));
-        // never drop a look the user just logged because the list hasn't caught up yet
-        if (fromServer.length) fr.entries = fromServer;
-        renderList();
-      } catch (_) { /* leave the local list */ }
+      try { const r = await api("listObservations"); const list = Array.isArray(r) ? r : r.observations || []; if (seq0 >= fr.syncSeq) { fr.server = list.map(normLook); fr.syncSeq = seq0; } } catch (_) { /* keep what we have */ }
     }
     if (isConfigured("scorecards")) {
-      try { const r = await api("scorecards"); fr.cards = (Array.isArray(r) ? r : r.scorecards || []).map(normCard); renderCards(); } catch (_) { /* keep empty state */ }
+      try { const r = await api("scorecards"); if (seq0 >= fr.cardSeq) { fr.cards = (Array.isArray(r) ? r : r.scorecards || []).map(normCard); fr.cardSeq = seq0; } } catch (_) { /* draft stays */ }
     }
+    renderAll();
   }
-  // lazy outcome resolution: the app resolves what's due whenever it opens
+
+  function resetField() { Object.assign(fr, { exp: null, phase: "none", busy: false, server: [], local: [], seq: 0, syncSeq: 0, cardSeq: 0, cards: [], remindTime: null, calDone: false, startedAt: null, pop: null, just: null, reportSeen: false, moreOpen: false }); }
+
+  function mountField() {
+    panes[3].innerHTML = `<h3>Your field test</h3><p class="lore-intro">Look, tap, put the phone away. We check the sky for you later.</p>
+      <div class="ft" id="ft">
+        <section class="ft-trail" id="ft-trail" aria-label="Progress"></section>
+        <section class="lore-obs ft-look" id="ft-look" aria-label="Log a look"></section>
+        <section class="ft-repwrap" id="ft-report" aria-label="Field report"></section>
+        <section class="ft-logwrap" id="ft-log" aria-label="Observation log"></section>
+        <div class="ft-actions" id="ft-actions"><div class="lore-actions"><button class="lore-btn lore-btn--sage" type="button" data-act="again">Test another saying</button><button class="lore-btn lore-btn--ghost" type="button" data-act="stop">Stop following this saying</button></div>
+          <div class="ft-stopbox" id="ft-stopbox" hidden><p>Stop following this saying here? Your looks stay in the logbook.</p><div class="lore-actions"><button class="lore-btn lore-btn--coral" type="button" data-act="stop-yes">Stop following</button><button class="lore-btn lore-btn--ghost" type="button" data-act="stop-no">Keep going</button></div></div></div>
+      </div><p class="ft-sr" id="ft-live" role="status" aria-live="polite"></p>`;
+    ftRoot = $("#ft"); trailEl = $("#ft-trail"); lookEl = $("#ft-look"); repEl = $("#ft-report"); logEl = $("#ft-log"); actEl = $("#ft-actions"); liveEl = $("#ft-live"); obsEl = lookEl;
+    on(ftRoot, "click", onFieldClick);
+    on(logEl, "toggle", (e) => { if (e.target.classList?.contains("ft-more")) fr.moreOpen = e.target.open; }, { capture: true });
+    wireResultActions();
+    renderLook(); renderAll(); refreshServerData();
+  }
+  function beginField(f) {
+    resetField(); fr.exp = f; S.field = f; fr.phase = "ready"; fr.startedAt = new Date().toISOString();
+    mountField(); ftRemember(); renderResume();
+  }
+  function openSaved(t, focus = true) {
+    resetField(); fr.exp = t.exp; S.field = t.exp; fr.phase = "ready"; fr.startedAt = t.startedAt || null; fr.remindTime = t.remindTime || null; fr.calDone = !!t.calDone;
+    $("#lore-side-mode").hidden = false; $("#lore-side-badge").textContent = "Field Test";
+    eng.locked = [2, 3]; mountField(); eng.max = 4; go(4, focus);
+  }
+
+  async function onFieldClick(e) {
+    const act = (k) => e.target.closest(`[data-act="${k}"]`);
+    if (act("ics")) { onAddToCalendar(); return; }
+    if (act("another")) { fr.phase = "ready"; fr.just = null; renderLook(); return; }
+    if (act("keep")) { fr.phase = "ready"; fr.just = null; renderLook(); lookEl.scrollIntoView({ block: "center", behavior: reduce ? "auto" : "smooth" }); return; }
+    if (act("share")) { ftShare(); return; }
+    if (act("stop")) { $("#ft-stopbox").hidden = false; return; }
+    if (act("stop-no")) { $("#ft-stopbox").hidden = true; return; }
+    if (act("stop-yes")) { ftForget(fr.exp.id); renderResume(); $('[data-act="again"]', panes[3]).click(); return; }
+    const b = e.target.closest("[data-seen]"); if (!b || fr.busy || !fr.exp) return;
+    const seen = b.dataset.seen === "true";
+    fr.busy = true; $$(".lore-seen .lore-btn", lookEl).forEach((x) => (x.disabled = true)); busy(b, true);
+    try {
+      const note = ($("#lf-note", lookEl)?.value || "").trim();
+      const r = await api("submitObservation", { experiment_id: fr.exp.id, seen, note: note || null }, { id: fr.exp.id });
+      let at = r?.observed_at ? new Date(r.observed_at) : new Date(); if (isNaN(at)) at = new Date(); // fall back to the moment of the tap
+      fr.seq++; fr.local.push({ seq: fr.seq, exp: fr.exp.id, proverb: fr.exp.proverb, seen, status: "logged", outcome: null, hit: null, note: note || null, at: at.toISOString(), t: at.getTime() });
+      const s = ftStats();
+      fr.phase = "logged"; fr.just = { seen, at, no: s.looks.length, msg: milestone(seen, s) };
+      fr.pop = seen && s.counted + s.pending <= s.min ? s.counted + s.pending - 1 : null; // pop the new daisy
+      renderTrail(); renderLook(); renderReport(); renderLog(); ftRemember(); renderResume();
+      if (liveEl) liveEl.textContent = fr.just.msg;
+      refreshServerData();
+    } catch (err) {
+      const d = describeError(err);
+      lookEl.insertAdjacentHTML("beforeend", `<div class="lore-alert" role="alert"><strong>${esc(d.title)}</strong>${esc(d.msg)} Your look was <b>not</b> saved.</div>`);
+      $$(".lore-seen .lore-btn", lookEl).forEach((x) => (x.disabled = false)); busy(b, false);
+      setTimeout(() => $$(".lore-alert", lookEl).forEach((a) => a.remove()), 9000);
+    } finally { fr.busy = false; }
+  }
+
+  /* ---- shareable report image (only from a real scorecard) ---- */
+  function ftImage(s) {
+    const f = fr.exp, c = s.card, sc = scoreOf(c, "field"), W = 1080, H = 1350, ink = "#10291b";
+    const cv = document.createElement("canvas"); cv.width = W; cv.height = H;
+    const g = cv.getContext("2d");
+    const wrap = (text, x, y, maxW, lh, maxLines) => {
+      let line = "", n = 0;
+      for (const w of String(text).split(/\s+/)) {
+        const t = line ? line + " " + w : w;
+        if (g.measureText(t).width > maxW && line) { g.fillText(line, x, y); y += lh; line = w; if (++n >= maxLines) return y; } else line = t;
+      }
+      g.fillText(line, x, y); return y + lh;
+    };
+    g.fillStyle = "#1f5a3d"; g.fillRect(0, 0, W, H);
+    g.fillStyle = "#fffaf0"; g.strokeStyle = ink; g.lineWidth = 8; g.beginPath(); g.roundRect(70, 90, W - 140, H - 230, 36); g.fill(); g.stroke();
+    g.fillStyle = ink; g.textBaseline = "alphabetic";
+    g.font = "700 34px Nunito, system-ui, sans-serif"; g.fillText("LORE LAB · FIELD REPORT", 130, 190);
+    g.font = "56px 'Caveat Brush', 'Chalkboard SE', cursive";
+    let y = wrap("“" + (f.proverb || "").replace(/\s+/g, " ").slice(0, 140) + "”", 130, 290, W - 260, 70, 4);
+    const fill = { promising: "#8aa863", chance: "#fbf6e6", backfires: "#f26a4f" }[sc.verdict] || "#f4d88a";
+    g.fillStyle = fill; g.strokeStyle = ink; g.lineWidth = 6; y += 20; g.beginPath(); g.roundRect(130, y, W - 260, 120, 24); g.fill(); g.stroke();
+    g.fillStyle = ink; g.font = "800 60px Nunito, system-ui, sans-serif"; g.fillText(VERDICT_TEXT[sc.verdict]?.label || "Result", 170, y + 80); y += 230;
+    g.font = "800 120px Nunito, system-ui, sans-serif"; g.fillText(c.hitRate !== null ? pct(c.hitRate) : "–", 130, y);
+    g.font = "600 38px Nunito, system-ui, sans-serif"; g.fillText(`hit rate · ${c.hits ?? "?"} of ${c.n}`, 130, y + 56);
+    if (c.baseRate !== null) { g.font = "800 120px Nunito, system-ui, sans-serif"; g.fillText(pct(c.baseRate), 640, y); g.font = "600 38px Nunito, system-ui, sans-serif"; g.fillText("bar to beat", 640, y + 56); }
+    y += 110;
+    if (c.lo !== null && c.hi !== null) {
+      const x0 = 130, bw = W - 260;
+      g.fillStyle = "rgba(16,41,27,.1)"; g.strokeStyle = ink; g.lineWidth = 4; g.beginPath(); g.roundRect(x0, y, bw, 34, 17); g.fill(); g.stroke();
+      g.fillStyle = "#8aa863"; g.beginPath(); g.roundRect(x0 + c.lo * bw, y + 5, Math.max((c.hi - c.lo) * bw, 6), 24, 12); g.fill();
+      if (c.baseRate !== null) { g.fillStyle = "#f26a4f"; g.fillRect(x0 + c.baseRate * bw - 4, y - 10, 8, 54); }
+      y += 44;
+    }
+    y += 50; g.fillStyle = ink; g.font = "600 34px Nunito, system-ui, sans-serif";
+    wrap(`${plural(c.n, "sighting", "sightings")}${s.days ? ` over ${plural(s.days, "day", "days")}` : ""} · ${f.place || "one place"}. A hint, not proof.`, 130, y, W - 260, 46, 3);
+    g.fillStyle = "#fbf6e6"; g.font = "700 40px Nunito, system-ui, sans-serif"; g.fillText("Test your family’s saying: " + location.host, 70, H - 60);
+    return cv;
+  }
+  async function ftShare() {
+    const msg = $("#ft-share-msg"), s = ftStats(); if (!s.card) return;
+    try {
+      try { await Promise.all([document.fonts.load("56px 'Caveat Brush'"), document.fonts.load("800 60px Nunito")]); } catch (_) { /* fall back to system fonts */ }
+      const blob = await new Promise((r) => ftImage(s).toBlob(r, "image/png"));
+      const file = new File([blob], "lore-lab-field-report.png", { type: "image/png" });
+      const data = { files: [file], title: "Lore Lab field report", text: `I put “${fr.exp.proverb}” through a field test.` };
+      if (navigator.canShare && navigator.canShare(data)) { await navigator.share(data); msg.textContent = "Shared."; return; }
+      const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "lore-lab-field-report.png"; a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+      msg.textContent = "Saved the report image to your device.";
+    } catch (err) { if (err && err.name !== "AbortError" && msg) msg.textContent = "Couldn’t make the report image on this browser."; }
+  }
+
+  /* ---- "Field tests in progress" on step 1 ---- */
+  let resumeEl = null;
+  function renderResume() {
+    const list = ftStore();
+    if (!resumeEl) {
+      resumeEl = document.createElement("div"); resumeEl.className = "ft-resume"; resumeEl.id = "ft-resume";
+      panes[0].insertBefore(resumeEl, $(".lore-intro", panes[0]) || form);
+      on(resumeEl, "click", (e) => { const b = e.target.closest("[data-resume]"); const t = b && ftStore().find((x) => String(x.exp.id) === b.dataset.resume); if (t) openSaved(t, true); });
+    }
+    resumeEl.hidden = !list.length;
+    resumeEl.innerHTML = list.length ? `<p class="ft-kick">Field tests in progress</p><ul>${list.slice(0, 4).map((t) => {
+      const sn = t.snap || {}, line = sn.looks ? `${sn.sightings} of ${sn.min} sightings · ${plural(sn.looks, "look", "looks")}` : "No looks yet";
+      return `<li><span><b>“${esc(t.exp.proverb)}”</b><small>${esc([t.exp.place, line].filter(Boolean).join(" · "))}</small></span><button class="lore-btn lore-btn--butter" type="button" data-resume="${esc(t.exp.id)}">Continue looking</button></li>`;
+    }).join("")}</ul>` : "";
+  }
+
+  // boot: show remembered tests, open the one a calendar reminder points at, and resolve what's due
   (async function boot() {
+    renderResume();
+    const want = new URLSearchParams(location.search).get("look");
+    if (want) {
+      const t = ftStore().find((x) => String(x.exp.id) === want);
+      if (t) openSaved(t, false);
+      else showAlert("That reminder is for a field test this browser doesn’t know about. Tests are remembered on the device where you started them.", "info");
+    }
     if (isConfigured("resolvePending")) { try { await api("resolvePending"); } catch (_) { /* failed looks show as such */ } }
+    if (fr.exp) refreshServerData();
   })();
 
   /* ---------------------------------------------------------
@@ -1121,7 +1509,7 @@
     out.hidden = false;
     out.innerHTML = `<div class="qr-box">
       <p class="qr-kick">Your result</p>
-      <div id="qr-card">${LL.cardHTML(card)}</div>
+      <div id="qr-card">${lab ? LL.resultHTML(card, { h, th: preset ? { value: preset.value, unit: preset.unit, preset: true } : null, actions: false }) : LL.cardHTML(card)}</div>
       ${used}
       <div class="qr-actions">
         ${lab ? `<button class="qr-btn qr-btn--coral" type="button" id="qr-share">Share this result</button>` : `<button class="qr-btn qr-btn--coral" type="button" id="qr-start">Pick a place and start looking</button>`}
